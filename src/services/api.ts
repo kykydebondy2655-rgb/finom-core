@@ -553,6 +553,55 @@ export const adminApi = {
       .order('uploaded_at', { ascending: false });
     if (error) throw error;
     return data || [];
+  },
+
+  // Update loan status (admin only)
+  async updateLoanStatus(loanId: string, status: string, rejectionReason?: string) {
+    const updates: TablesUpdate<'loan_applications'> = { status };
+    if (rejectionReason) updates.rejection_reason = rejectionReason;
+    
+    const { data, error } = await supabase
+      .from('loan_applications')
+      .update(updates)
+      .eq('id', loanId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // Create client assignment
+  async createAssignment(agentUserId: string, clientUserId: string) {
+    const { data, error } = await supabase
+      .from('client_assignments')
+      .insert({ agent_user_id: agentUserId, client_user_id: clientUserId })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // Delete client assignment
+  async deleteAssignment(assignmentId: string) {
+    const { error } = await supabase
+      .from('client_assignments')
+      .delete()
+      .eq('id', assignmentId);
+    if (error) throw error;
+  },
+
+  // Get assigned agent for a client
+  async getClientAgent(clientUserId: string) {
+    const { data, error } = await supabase
+      .from('client_assignments')
+      .select(`
+        *,
+        agent:profiles!client_assignments_agent_user_id_fkey(*)
+      `)
+      .eq('client_user_id', clientUserId)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.agent || null;
   }
 };
 

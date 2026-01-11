@@ -20,6 +20,12 @@ const Register = () => {
         e.preventDefault();
         setError('');
 
+        // Validate required fields
+        if (!formData.firstName.trim() || !formData.lastName.trim()) {
+            setError('Le prénom et le nom sont obligatoires');
+            return;
+        }
+
         if (formData.password !== formData.confirmPassword) {
             setError('Les mots de passe ne correspondent pas');
             return;
@@ -67,22 +73,24 @@ const Register = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Prénom</label>
+                                <label>Prénom *</label>
                                 <input
                                     type="text"
                                     name="firstName"
                                     value={formData.firstName}
                                     onChange={handleChange}
+                                    required
                                     className="form-input"
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Nom</label>
+                                <label>Nom *</label>
                                 <input
                                     type="text"
                                     name="lastName"
                                     value={formData.lastName}
                                     onChange={handleChange}
+                                    required
                                     className="form-input"
                                 />
                             </div>
