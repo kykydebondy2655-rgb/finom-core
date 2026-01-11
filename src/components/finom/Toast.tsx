@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import '../styles/Toast.css';
+import '../../styles/Toast.css';
 
 interface ToastContextType {
     success: (message: string, duration?: number) => number;
