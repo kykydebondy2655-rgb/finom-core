@@ -5,6 +5,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import { loansApi } from '@/services/api';
+import { calculateMonthlyPayment as calcMonthly, calculateTotalInterest } from '@/lib/loanCalculations';
 
 interface FormData {
   amount: number;
@@ -46,16 +47,14 @@ const NewLoanApplication: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const calculateMonthlyPayment = () => {
+  const getMonthlyPayment = () => {
     const loanAmount = formData.amount - formData.downPayment;
-    const monthlyRate = formData.rate / 100 / 12;
     const months = formData.duration * 12;
-    if (monthlyRate === 0) return loanAmount / months;
-    return (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+    return calcMonthly(loanAmount, formData.rate, months);
   };
 
-  const calculateDebtRatio = () => {
-    const monthly = calculateMonthlyPayment();
+  const getDebtRatio = () => {
+    const monthly = getMonthlyPayment();
     if (formData.monthlyIncome <= 0) return 0;
     return ((monthly + formData.monthlyExpenses) / formData.monthlyIncome) * 100;
   };
@@ -83,8 +82,8 @@ const NewLoanApplication: React.FC = () => {
       setError(null);
 
       const loanAmount = formData.amount - formData.downPayment;
-      const monthlyPayment = calculateMonthlyPayment();
-      const debtRatio = calculateDebtRatio();
+      const monthlyPayment = getMonthlyPayment();
+      const debtRatio = getDebtRatio();
       const totalInterest = (monthlyPayment * formData.duration * 12) - loanAmount;
 
       await loansApi.create({
@@ -199,7 +198,7 @@ const NewLoanApplication: React.FC = () => {
               </div>
               <div className="summary-row highlight">
                 <span>Mensualité estimée</span>
-                <strong>{calculateMonthlyPayment().toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €/mois</strong>
+                <strong>{getMonthlyPayment().toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €/mois</strong>
               </div>
             </div>
           </div>
@@ -236,11 +235,11 @@ const NewLoanApplication: React.FC = () => {
             </div>
 
             {formData.monthlyIncome > 0 && (
-              <div className={`debt-ratio-indicator ${calculateDebtRatio() > 35 ? 'warning' : 'ok'}`}>
+              <div className={`debt-ratio-indicator ${getDebtRatio() > 35 ? 'warning' : 'ok'}`}>
                 <span className="ratio-label">Taux d'endettement estimé</span>
-                <span className="ratio-value">{calculateDebtRatio().toFixed(1)}%</span>
+                <span className="ratio-value">{getDebtRatio().toFixed(1)}%</span>
                 <span className="ratio-hint">
-                  {calculateDebtRatio() <= 35 
+                  {getDebtRatio() <= 35 
                     ? '✓ Bon ratio (inférieur à 35%)' 
                     : '⚠️ Ratio élevé (supérieur à 35%)'}
                 </span>
@@ -287,7 +286,7 @@ const NewLoanApplication: React.FC = () => {
               </div>
               <div className="recap-row highlight">
                 <span>Mensualité</span>
-                <span>{calculateMonthlyPayment().toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €/mois</span>
+                <span>{getMonthlyPayment().toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €/mois</span>
               </div>
             </div>
 
@@ -300,7 +299,7 @@ const NewLoanApplication: React.FC = () => {
                 </div>
                 <div className="recap-row">
                   <span>Taux d'endettement</span>
-                  <span>{calculateDebtRatio().toFixed(1)}%</span>
+                  <span>{getDebtRatio().toFixed(1)}%</span>
                 </div>
               </div>
             )}
