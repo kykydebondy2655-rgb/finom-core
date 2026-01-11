@@ -58,29 +58,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const fetchUserProfile = async (authUser: User) => {
         try {
-            const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', authUser.id)
-                .maybeSingle();
+            // Fetch profile and role in parallel for better performance
+            const [profileResult, roleResult] = await Promise.all([
+                supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', authUser.id)
+                    .maybeSingle(),
+                supabase
+                    .rpc('get_user_role', { _user_id: authUser.id })
+            ]);
 
-            if (profile) {
-                const role = (profile.role as 'client' | 'agent' | 'admin') || 'client';
-                setUser({
-                    id: authUser.id,
-                    email: authUser.email || '',
-                    firstName: profile.first_name || undefined,
-                    lastName: profile.last_name || undefined,
-                    role
-                });
-            } else {
-                // Create default profile
-                setUser({
-                    id: authUser.id,
-                    email: authUser.email || '',
-                    role: 'client'
-                });
-            }
+            const profile = profileResult.data;
+            // Use role from user_roles table via RPC function (secure)
+            const role = (roleResult.data as 'client' | 'agent' | 'admin') || 'client';
+
+            setUser({
+                id: authUser.id,
+                email: authUser.email || '',
+                firstName: profile?.first_name || undefined,
+                lastName: profile?.last_name || undefined,
+                role
+            });
         } catch (error) {
             console.error('Failed to fetch user profile:', error);
             setUser({

@@ -292,8 +292,8 @@ main {
   font-size: 1.5rem;
 }
 
-/* Card Improvements */
-.card {
+/* Card base styles are now in Card.css - this is for global utility classes */
+.card-feature {
   background: var(--color-white);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
@@ -302,7 +302,7 @@ main {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card:hover {
+.card-feature:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
 }
