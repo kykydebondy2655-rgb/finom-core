@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
 import type { LoanApplication, Document, Message } from '@/services/api';
+import DocumentUpload from '@/components/documents/DocumentUpload';
+import { useToast } from '@/components/finom/Toast';
 
 const LoanDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +25,8 @@ const LoanDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline'>('overview');
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [showUploadSection, setShowUploadSection] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     if (id) loadLoanData();
@@ -280,18 +284,39 @@ const LoanDetail: React.FC = () => {
               <Card padding="lg">
                 <div className="documents-header">
                   <h3>Documents du dossier</h3>
-                  <Button variant="secondary" size="sm">
-                    + Ajouter un document
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    onClick={() => setShowUploadSection(!showUploadSection)}
+                  >
+                    {showUploadSection ? '✕ Fermer' : '+ Ajouter un document'}
                   </Button>
                 </div>
 
-                {documents.length === 0 ? (
+                {showUploadSection && (
+                  <div className="upload-section">
+                    <DocumentUpload
+                      loanId={id}
+                      category="loan_document"
+                      onUploadComplete={() => {
+                        toast.success('Document ajouté avec succès');
+                        setShowUploadSection(false);
+                        loadLoanData();
+                      }}
+                      onError={(err) => toast.error(err)}
+                    />
+                  </div>
+                )}
+
+                {documents.length === 0 && !showUploadSection ? (
                   <div className="empty-docs">
                     <span className="empty-icon">📄</span>
                     <p>Aucun document dans ce dossier</p>
-                    <Button variant="primary" size="sm">Ajouter un document</Button>
+                    <Button variant="primary" size="sm" onClick={() => setShowUploadSection(true)}>
+                      Ajouter un document
+                    </Button>
                   </div>
-                ) : (
+                ) : documents.length > 0 && (
                   <div className="documents-list">
                     {documents.map(doc => (
                       <div key={doc.id} className="document-item">
@@ -551,6 +576,13 @@ const LoanDetail: React.FC = () => {
 
           .documents-header h3 {
             margin: 0;
+          }
+
+          .upload-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: var(--radius-md);
           }
 
           .empty-docs,

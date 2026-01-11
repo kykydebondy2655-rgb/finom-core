@@ -1,0 +1,245 @@
+import React, { useState, useEffect } from 'react';
+import Button from '@/components/finom/Button';
+import { adminApi } from '@/services/api';
+
+interface AssignmentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  existingAssignments: Array<{ client_user_id: string; agent_user_id: string }>;
+}
+
+interface SelectOption {
+  id: string;
+  label: string;
+}
+
+const AssignmentModal: React.FC<AssignmentModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  existingAssignments
+}) => {
+  const [agents, setAgents] = useState<SelectOption[]>([]);
+  const [clients, setClients] = useState<SelectOption[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState('');
+  const [selectedClient, setSelectedClient] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadData();
+    }
+  }, [isOpen]);
+
+  const loadData = async () => {
+    try {
+      setLoadingData(true);
+      const [agentsData, clientsData] = await Promise.all([
+        adminApi.getAllAgents(),
+        adminApi.getAllClients()
+      ]);
+      
+      setAgents(
+        (agentsData || []).map((a: any) => ({
+          id: a.id,
+          label: `${a.first_name || ''} ${a.last_name || ''}`.trim() || a.email || 'Agent'
+        }))
+      );
+      
+      // Filter out clients that are already assigned
+      const assignedClientIds = existingAssignments.map(a => a.client_user_id);
+      setClients(
+        (clientsData || [])
+          .filter((c: any) => !assignedClientIds.includes(c.id))
+          .map((c: any) => ({
+            id: c.id,
+            label: `${c.first_name || ''} ${c.last_name || ''}`.trim() || c.email || 'Client'
+          }))
+      );
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Erreur lors du chargement');
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAgent || !selectedClient) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      await adminApi.createAssignment(selectedAgent, selectedClient);
+      onSuccess();
+      onClose();
+      resetForm();
+    } catch (err: any) {
+      console.error('Error creating assignment:', err);
+      setError(err?.message || 'Erreur lors de la création');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setSelectedAgent('');
+    setSelectedClient('');
+    setError(null);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>➕ Nouvelle assignation</h2>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+
+        {loadingData ? (
+          <div className="loading-state">Chargement...</div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {error && <div className="error-message">{error}</div>}
+
+            <div className="form-group">
+              <label>Agent *</label>
+              <select
+                value={selectedAgent}
+                onChange={(e) => setSelectedAgent(e.target.value)}
+                required
+              >
+                <option value="">Sélectionner un agent</option>
+                {agents.map((agent) => (
+                  <option key={agent.id} value={agent.id}>
+                    {agent.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Client *</label>
+              <select
+                value={selectedClient}
+                onChange={(e) => setSelectedClient(e.target.value)}
+                required
+              >
+                <option value="">Sélectionner un client</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.label}
+                  </option>
+                ))}
+              </select>
+              {clients.length === 0 && (
+                <span className="input-hint">Tous les clients sont déjà assignés</span>
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <Button variant="ghost" type="button" onClick={onClose}>
+                Annuler
+              </Button>
+              <Button 
+                variant="primary" 
+                type="submit" 
+                disabled={loading || !selectedAgent || !selectedClient}
+              >
+                {loading ? 'Création...' : 'Créer l\'assignation'}
+              </Button>
+            </div>
+          </form>
+        )}
+
+        <style>{`
+          .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+          }
+          .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 450px;
+          }
+          .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+          }
+          .modal-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+          }
+          .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text-tertiary);
+          }
+          form {
+            padding: 1.5rem;
+          }
+          .loading-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--color-text-tertiary);
+          }
+          .error-message {
+            background: #fee;
+            color: var(--color-danger);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+          }
+          .form-group {
+            margin-bottom: 1.25rem;
+          }
+          .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+          }
+          .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+          }
+          .input-hint {
+            font-size: 0.85rem;
+            color: var(--color-text-tertiary);
+            margin-top: 0.25rem;
+            display: block;
+          }
+          .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+};
+
+export default AssignmentModal;

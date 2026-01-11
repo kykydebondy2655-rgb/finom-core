@@ -4,12 +4,15 @@ import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
+import AssignmentModal from '@/components/admin/AssignmentModal';
 import { adminApi, formatDate } from '@/services/api';
 
 const AdminAssignments: React.FC = () => {
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     loadAssignments();
@@ -24,6 +27,20 @@ const AdminAssignments: React.FC = () => {
       console.error('Error loading assignments:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette assignation ?')) return;
+    
+    try {
+      setDeleting(id);
+      await adminApi.deleteAssignment(id);
+      loadAssignments();
+    } catch (err) {
+      console.error('Error deleting assignment:', err);
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -46,7 +63,9 @@ const AdminAssignments: React.FC = () => {
           <Card className="assignments-card fade-in" padding="lg">
             <div className="card-header">
               <h3>Liste des assignations</h3>
-              <Button variant="primary" size="sm">+ Nouvelle assignation</Button>
+              <Button variant="primary" size="sm" onClick={() => setShowModal(true)}>
+                + Nouvelle assignation
+              </Button>
             </div>
 
             {assignments.length === 0 ? (
@@ -84,7 +103,16 @@ const AdminAssignments: React.FC = () => {
                           </div>
                         </td>
                         <td className="date">{formatDate(a.assigned_at)}</td>
-                        <td><Button variant="ghost" size="sm">Modifier</Button></td>
+                        <td>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(a.id)}
+                            disabled={deleting === a.id}
+                          >
+                            {deleting === a.id ? '...' : '🗑️'}
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -92,6 +120,16 @@ const AdminAssignments: React.FC = () => {
               </div>
             )}
           </Card>
+
+          <AssignmentModal
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSuccess={loadAssignments}
+            existingAssignments={assignments.map(a => ({
+              client_user_id: a.client_user_id,
+              agent_user_id: a.agent_user_id
+            }))}
+          />
         </div>
 
         <style>{`
