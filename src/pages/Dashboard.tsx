@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor } from '../services/api';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -11,26 +14,38 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Simulated fetch - will be connected to Supabase later
-        setTimeout(() => {
-            setLoans([]);
+        if (user?.id) {
+            loadLoans();
+        } else {
             setLoading(false);
-        }, 500);
-    }, []);
+        }
+    }, [user]);
 
-    if (loading) return null;
+    const loadLoans = async () => {
+        try {
+            const data = await loansApi.getByUser(user!.id);
+            setLoans(data || []);
+        } catch (error) {
+            console.error('Failed to load loans:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="dashboard-page">
-            {/* Page Header */}
-            <div className="page-header">
-                <div className="page-header-content">
-                    <h1>Bonjour, {user?.firstName || 'Utilisateur'}</h1>
-                    <p>Bienvenue sur votre espace personnel Finom. Gérez vos demandes de prêt et suivez vos dossiers en temps réel.</p>
+        <PageLayout>
+            <div className="dashboard-page">
+                {/* Page Header */}
+                <div className="page-header">
+                    <div className="page-header-content">
+                        <h1>Bonjour, {user?.firstName || 'Utilisateur'}</h1>
+                        <p>Bienvenue sur votre espace personnel FINOM. Gérez vos demandes de prêt et suivez vos dossiers en temps réel.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="container">
+                <div className="container">
                 {/* Quick Actions */}
                 <div className="quick-actions fade-in">
                     <Button onClick={() => navigate('/simulator')} variant="primary" size="lg">
@@ -82,11 +97,11 @@ const Dashboard = () => {
                                             onClick={() => navigate(`/loans/${loan.id}`)}
                                             className="loan-row"
                                         >
-                                            <td><span className="ref-badge">#{loan.id}</span></td>
-                                            <td className="amount">{loan.amount?.toLocaleString()} €</td>
-                                            <td>{loan.monthlyPayment?.toLocaleString()} €/mois</td>
-                                            <td>{loan.status}</td>
-                                            <td className="date">{new Date(loan.updatedAt || loan.createdAt).toLocaleDateString('fr-FR')}</td>
+                                            <td><span className="ref-badge">#{loan.id.slice(0, 8)}</span></td>
+                                            <td className="amount">{formatCurrency(loan.amount)}</td>
+                                            <td>{formatCurrency(loan.monthly_payment || loan.monthly_payment_est || 0)}/mois</td>
+                                            <td><span className="status-badge" style={{ background: getStatusColor(loan.status) }}>{getStatusLabel(loan.status)}</span></td>
+                                            <td className="date">{formatDate(loan.updated_at || loan.created_at)}</td>
                                             <td>
                                                 <Button variant="ghost" size="sm">
                                                     Gérer →
@@ -102,7 +117,7 @@ const Dashboard = () => {
 
                 {/* Banking Quick Access */}
                 <div className="banking-cards fade-in">
-                    <Card className="banking-card" padding="lg">
+                    <Card className="banking-card" padding="lg" onClick={() => navigate('/banking')}>
                         <div className="banking-icon">🏦</div>
                         <div className="banking-info">
                             <h4>Compte bancaire</h4>
@@ -110,15 +125,15 @@ const Dashboard = () => {
                         </div>
                         <span className="arrow">→</span>
                     </Card>
-                    <Card className="banking-card" padding="lg">
+                    <Card className="banking-card" padding="lg" onClick={() => navigate('/loans')}>
                         <div className="banking-icon">📄</div>
                         <div className="banking-info">
-                            <h4>Mes documents</h4>
-                            <p>Gérer mes justificatifs</p>
+                            <h4>Mes dossiers</h4>
+                            <p>Gérer mes demandes de prêt</p>
                         </div>
                         <span className="arrow">→</span>
                     </Card>
-                    <Card className="banking-card" padding="lg">
+                    <Card className="banking-card" padding="lg" onClick={() => navigate('/profile')}>
                         <div className="banking-icon">👤</div>
                         <div className="banking-info">
                             <h4>Mon profil</h4>
@@ -127,16 +142,9 @@ const Dashboard = () => {
                         <span className="arrow">→</span>
                     </Card>
                 </div>
-
-                {/* Logout Button */}
-                <div className="logout-section">
-                    <Button onClick={() => navigate('/')} variant="ghost">
-                        ← Retour à l'accueil
-                    </Button>
                 </div>
-            </div>
 
-            <style>{`
+                <style>{`
                 .dashboard-page {
                     min-height: 100vh;
                     background: var(--color-bg);
@@ -351,8 +359,13 @@ const Dashboard = () => {
                     font-size: 1.25rem;
                 }
                 
-                .logout-section {
-                    margin-top: 2rem;
+                .status-badge {
+                    display: inline-block;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 100px;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    color: white;
                 }
 
                 @media (max-width: 768px) {
@@ -373,7 +386,8 @@ const Dashboard = () => {
                     to { opacity: 1; transform: translateY(0); }
                 }
             `}</style>
-        </div>
+            </div>
+        </PageLayout>
     );
 };
 
