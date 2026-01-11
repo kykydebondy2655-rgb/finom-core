@@ -6,11 +6,12 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
-import { profilesApi, loansApi, documentsApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
+import { agentApi, formatCurrency, formatDate } from '@/services/api';
 import type { Profile, LoanApplication, Document } from '@/services/api';
 
 const AgentClientDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [client, setClient] = useState<Profile | null>(null);
   const [loans, setLoans] = useState<LoanApplication[]>([]);
@@ -19,17 +20,18 @@ const AgentClientDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents'>('info');
 
   useEffect(() => {
-    if (id) loadClientData();
-  }, [id]);
+    if (id && user) loadClientData();
+  }, [id, user]);
 
   const loadClientData = async () => {
-    if (!id) return;
+    if (!id || !user) return;
     try {
       setLoading(true);
+      // Use agent-specific API that respects RLS via client_assignments
       const [clientData, loansData, docsData] = await Promise.all([
-        profilesApi.get(id),
-        loansApi.getByUser(id),
-        documentsApi.getByUser(id)
+        agentApi.getClientProfile(user.id, id),
+        agentApi.getClientLoans(id),
+        agentApi.getClientDocuments(id)
       ]);
       setClient(clientData);
       setLoans(loansData || []);
