@@ -6,7 +6,7 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
-import { loansApi, documentsApi, messagesApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
+import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
 import type { LoanApplication, Document, Message } from '@/services/api';
 
 const LoanDetail: React.FC = () => {
@@ -17,6 +17,7 @@ const LoanDetail: React.FC = () => {
   const [loan, setLoan] = useState<LoanApplication | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [assignedAgent, setAssignedAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline'>('overview');
@@ -39,6 +40,16 @@ const LoanDetail: React.FC = () => {
       setLoan(loanData);
       setDocuments(docsData || []);
       setMessages(msgsData || []);
+      
+      // Load assigned agent for this loan's owner
+      if (loanData?.user_id) {
+        try {
+          const agent = await adminApi.getClientAgent(loanData.user_id);
+          setAssignedAgent(agent);
+        } catch {
+          // User may not have permission to get agent info
+        }
+      }
     } catch (err) {
       console.error('Error loading loan:', err);
       setError('Impossible de charger ce dossier');
@@ -53,12 +64,17 @@ const LoanDetail: React.FC = () => {
     try {
       setSendingMessage(true);
       
-      // Determine recipient: if user is client, send to assigned agent (or system)
-      // For now, we'll use a placeholder - in real app, this would query client_assignments
-      // If user owns the loan, the message goes to support/agent
-      // If user is agent/admin viewing the loan, message goes to loan owner
+      // Determine recipient based on who is sending
       const isOwner = loan.user_id === user.id;
-      const toUserId = isOwner ? loan.user_id : loan.user_id; // Placeholder - should be agent_id
+      let toUserId: string;
+      
+      if (isOwner) {
+        // Client sending message -> send to assigned agent or loan owner (self for now if no agent)
+        toUserId = assignedAgent?.id || loan.user_id;
+      } else {
+        // Agent/Admin sending message -> send to loan owner (client)
+        toUserId = loan.user_id;
+      }
       
       await messagesApi.send({
         loan_id: id,
