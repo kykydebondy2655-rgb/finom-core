@@ -6,6 +6,7 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
+import CallModal from '@/components/agent/CallModal';
 import { agentApi, formatDateTime } from '@/services/api';
 
 const AgentDashboard: React.FC = () => {
@@ -14,6 +15,8 @@ const AgentDashboard: React.FC = () => {
   const [clients, setClients] = useState<any[]>([]);
   const [callbacks, setCallbacks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCallModal, setShowCallModal] = useState(false);
+  const [selectedCallback, setSelectedCallback] = useState<any>(null);
 
   useEffect(() => {
     if (user) loadData();
@@ -108,7 +111,16 @@ const AgentDashboard: React.FC = () => {
                       <span className="callback-time">{formatDateTime(callback.scheduled_at)}</span>
                       {callback.reason && <span className="callback-reason">{callback.reason}</span>}
                     </div>
-                    <Button variant="primary" size="sm">Appeler</Button>
+                    <Button 
+                      variant="primary" 
+                      size="sm"
+                      onClick={() => {
+                        setSelectedCallback(callback);
+                        setShowCallModal(true);
+                      }}
+                    >
+                      📞 Appeler
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -150,6 +162,17 @@ const AgentDashboard: React.FC = () => {
             )}
           </Card>
         </div>
+
+        {/* Call Modal */}
+        <CallModal
+          isOpen={showCallModal}
+          onClose={() => {
+            setShowCallModal(false);
+            setSelectedCallback(null);
+          }}
+          onSuccess={loadData}
+          callback={selectedCallback}
+        />
 
         <style>{`
           .agent-dashboard { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
