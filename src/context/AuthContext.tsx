@@ -1,0 +1,149 @@
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User, Session } from '@supabase/supabase-js';
+
+interface AuthUser {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    role: 'client' | 'agent' | 'admin';
+}
+
+interface AuthContextType {
+    user: AuthUser | null;
+    loading: boolean;
+    login: (email: string, password: string) => Promise<AuthUser>;
+    register: (email: string, password: string, firstName: string, lastName: string) => Promise<AuthUser>;
+    logout: () => Promise<void>;
+    isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within AuthProvider');
+    }
+    return context;
+};
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
+                fetchUserProfile(session.user);
+            } else {
+                setLoading(false);
+            }
+        });
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (session?.user) {
+                await fetchUserProfile(session.user);
+            } else {
+                setUser(null);
+                setLoading(false);
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const fetchUserProfile = async (authUser: User) => {
+        try {
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', authUser.id)
+                .maybeSingle();
+
+            if (profile) {
+                const role = (profile.role as 'client' | 'agent' | 'admin') || 'client';
+                setUser({
+                    id: authUser.id,
+                    email: authUser.email || '',
+                    firstName: profile.first_name || undefined,
+                    lastName: profile.last_name || undefined,
+                    role
+                });
+            } else {
+                // Create default profile
+                setUser({
+                    id: authUser.id,
+                    email: authUser.email || '',
+                    role: 'client'
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch user profile:', error);
+            setUser({
+                id: authUser.id,
+                email: authUser.email || '',
+                role: 'client'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const login = async (email: string, password: string): Promise<AuthUser> => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        const authUser = data.user;
+        if (!authUser) throw new Error('Login failed');
+
+        await fetchUserProfile(authUser);
+        return user!;
+    };
+
+    const register = async (email: string, password: string, firstName: string, lastName: string): Promise<AuthUser> => {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    first_name: firstName,
+                    last_name: lastName
+                }
+            }
+        });
+
+        if (error) throw error;
+
+        const authUser = data.user;
+        if (!authUser) throw new Error('Registration failed');
+
+        await fetchUserProfile(authUser);
+        return user!;
+    };
+
+    const logout = async () => {
+        await supabase.auth.signOut();
+        setUser(null);
+    };
+
+    const value: AuthContextType = {
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export default AuthProvider;

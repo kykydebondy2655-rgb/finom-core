@@ -1,27 +1,27 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './components/finom/Toast';
+import Home from './pages/Home';
+import NotFound from './pages/NotFound';
+import './styles/finom.css';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+    return (
+        <AuthProvider>
+            <ToastProvider>
+                <Router>
+                    <div className="app-container">
+                        <main>
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route path="*" element={<NotFound />} />
+                            </Routes>
+                        </main>
+                    </div>
+                </Router>
+            </ToastProvider>
+        </AuthProvider>
+    );
+}
 
 export default App;
