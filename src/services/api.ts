@@ -336,16 +336,28 @@ export const agentApi = {
   },
 
   async getCallbacks(agentId: string) {
-    const { data, error } = await supabase
+    // First get callbacks
+    const { data: callbacks, error: cbError } = await supabase
       .from('callbacks')
-      .select(`
-        *,
-        client:profiles!callbacks_client_id_fkey(*)
-      `)
+      .select('*')
       .eq('agent_id', agentId)
       .order('scheduled_at', { ascending: true });
-    if (error) throw error;
-    return data;
+    if (cbError) throw cbError;
+    
+    if (!callbacks || callbacks.length === 0) return [];
+    
+    // Then get client profiles
+    const clientIds = [...new Set(callbacks.map(c => c.client_id))];
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', clientIds);
+    if (profileError) throw profileError;
+    
+    return callbacks.map(cb => ({
+      ...cb,
+      client: profiles?.find(p => p.id === cb.client_id) || null
+    }));
   },
 
   async createCallback(callback: TablesInsert<'callbacks'>) {
@@ -380,16 +392,28 @@ export const agentApi = {
   },
 
   async getCallLogs(agentId: string) {
-    const { data, error } = await supabase
+    // First get call logs
+    const { data: logs, error: logError } = await supabase
       .from('call_logs')
-      .select(`
-        *,
-        client:profiles!call_logs_client_id_fkey(*)
-      `)
+      .select('*')
       .eq('agent_id', agentId)
       .order('created_at', { ascending: false });
-    if (error) throw error;
-    return data;
+    if (logError) throw logError;
+    
+    if (!logs || logs.length === 0) return [];
+    
+    // Then get client profiles
+    const clientIds = [...new Set(logs.map(l => l.client_id))];
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', clientIds);
+    if (profileError) throw profileError;
+    
+    return logs.map(log => ({
+      ...log,
+      client: profiles?.find(p => p.id === log.client_id) || null
+    }));
   }
 };
 
