@@ -383,23 +383,38 @@ export const agentApi = {
 // ============= ADMIN SERVICES =============
 export const adminApi = {
   async getAllClients() {
+    // Get all users with 'client' role from user_roles table
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', 'client')
-      .order('created_at', { ascending: false });
+      .from('user_roles')
+      .select(`
+        user_id,
+        role,
+        profiles:user_id(*)
+      `)
+      .eq('role', 'client');
     if (error) throw error;
-    return data;
+    // Flatten to return profile data
+    return data?.map(r => {
+      const profile = r.profiles as any;
+      return profile ? { ...profile, id: r.user_id } : null;
+    }).filter(Boolean) || [];
   },
 
   async getAllAgents() {
+    // Get all users with 'agent' role from user_roles table
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', 'agent')
-      .order('created_at', { ascending: false });
+      .from('user_roles')
+      .select(`
+        user_id,
+        role,
+        profiles:user_id(*)
+      `)
+      .eq('role', 'agent');
     if (error) throw error;
-    return data;
+    return data?.map(r => {
+      const profile = r.profiles as any;
+      return profile ? { ...profile, id: r.user_id } : null;
+    }).filter(Boolean) || [];
   },
 
   async getAllLoans() {
