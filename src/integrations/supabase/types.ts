@@ -14,6 +14,663 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          agent_id: string
+          appointment_type: string | null
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          scheduled_at: string
+          status: string | null
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          appointment_type?: string | null
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          scheduled_at: string
+          status?: string | null
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          appointment_type?: string | null
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          scheduled_at?: string
+          status?: string | null
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          new_value: Json | null
+          old_value: Json | null
+          reason: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          reason?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          reason?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bank_accounts: {
+        Row: {
+          balance: number | null
+          bic: string
+          created_at: string
+          currency: string | null
+          daily_limit: number | null
+          iban: string
+          id: string
+          is_frozen: boolean | null
+          monthly_limit: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          bic: string
+          created_at?: string
+          currency?: string | null
+          daily_limit?: number | null
+          iban: string
+          id?: string
+          is_frozen?: boolean | null
+          monthly_limit?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          bic?: string
+          created_at?: string
+          currency?: string | null
+          daily_limit?: number | null
+          iban?: string
+          id?: string
+          is_frozen?: boolean | null
+          monthly_limit?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beneficiaries: {
+        Row: {
+          activated_at: string | null
+          bank_name: string | null
+          bic: string | null
+          created_at: string
+          iban: string
+          id: string
+          label: string | null
+          name: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          bank_name?: string | null
+          bic?: string | null
+          created_at?: string
+          iban: string
+          id?: string
+          label?: string | null
+          name: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          bank_name?: string | null
+          bic?: string | null
+          created_at?: string
+          iban?: string
+          id?: string
+          label?: string | null
+          name?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beneficiaries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      call_logs: {
+        Row: {
+          agent_id: string
+          call_status: string
+          call_type: string
+          client_id: string
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          agent_id: string
+          call_status: string
+          call_type: string
+          client_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          agent_id?: string
+          call_status?: string
+          call_type?: string
+          client_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "call_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      callbacks: {
+        Row: {
+          agent_id: string
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          reason: string | null
+          scheduled_at: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          scheduled_at: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          scheduled_at?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "callbacks_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "callbacks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_assignments: {
+        Row: {
+          agent_user_id: string
+          assigned_at: string
+          client_user_id: string
+          id: string
+        }
+        Insert: {
+          agent_user_id: string
+          assigned_at?: string
+          client_user_id: string
+          id?: string
+        }
+        Update: {
+          agent_user_id?: string
+          assigned_at?: string
+          client_user_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_assignments_agent_user_id_fkey"
+            columns: ["agent_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_assignments_client_user_id_fkey"
+            columns: ["client_user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          category: string | null
+          expires_at: string | null
+          file_name: string
+          file_path: string
+          file_type: string | null
+          id: string
+          loan_id: string | null
+          rejection_reason: string | null
+          status: string | null
+          uploaded_at: string
+          user_id: string
+          validated_at: string | null
+          validated_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          expires_at?: string | null
+          file_name: string
+          file_path: string
+          file_type?: string | null
+          id?: string
+          loan_id?: string | null
+          rejection_reason?: string | null
+          status?: string | null
+          uploaded_at?: string
+          user_id: string
+          validated_at?: string | null
+          validated_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          expires_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_type?: string | null
+          id?: string
+          loan_id?: string | null
+          rejection_reason?: string | null
+          status?: string | null
+          uploaded_at?: string
+          user_id?: string
+          validated_at?: string | null
+          validated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_loan_id_fkey"
+            columns: ["loan_id"]
+            isOneToOne: false
+            referencedRelation: "loan_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_validated_by_fkey"
+            columns: ["validated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      holds: {
+        Row: {
+          account_id: string
+          amount: number
+          created_at: string
+          id: string
+          released_at: string | null
+          status: string | null
+          transfer_id: string | null
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          created_at?: string
+          id?: string
+          released_at?: string | null
+          status?: string | null
+          transfer_id?: string | null
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          released_at?: string | null
+          status?: string | null
+          transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "holds_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "holds_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loan_applications: {
+        Row: {
+          amount: number
+          assurance_status: string | null
+          created_at: string
+          debt_ratio_est: number | null
+          duration: number
+          fees_used: number | null
+          id: string
+          insurance_rate_used: number | null
+          interest_rate_used: number | null
+          is_draft: boolean | null
+          monthly_payment: number | null
+          monthly_payment_est: number | null
+          next_action: string | null
+          notary_iban: string | null
+          notary_ref: string | null
+          rate: number
+          rejection_reason: string | null
+          sequestre_amount_expected: number | null
+          sequestre_amount_received: number | null
+          sequestre_status: string | null
+          status: string | null
+          total_amount: number | null
+          total_cost_est: number | null
+          total_interest: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          assurance_status?: string | null
+          created_at?: string
+          debt_ratio_est?: number | null
+          duration: number
+          fees_used?: number | null
+          id?: string
+          insurance_rate_used?: number | null
+          interest_rate_used?: number | null
+          is_draft?: boolean | null
+          monthly_payment?: number | null
+          monthly_payment_est?: number | null
+          next_action?: string | null
+          notary_iban?: string | null
+          notary_ref?: string | null
+          rate: number
+          rejection_reason?: string | null
+          sequestre_amount_expected?: number | null
+          sequestre_amount_received?: number | null
+          sequestre_status?: string | null
+          status?: string | null
+          total_amount?: number | null
+          total_cost_est?: number | null
+          total_interest?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          assurance_status?: string | null
+          created_at?: string
+          debt_ratio_est?: number | null
+          duration?: number
+          fees_used?: number | null
+          id?: string
+          insurance_rate_used?: number | null
+          interest_rate_used?: number | null
+          is_draft?: boolean | null
+          monthly_payment?: number | null
+          monthly_payment_est?: number | null
+          next_action?: string | null
+          notary_iban?: string | null
+          notary_ref?: string | null
+          rate?: number
+          rejection_reason?: string | null
+          sequestre_amount_expected?: number | null
+          sequestre_amount_received?: number | null
+          sequestre_status?: string | null
+          status?: string | null
+          total_amount?: number | null
+          total_cost_est?: number | null
+          total_interest?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          created_at: string
+          from_user_id: string
+          id: string
+          loan_id: string
+          message: string
+          read: boolean | null
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_user_id: string
+          id?: string
+          loan_id: string
+          message: string
+          read?: boolean | null
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          loan_id?: string
+          message?: string
+          read?: boolean | null
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_loan_id_fkey"
+            columns: ["loan_id"]
+            isOneToOne: false
+            referencedRelation: "loan_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          message: string
+          read: boolean | null
+          related_entity: string | null
+          related_id: string | null
+          sent_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean | null
+          related_entity?: string | null
+          related_id?: string | null
+          sent_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean | null
+          related_entity?: string | null
+          related_id?: string | null
+          sent_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -55,6 +712,191 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      system_settings: {
+        Row: {
+          category: string
+          description: string | null
+          key: string
+          type: string
+          updated_at: string
+          updated_by: string | null
+          value: string
+        }
+        Insert: {
+          category: string
+          description?: string | null
+          key: string
+          type: string
+          updated_at?: string
+          updated_by?: string | null
+          value: string
+        }
+        Update: {
+          category?: string
+          description?: string | null
+          key?: string
+          type?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          account_id: string
+          amount: number
+          created_at: string
+          currency: string | null
+          document_id: string | null
+          id: string
+          label: string | null
+          reference: string | null
+          related_transfer_id: string | null
+          type: string
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          created_at?: string
+          currency?: string | null
+          document_id?: string | null
+          id?: string
+          label?: string | null
+          reference?: string | null
+          related_transfer_id?: string | null
+          type: string
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          document_id?: string | null
+          id?: string
+          label?: string | null
+          reference?: string | null
+          related_transfer_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_related_transfer_id_fkey"
+            columns: ["related_transfer_id"]
+            isOneToOne: false
+            referencedRelation: "transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transfers: {
+        Row: {
+          agent_id: string | null
+          amount: number
+          beneficiary_id: string
+          cancelled_at: string | null
+          created_at: string
+          currency: string | null
+          document_id: string | null
+          id: string
+          idempotency_key: string | null
+          processed_at: string | null
+          reference: string | null
+          rejection_reason: string | null
+          risk_flags: string | null
+          risk_score: number | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          amount: number
+          beneficiary_id: string
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string | null
+          document_id?: string | null
+          id?: string
+          idempotency_key?: string | null
+          processed_at?: string | null
+          reference?: string | null
+          rejection_reason?: string | null
+          risk_flags?: string | null
+          risk_score?: number | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          amount?: number
+          beneficiary_id?: string
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string | null
+          document_id?: string | null
+          id?: string
+          idempotency_key?: string | null
+          processed_at?: string | null
+          reference?: string | null
+          rejection_reason?: string | null
+          risk_flags?: string | null
+          risk_score?: number | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfers_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_beneficiary_id_fkey"
+            columns: ["beneficiary_id"]
+            isOneToOne: false
+            referencedRelation: "beneficiaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
