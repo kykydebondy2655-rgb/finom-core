@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/finom/Toast';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Public Pages
 import Home from './pages/Home';
@@ -43,7 +44,7 @@ function App() {
                     <div className="app-container">
                         <main>
                             <Routes>
-                                {/* Public */}
+                                {/* ============= PUBLIC ROUTES ============= */}
                                 <Route path="/" element={<Home />} />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/register" element={<Register />} />
@@ -52,29 +53,141 @@ function App() {
                                 <Route path="/contact" element={<Contact />} />
                                 <Route path="/faq" element={<Faq />} />
 
-                                {/* Client */}
-                                <Route path="/dashboard" element={<Dashboard />} />
-                                <Route path="/profile" element={<Profile />} />
-                                <Route path="/banking" element={<Banking />} />
-                                <Route path="/loans" element={<LoansList />} />
-                                <Route path="/loans/new" element={<NewLoanApplication />} />
-                                <Route path="/loans/:id" element={<LoanDetail />} />
+                                {/* ============= CLIENT ROUTES ============= */}
+                                <Route 
+                                    path="/dashboard" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['client', 'agent', 'admin']}>
+                                            <Dashboard />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/profile" 
+                                    element={
+                                        <ProtectedRoute>
+                                            <Profile />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/banking" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['client']}>
+                                            <Banking />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/loans" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['client']}>
+                                            <LoansList />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/loans/new" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['client']}>
+                                            <NewLoanApplication />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/loans/:id" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['client', 'agent', 'admin']}>
+                                            <LoanDetail />
+                                        </ProtectedRoute>
+                                    } 
+                                />
 
-                                {/* Agent */}
-                                <Route path="/agent/dashboard" element={<AgentDashboard />} />
-                                <Route path="/agent/clients" element={<AgentClients />} />
-                                <Route path="/agent/clients/:id" element={<AgentClientDetail />} />
-                                <Route path="/agent/callbacks" element={<AgentCallbacks />} />
+                                {/* ============= AGENT ROUTES ============= */}
+                                <Route 
+                                    path="/agent/dashboard" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['agent', 'admin']}>
+                                            <AgentDashboard />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/agent/clients" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['agent', 'admin']}>
+                                            <AgentClients />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/agent/clients/:id" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['agent', 'admin']}>
+                                            <AgentClientDetail />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/agent/callbacks" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['agent', 'admin']}>
+                                            <AgentCallbacks />
+                                        </ProtectedRoute>
+                                    } 
+                                />
 
-                                {/* Admin */}
-                                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                                <Route path="/admin/clients" element={<AdminClients />} />
-                                <Route path="/admin/clients/:id" element={<AgentClientDetail />} />
-                                <Route path="/admin/loans" element={<AdminLoans />} />
-                                <Route path="/admin/agents" element={<AdminAgents />} />
-                                <Route path="/admin/assignments" element={<AdminAssignments />} />
+                                {/* ============= ADMIN ROUTES ============= */}
+                                <Route 
+                                    path="/admin/dashboard" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminDashboard />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/clients" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminClients />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/clients/:id" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AgentClientDetail />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/loans" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminLoans />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/agents" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminAgents />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/assignments" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminAssignments />
+                                        </ProtectedRoute>
+                                    } 
+                                />
 
-                                {/* Fallback */}
+                                {/* ============= FALLBACK ============= */}
                                 <Route path="*" element={<NotFound />} />
                             </Routes>
                         </main>
