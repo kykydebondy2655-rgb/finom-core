@@ -9,6 +9,7 @@ import StatusBadge from '@/components/common/StatusBadge';
 import { bankingApi, beneficiariesApi, transfersApi, formatCurrency, formatDateTime } from '@/services/api';
 import type { BankAccount, Beneficiary, Transaction } from '@/services/api';
 import { useToast } from '@/components/finom/Toast';
+import { isValidIBAN, isValidBIC } from '@/lib/validators';
 
 const Banking: React.FC = () => {
   const { user } = useAuth();
@@ -90,16 +91,7 @@ const Banking: React.FC = () => {
     }
   };
 
-  // IBAN validation helper
-  const isValidIBAN = (iban: string): boolean => {
-    const cleanIban = iban.replace(/\s/g, '').toUpperCase();
-    // Basic IBAN format check (2 letters + 2 digits + up to 30 alphanumeric)
-    const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
-    if (!ibanRegex.test(cleanIban)) return false;
-    // Check length based on country (simplified - FR = 27 chars)
-    if (cleanIban.startsWith('FR') && cleanIban.length !== 27) return false;
-    return true;
-  };
+  // IBAN validation is now imported from @/lib/validators
 
   const handleCreateBeneficiary = async () => {
     if (!user || !beneficiaryData.name || !beneficiaryData.iban) {
