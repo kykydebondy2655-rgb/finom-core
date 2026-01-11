@@ -1,47 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
-import { agentApi, formatCurrency, formatDate } from '@/services/api';
+import { agentApi, adminApi, formatCurrency, formatDate } from '@/services/api';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import type { Profile, LoanApplication, Document } from '@/services/api';
 
 const AgentClientDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { isAdmin } = useUserRoles();
   const navigate = useNavigate();
+  const location = useLocation();
   const [client, setClient] = useState<Profile | null>(null);
   const [loans, setLoans] = useState<LoanApplication[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents'>('info');
 
+  // Detect if accessed from admin or agent route
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   useEffect(() => {
     if (id && user) loadClientData();
-  }, [id, user]);
+  }, [id, user, isAdmin]);
 
   const loadClientData = async () => {
     if (!id || !user) return;
     try {
       setLoading(true);
-      // Use agent-specific API that respects RLS via client_assignments
-      const [clientData, loansData, docsData] = await Promise.all([
-        agentApi.getClientProfile(user.id, id),
-        agentApi.getClientLoans(id),
-        agentApi.getClientDocuments(id)
-      ]);
-      setClient(clientData);
-      setLoans(loansData || []);
-      setDocuments(docsData || []);
+      
+      // Use admin API for admins, agent API for agents
+      if (isAdmin || isAdminRoute) {
+        const [clientData, loansData, docsData] = await Promise.all([
+          adminApi.getClientById(id),
+          adminApi.getClientLoans(id),
+          adminApi.getClientDocuments(id)
+        ]);
+        setClient(clientData);
+        setLoans(loansData || []);
+        setDocuments(docsData || []);
+      } else {
+        // Agent: use agent-specific API that respects RLS via client_assignments
+        const [clientData, loansData, docsData] = await Promise.all([
+          agentApi.getClientProfile(user.id, id),
+          agentApi.getClientLoans(id),
+          agentApi.getClientDocuments(id)
+        ]);
+        setClient(clientData);
+        setLoans(loansData || []);
+        setDocuments(docsData || []);
+      }
     } catch (err) {
       console.error('Error loading client:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  // Dynamic back navigation based on route
+  const backPath = isAdminRoute ? '/admin/clients' : '/agent/clients';
+  const themeColor = isAdminRoute ? 'var(--color-admin)' : 'var(--color-agent)';
+  const themeGradient = isAdminRoute 
+    ? 'linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%)' 
+    : 'linear-gradient(135deg, var(--color-agent) 0%, #047857 100%)';
 
   if (loading) {
     return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
@@ -53,7 +79,7 @@ const AgentClientDetail: React.FC = () => {
         <div className="error-page">
           <Card padding="xl">
             <h2>Client non trouvé</h2>
-            <Button variant="primary" onClick={() => navigate('/agent/clients')}>Retour</Button>
+            <Button variant="primary" onClick={() => navigate(backPath)}>Retour</Button>
           </Card>
         </div>
       </PageLayout>
@@ -63,9 +89,9 @@ const AgentClientDetail: React.FC = () => {
   return (
     <PageLayout>
       <div className="client-detail-page">
-        <div className="page-header">
+        <div className="page-header" style={{ background: themeGradient }}>
           <div className="container">
-            <button className="back-btn" onClick={() => navigate('/agent/clients')}>← Retour aux clients</button>
+            <button className="back-btn" onClick={() => navigate(backPath)}>← Retour aux clients</button>
             <div className="header-content">
               <div className="client-header">
                 <div className="client-avatar-lg">{client.first_name?.[0] || 'C'}</div>
@@ -158,18 +184,18 @@ const AgentClientDetail: React.FC = () => {
 
         <style>{`
           .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-agent) 0%, #047857 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
+          .page-header { color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
           .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
           .header-content { display: flex; justify-content: space-between; align-items: flex-start; }
           .client-header { display: flex; align-items: center; gap: 1rem; }
-          .client-avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: white; color: var(--color-agent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; }
+          .client-avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: white; color: ${themeColor}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; }
           .page-header h1 { color: white; font-size: 1.75rem; margin: 0; }
           .page-header p { opacity: 0.9; margin: 0.25rem 0 0; }
           .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
           .quick-actions { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
           .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
           .tab { padding: 0.75rem 1.25rem; border: none; background: white; border-radius: var(--radius-full); font-weight: 600; color: var(--color-text-secondary); cursor: pointer; }
-          .tab.active { background: var(--color-agent); color: white; }
+          .tab.active { background: ${themeColor}; color: white; }
           .info-grid { display: grid; gap: 1rem; }
           .info-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); }
           .info-row:last-child { border-bottom: none; }
