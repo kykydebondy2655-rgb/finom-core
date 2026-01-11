@@ -520,6 +520,39 @@ export const adminApi = {
       `);
     if (error) throw error;
     return data;
+  },
+
+  // Get a specific client profile by ID (admin only - RLS allows via admin policy)
+  async getClientById(clientId: string) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', clientId)
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // Get loans for a specific client (admin)
+  async getClientLoans(clientId: string) {
+    const { data, error } = await supabase
+      .from('loan_applications')
+      .select('*')
+      .eq('user_id', clientId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  // Get documents for a specific client (admin)
+  async getClientDocuments(clientId: string) {
+    const { data, error } = await supabase
+      .from('documents')
+      .select('*')
+      .eq('user_id', clientId)
+      .order('uploaded_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
   }
 };
 
