@@ -20,6 +20,8 @@ const LoanDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline'>('overview');
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
 
   useEffect(() => {
     if (id) loadLoanData();
@@ -42,6 +44,28 @@ const LoanDetail: React.FC = () => {
       setError('Impossible de charger ce dossier');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !id || !user || !loan) return;
+    
+    try {
+      setSendingMessage(true);
+      await messagesApi.send({
+        loan_id: id,
+        from_user_id: user.id,
+        to_user_id: loan.user_id === user.id ? loan.user_id : user.id, // Will need agent assignment for real app
+        message: newMessage.trim()
+      });
+      setNewMessage('');
+      // Reload messages
+      const msgsData = await messagesApi.getByLoan(id);
+      setMessages(msgsData || []);
+    } catch (err) {
+      console.error('Error sending message:', err);
+    } finally {
+      setSendingMessage(false);
     }
   };
 
@@ -291,8 +315,22 @@ const LoanDetail: React.FC = () => {
                 )}
 
                 <div className="message-input">
-                  <input type="text" placeholder="Votre message..." />
-                  <Button variant="primary" size="sm">Envoyer</Button>
+                  <input 
+                    type="text" 
+                    placeholder="Votre message..." 
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    disabled={sendingMessage}
+                  />
+                  <Button 
+                    variant="primary" 
+                    size="sm" 
+                    onClick={handleSendMessage}
+                    disabled={sendingMessage || !newMessage.trim()}
+                  >
+                    {sendingMessage ? '...' : 'Envoyer'}
+                  </Button>
                 </div>
               </Card>
             </div>

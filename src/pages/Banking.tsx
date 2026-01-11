@@ -8,15 +8,24 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import { bankingApi, beneficiariesApi, transfersApi, formatCurrency, formatDateTime } from '@/services/api';
 import type { BankAccount, Beneficiary, Transaction } from '@/services/api';
+import { useToast } from '@/components/finom/Toast';
 
 const Banking: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [account, setAccount] = useState<BankAccount | null>(null);
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'beneficiaries' | 'transfers'>('overview');
+  
+  // Modal states
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showBeneficiaryModal, setShowBeneficiaryModal] = useState(false);
+  const [transferData, setTransferData] = useState({ beneficiaryId: '', amount: 0, reference: '' });
+  const [beneficiaryData, setBeneficiaryData] = useState({ name: '', iban: '', bic: '' });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (user) loadData();
@@ -43,6 +52,56 @@ const Banking: React.FC = () => {
     }
   };
 
+  const handleCreateTransfer = async () => {
+    if (!user || !transferData.beneficiaryId || transferData.amount <= 0) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await transfersApi.create({
+        user_id: user.id,
+        beneficiary_id: transferData.beneficiaryId,
+        amount: transferData.amount,
+        reference: transferData.reference || undefined
+      });
+      toast.success('Virement initié avec succès');
+      setShowTransferModal(false);
+      setTransferData({ beneficiaryId: '', amount: 0, reference: '' });
+      loadData();
+    } catch (err) {
+      console.error('Error creating transfer:', err);
+      toast.error('Erreur lors du virement');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCreateBeneficiary = async () => {
+    if (!user || !beneficiaryData.name || !beneficiaryData.iban) {
+      toast.error('Veuillez remplir le nom et l\'IBAN');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await beneficiariesApi.create({
+        user_id: user.id,
+        name: beneficiaryData.name,
+        iban: beneficiaryData.iban,
+        bic: beneficiaryData.bic || undefined
+      });
+      toast.success('Bénéficiaire ajouté');
+      setShowBeneficiaryModal(false);
+      setBeneficiaryData({ name: '', iban: '', bic: '' });
+      loadData();
+    } catch (err) {
+      console.error('Error creating beneficiary:', err);
+      toast.error('Erreur lors de l\'ajout');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
   }
@@ -65,7 +124,9 @@ const Banking: React.FC = () => {
               <span className="balance-amount">{formatCurrency(account?.balance || 0)}</span>
               <span className="account-iban">{account?.iban || 'Aucun compte'}</span>
             </div>
-            <Button variant="primary" size="lg">+ Nouveau virement</Button>
+            <Button variant="primary" size="lg" onClick={() => setShowTransferModal(true)} disabled={beneficiaries.length === 0}>
+              + Nouveau virement
+            </Button>
           </Card>
 
           {/* Tabs */}
@@ -101,7 +162,7 @@ const Banking: React.FC = () => {
             <Card className="beneficiaries-card fade-in" padding="lg">
               <div className="card-header">
                 <h3>Mes bénéficiaires</h3>
-                <Button variant="secondary" size="sm">+ Ajouter</Button>
+                <Button variant="secondary" size="sm" onClick={() => setShowBeneficiaryModal(true)}>+ Ajouter</Button>
               </div>
               {beneficiaries.length === 0 ? (
                 <p className="empty-text">Aucun bénéficiaire enregistré</p>
@@ -121,6 +182,94 @@ const Banking: React.FC = () => {
             </Card>
           )}
         </div>
+
+        {/* Transfer Modal */}
+        {showTransferModal && (
+          <div className="modal-overlay" onClick={() => setShowTransferModal(false)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <h3>Nouveau virement</h3>
+              <div className="form-group">
+                <label>Bénéficiaire</label>
+                <select 
+                  value={transferData.beneficiaryId} 
+                  onChange={e => setTransferData(prev => ({ ...prev, beneficiaryId: e.target.value }))}
+                >
+                  <option value="">Sélectionner...</option>
+                  {beneficiaries.filter(b => b.status === 'active').map(b => (
+                    <option key={b.id} value={b.id}>{b.name} - {b.iban}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Montant (€)</label>
+                <input 
+                  type="number" 
+                  value={transferData.amount || ''} 
+                  onChange={e => setTransferData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+                  min={1}
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="form-group">
+                <label>Référence (optionnel)</label>
+                <input 
+                  type="text" 
+                  value={transferData.reference} 
+                  onChange={e => setTransferData(prev => ({ ...prev, reference: e.target.value }))}
+                  placeholder="Motif du virement"
+                />
+              </div>
+              <div className="modal-actions">
+                <Button variant="ghost" onClick={() => setShowTransferModal(false)}>Annuler</Button>
+                <Button variant="primary" onClick={handleCreateTransfer} disabled={submitting}>
+                  {submitting ? 'Envoi...' : 'Confirmer le virement'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Beneficiary Modal */}
+        {showBeneficiaryModal && (
+          <div className="modal-overlay" onClick={() => setShowBeneficiaryModal(false)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <h3>Ajouter un bénéficiaire</h3>
+              <div className="form-group">
+                <label>Nom du bénéficiaire</label>
+                <input 
+                  type="text" 
+                  value={beneficiaryData.name} 
+                  onChange={e => setBeneficiaryData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Nom complet"
+                />
+              </div>
+              <div className="form-group">
+                <label>IBAN</label>
+                <input 
+                  type="text" 
+                  value={beneficiaryData.iban} 
+                  onChange={e => setBeneficiaryData(prev => ({ ...prev, iban: e.target.value }))}
+                  placeholder="FR76..."
+                />
+              </div>
+              <div className="form-group">
+                <label>BIC (optionnel)</label>
+                <input 
+                  type="text" 
+                  value={beneficiaryData.bic} 
+                  onChange={e => setBeneficiaryData(prev => ({ ...prev, bic: e.target.value }))}
+                  placeholder="BNPAFRPP"
+                />
+              </div>
+              <div className="modal-actions">
+                <Button variant="ghost" onClick={() => setShowBeneficiaryModal(false)}>Annuler</Button>
+                <Button variant="primary" onClick={handleCreateBeneficiary} disabled={submitting}>
+                  {submitting ? 'Ajout...' : 'Ajouter'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <style>{`
           .banking-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
@@ -146,6 +295,18 @@ const Banking: React.FC = () => {
           .tx-amount.negative { color: var(--color-danger); }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          
+          /* Modal styles */
+          .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+          .modal-content { background: white; padding: 2rem; border-radius: var(--radius-lg); max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
+          .modal-content h3 { margin: 0 0 1.5rem; font-size: 1.25rem; }
+          .modal-content .form-group { margin-bottom: 1.25rem; }
+          .modal-content .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+          .modal-content .form-group input,
+          .modal-content .form-group select { width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 1rem; }
+          .modal-content .form-group input:focus,
+          .modal-content .form-group select:focus { outline: none; border-color: var(--color-primary); }
+          .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
         `}</style>
       </div>
     </PageLayout>

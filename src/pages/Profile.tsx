@@ -17,6 +17,7 @@ const Profile = () => {
         phone: '',
         address: ''
     });
+    const [kycStatus, setKycStatus] = useState<string>('pending');
     const [saved, setSaved] = useState(false);
 
     useEffect(() => {
@@ -47,6 +48,7 @@ const Profile = () => {
                 phone: data.phone || '',
                 address: data.address || ''
             }));
+            setKycStatus(data.kyc_status || 'pending');
         }
     };
 
@@ -201,8 +203,16 @@ const Profile = () => {
                             <Card padding="lg">
                                 <h3>📊 Statut KYC</h3>
                                 <div className="kyc-status">
-                                    <span className="kyc-badge pending">En attente</span>
-                                    <p>Complétez votre profil et uploadez vos documents.</p>
+                                    <span className={`kyc-badge ${kycStatus === 'validated' ? 'validated' : kycStatus === 'rejected' ? 'rejected' : 'pending'}`}>
+                                        {kycStatus === 'validated' ? 'Validé' : kycStatus === 'rejected' ? 'Refusé' : 'En attente'}
+                                    </span>
+                                    <p>
+                                        {kycStatus === 'validated' 
+                                            ? 'Votre identité a été vérifiée.' 
+                                            : kycStatus === 'rejected'
+                                            ? 'Veuillez soumettre de nouveaux documents.'
+                                            : 'Complétez votre profil et uploadez vos documents.'}
+                                    </p>
                                 </div>
                             </Card>
 
@@ -346,6 +356,14 @@ const Profile = () => {
                     .kyc-badge.pending {
                         background: #fff3cd;
                         color: #856404;
+                    }
+                    .kyc-badge.validated {
+                        background: #d1fae5;
+                        color: #065f46;
+                    }
+                    .kyc-badge.rejected {
+                        background: #fee2e2;
+                        color: #991b1b;
                     }
                     .kyc-status p {
                         font-size: 0.85rem;
