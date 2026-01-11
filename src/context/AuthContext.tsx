@@ -136,14 +136,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 data: {
                     first_name: firstName,
                     last_name: lastName
-                }
+                },
+                emailRedirectTo: `${window.location.origin}/`
             }
         });
 
         if (error) throw error;
 
         const authUser = data.user;
-        if (!authUser) throw new Error('Registration failed');
+        
+        // Check if user already exists (Supabase returns user but no session)
+        if (!authUser) throw new Error('Échec de l\'inscription');
+        
+        // If user exists but identities is empty, it means email is already taken
+        if (authUser.identities && authUser.identities.length === 0) {
+            throw new Error('Cet email est déjà utilisé. Veuillez vous connecter.');
+        }
 
         // New users are always clients
         const registeredUser: AuthUser = {
