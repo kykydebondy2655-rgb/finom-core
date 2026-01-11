@@ -311,15 +311,28 @@ export const messagesApi = {
 // ============= AGENT SERVICES =============
 export const agentApi = {
   async getAssignedClients(agentId: string) {
-    const { data, error } = await supabase
+    // First get assignments
+    const { data: assignments, error: assignError } = await supabase
       .from('client_assignments')
-      .select(`
-        *,
-        client:profiles!client_assignments_client_user_id_fkey(*)
-      `)
+      .select('*')
       .eq('agent_user_id', agentId);
-    if (error) throw error;
-    return data;
+    if (assignError) throw assignError;
+    
+    if (!assignments || assignments.length === 0) return [];
+    
+    // Then get profiles for each client
+    const clientIds = assignments.map(a => a.client_user_id);
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', clientIds);
+    if (profileError) throw profileError;
+    
+    // Combine data
+    return assignments.map(a => ({
+      ...a,
+      client: profiles?.find(p => p.id === a.client_user_id) || null
+    }));
   },
 
   async getCallbacks(agentId: string) {
