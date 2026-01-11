@@ -414,6 +414,50 @@ export const agentApi = {
       ...log,
       client: profiles?.find(p => p.id === log.client_id) || null
     }));
+  },
+
+  // Get a specific assigned client's profile (via client_assignments RLS)
+  async getClientProfile(agentId: string, clientId: string) {
+    // First verify assignment exists
+    const { data: assignment, error: assignError } = await supabase
+      .from('client_assignments')
+      .select('*')
+      .eq('agent_user_id', agentId)
+      .eq('client_user_id', clientId)
+      .maybeSingle();
+    if (assignError) throw assignError;
+    if (!assignment) return null;
+    
+    // Then get the client profile (RLS allows via assignment)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', clientId)
+      .single();
+    if (profileError) throw profileError;
+    return profile;
+  },
+
+  // Get loans for an assigned client
+  async getClientLoans(clientId: string) {
+    const { data, error } = await supabase
+      .from('loan_applications')
+      .select('*')
+      .eq('user_id', clientId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  // Get documents for an assigned client
+  async getClientDocuments(clientId: string) {
+    const { data, error } = await supabase
+      .from('documents')
+      .select('*')
+      .eq('user_id', clientId)
+      .order('uploaded_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
   }
 };
 
