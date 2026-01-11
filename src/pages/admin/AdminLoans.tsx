@@ -5,6 +5,7 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
+import LoanStatusModal from '@/components/admin/LoanStatusModal';
 import { adminApi, formatCurrency, formatDate } from '@/services/api';
 
 const AdminLoans: React.FC = () => {
@@ -12,6 +13,8 @@ const AdminLoans: React.FC = () => {
   const [loans, setLoans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedLoan, setSelectedLoan] = useState<any>(null);
 
   useEffect(() => {
     loadLoans();
@@ -27,6 +30,11 @@ const AdminLoans: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditStatus = (loan: any) => {
+    setSelectedLoan(loan);
+    setShowStatusModal(true);
   };
 
   const filteredLoans = loans.filter(l => {
@@ -104,7 +112,14 @@ const AdminLoans: React.FC = () => {
                         <td>{loan.rate}%</td>
                         <td><StatusBadge status={loan.status} size="sm" /></td>
                         <td className="date">{formatDate(loan.created_at)}</td>
-                        <td><Button variant="ghost" size="sm">Voir →</Button></td>
+                        <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                          <Button variant="secondary" size="sm" onClick={() => handleEditStatus(loan)}>
+                            ✏️ Statut
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/loans/${loan.id}`)}>
+                            Voir →
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -112,6 +127,16 @@ const AdminLoans: React.FC = () => {
               </div>
             )}
           </Card>
+
+          <LoanStatusModal
+            isOpen={showStatusModal}
+            onClose={() => {
+              setShowStatusModal(false);
+              setSelectedLoan(null);
+            }}
+            onSuccess={loadLoans}
+            loan={selectedLoan}
+          />
         </div>
 
         <style>{`
@@ -135,6 +160,7 @@ const AdminLoans: React.FC = () => {
           .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
           .amount { font-weight: 600; }
           .date { color: var(--color-text-tertiary); font-size: 0.9rem; }
+          .actions-cell { display: flex; gap: 0.5rem; }
           .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 3rem; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

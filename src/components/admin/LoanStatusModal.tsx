@@ -1,0 +1,247 @@
+import React, { useState } from 'react';
+import Button from '@/components/finom/Button';
+import { adminApi } from '@/services/api';
+
+interface LoanStatusModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  loan: {
+    id: string;
+    status: string | null;
+    amount: number;
+    user?: { first_name?: string; last_name?: string };
+  } | null;
+}
+
+const STATUS_OPTIONS = [
+  { value: 'pending', label: 'En attente', color: 'var(--color-warning)' },
+  { value: 'in_review', label: 'En analyse', color: 'var(--color-info)' },
+  { value: 'approved', label: 'Approuvé', color: 'var(--color-success)' },
+  { value: 'rejected', label: 'Refusé', color: 'var(--color-danger)' },
+  { value: 'funded', label: 'Financé', color: 'var(--color-success)' },
+];
+
+const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  loan
+}) => {
+  const [selectedStatus, setSelectedStatus] = useState(loan?.status || 'pending');
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (loan) {
+      setSelectedStatus(loan.status || 'pending');
+      setRejectionReason('');
+    }
+  }, [loan]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loan) return;
+
+    if (selectedStatus === 'rejected' && !rejectionReason.trim()) {
+      setError('Veuillez indiquer un motif de refus');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      await adminApi.updateLoanStatus(
+        loan.id, 
+        selectedStatus, 
+        selectedStatus === 'rejected' ? rejectionReason.trim() : undefined
+      );
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      console.error('Error updating loan status:', err);
+      setError(err?.message || 'Erreur lors de la mise à jour');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen || !loan) return null;
+
+  const clientName = `${loan.user?.first_name || ''} ${loan.user?.last_name || ''}`.trim() || 'Client';
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>📋 Modifier le statut</h2>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+
+        <div className="loan-info">
+          <span className="loan-ref">Dossier #{loan.id.slice(0, 8)}</span>
+          <span className="loan-client">{clientName}</span>
+          <span className="loan-amount">{loan.amount?.toLocaleString()} €</span>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="form-group">
+            <label>Nouveau statut *</label>
+            <div className="status-options">
+              {STATUS_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={`status-option ${selectedStatus === option.value ? 'selected' : ''}`}
+                  style={{ '--status-color': option.color } as React.CSSProperties}
+                  onClick={() => setSelectedStatus(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {selectedStatus === 'rejected' && (
+            <div className="form-group">
+              <label>Motif du refus *</label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Indiquez la raison du refus..."
+                rows={3}
+                required
+              />
+            </div>
+          )}
+
+          <div className="modal-actions">
+            <Button variant="ghost" type="button" onClick={onClose}>
+              Annuler
+            </Button>
+            <Button variant="primary" type="submit" disabled={loading}>
+              {loading ? 'Mise à jour...' : 'Enregistrer'}
+            </Button>
+          </div>
+        </form>
+
+        <style>{`
+          .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+          }
+          .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+          }
+          .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+          }
+          .modal-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+          }
+          .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text-tertiary);
+          }
+          .loan-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 1.25rem 1.5rem;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--color-border);
+          }
+          .loan-ref {
+            font-family: monospace;
+            color: var(--color-admin);
+            font-weight: 600;
+          }
+          .loan-client {
+            font-weight: 600;
+            font-size: 1.1rem;
+          }
+          .loan-amount {
+            color: var(--color-text-secondary);
+          }
+          form {
+            padding: 1.5rem;
+          }
+          .error-message {
+            background: #fee;
+            color: var(--color-danger);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+          }
+          .form-group {
+            margin-bottom: 1.25rem;
+          }
+          .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+          }
+          .status-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+          }
+          .status-option {
+            padding: 0.625rem 1rem;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-full);
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+          }
+          .status-option:hover {
+            border-color: var(--status-color);
+          }
+          .status-option.selected {
+            background: var(--status-color);
+            border-color: var(--status-color);
+            color: white;
+          }
+          .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            resize: vertical;
+          }
+          .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+};
+
+export default LoanStatusModal;
