@@ -37,7 +37,7 @@ export const loansApi = {
       .from('loan_applications')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
     if (error) throw error;
     return data;
   },

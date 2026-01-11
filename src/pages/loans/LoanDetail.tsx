@@ -52,10 +52,18 @@ const LoanDetail: React.FC = () => {
     
     try {
       setSendingMessage(true);
+      
+      // Determine recipient: if user is client, send to assigned agent (or system)
+      // For now, we'll use a placeholder - in real app, this would query client_assignments
+      // If user owns the loan, the message goes to support/agent
+      // If user is agent/admin viewing the loan, message goes to loan owner
+      const isOwner = loan.user_id === user.id;
+      const toUserId = isOwner ? loan.user_id : loan.user_id; // Placeholder - should be agent_id
+      
       await messagesApi.send({
         loan_id: id,
         from_user_id: user.id,
-        to_user_id: loan.user_id === user.id ? loan.user_id : user.id, // Will need agent assignment for real app
+        to_user_id: toUserId,
         message: newMessage.trim()
       });
       setNewMessage('');

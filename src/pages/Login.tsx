@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import Button from '../components/finom/Button';
 
 const Login = () => {
@@ -17,7 +16,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            await login(formData.email, formData.password);
+            const loggedUser = await login(formData.email, formData.password);
 
             const pendingSim = localStorage.getItem('pendingSimulation');
             if (pendingSim) {
@@ -25,12 +24,8 @@ const Login = () => {
                 localStorage.removeItem('pendingSimulation');
                 navigate('/loans/new', { state: data });
             } else {
-                // Fetch role from user_roles table via RPC for redirect
-                const { data: roleData } = await supabase.rpc('get_user_role', { 
-                    _user_id: (await supabase.auth.getUser()).data.user?.id 
-                });
-                
-                const role = roleData || 'client';
+                // Use the role from the logged user (already fetched by AuthContext)
+                const role = loggedUser?.role || 'client';
                 if (role === 'admin') {
                     navigate('/admin/dashboard');
                 } else if (role === 'agent') {

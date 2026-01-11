@@ -57,6 +57,19 @@ const Banking: React.FC = () => {
       toast.error('Veuillez remplir tous les champs');
       return;
     }
+    
+    // Validate amount against balance
+    if (account && transferData.amount > (account.balance || 0)) {
+      toast.error('Solde insuffisant pour ce virement');
+      return;
+    }
+    
+    // Validate minimum amount
+    if (transferData.amount < 1) {
+      toast.error('Le montant minimum est de 1 €');
+      return;
+    }
+    
     try {
       setSubmitting(true);
       await transfersApi.create({
@@ -77,18 +90,42 @@ const Banking: React.FC = () => {
     }
   };
 
+  // IBAN validation helper
+  const isValidIBAN = (iban: string): boolean => {
+    const cleanIban = iban.replace(/\s/g, '').toUpperCase();
+    // Basic IBAN format check (2 letters + 2 digits + up to 30 alphanumeric)
+    const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/;
+    if (!ibanRegex.test(cleanIban)) return false;
+    // Check length based on country (simplified - FR = 27 chars)
+    if (cleanIban.startsWith('FR') && cleanIban.length !== 27) return false;
+    return true;
+  };
+
   const handleCreateBeneficiary = async () => {
     if (!user || !beneficiaryData.name || !beneficiaryData.iban) {
       toast.error('Veuillez remplir le nom et l\'IBAN');
       return;
     }
+    
+    // Validate name length
+    if (beneficiaryData.name.trim().length < 2) {
+      toast.error('Le nom doit contenir au moins 2 caractères');
+      return;
+    }
+    
+    // Validate IBAN format
+    if (!isValidIBAN(beneficiaryData.iban)) {
+      toast.error('Format IBAN invalide');
+      return;
+    }
+    
     try {
       setSubmitting(true);
       await beneficiariesApi.create({
         user_id: user.id,
-        name: beneficiaryData.name,
-        iban: beneficiaryData.iban,
-        bic: beneficiaryData.bic || undefined
+        name: beneficiaryData.name.trim(),
+        iban: beneficiaryData.iban.replace(/\s/g, '').toUpperCase(),
+        bic: beneficiaryData.bic?.toUpperCase() || undefined
       });
       toast.success('Bénéficiaire ajouté');
       setShowBeneficiaryModal(false);
@@ -122,12 +159,25 @@ const Banking: React.FC = () => {
             <div className="balance-content">
               <span className="balance-label">Solde disponible</span>
               <span className="balance-amount">{formatCurrency(account?.balance || 0)}</span>
-              <span className="account-iban">{account?.iban || 'Aucun compte'}</span>
+              <span className="account-iban">{account?.iban || 'Aucun compte associé'}</span>
             </div>
-            <Button variant="primary" size="lg" onClick={() => setShowTransferModal(true)} disabled={beneficiaries.length === 0}>
+            <Button 
+              variant="primary" 
+              size="lg" 
+              onClick={() => setShowTransferModal(true)} 
+              disabled={!account || beneficiaries.length === 0 || (account.balance || 0) <= 0}
+            >
               + Nouveau virement
             </Button>
           </Card>
+
+          {!account && (
+            <Card className="warning-card fade-in" padding="md">
+              <p style={{ margin: 0, color: 'var(--color-warning)' }}>
+                ⚠️ Vous n'avez pas encore de compte bancaire associé. Contactez le support pour en créer un.
+              </p>
+            </Card>
+          )}
 
           {/* Tabs */}
           <div className="tabs fade-in">

@@ -103,8 +103,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const authUser = data.user;
         if (!authUser) throw new Error('Login failed');
 
-        await fetchUserProfile(authUser);
-        return user!;
+        // Fetch profile and role to get the complete user
+        const [profileResult, roleResult] = await Promise.all([
+            supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', authUser.id)
+                .maybeSingle(),
+            supabase.rpc('get_user_role', { _user_id: authUser.id })
+        ]);
+
+        const profile = profileResult.data;
+        const role = (roleResult.data as 'client' | 'agent' | 'admin') || 'client';
+
+        const loggedUser: AuthUser = {
+            id: authUser.id,
+            email: authUser.email || '',
+            firstName: profile?.first_name || undefined,
+            lastName: profile?.last_name || undefined,
+            role
+        };
+
+        setUser(loggedUser);
+        return loggedUser;
     };
 
     const register = async (email: string, password: string, firstName: string, lastName: string): Promise<AuthUser> => {
@@ -124,8 +145,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const authUser = data.user;
         if (!authUser) throw new Error('Registration failed');
 
-        await fetchUserProfile(authUser);
-        return user!;
+        // New users are always clients
+        const registeredUser: AuthUser = {
+            id: authUser.id,
+            email: authUser.email || '',
+            firstName: firstName,
+            lastName: lastName,
+            role: 'client'
+        };
+
+        setUser(registeredUser);
+        return registeredUser;
     };
 
     const logout = async () => {
