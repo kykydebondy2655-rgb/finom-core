@@ -8,6 +8,7 @@ import Button from '@/components/finom/Button';
 import { useToast } from '@/components/finom/Toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import logger from '@/lib/logger';
 
 interface AdminDocumentUploadModalProps {
   isOpen: boolean;
@@ -139,7 +140,7 @@ const AdminDocumentUploadModal: React.FC<AdminDocumentUploadModalProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      console.error('Upload error:', err);
+      logger.logError('Upload error', err);
       toast.error(err instanceof Error ? err.message : 'Erreur lors de l\'envoi du document');
     } finally {
       setUploading(false);

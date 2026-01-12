@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import logger from '@/lib/logger';
 import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
@@ -74,7 +75,7 @@ const AgentClientDetail: React.FC = () => {
         setDocuments(docsData || []);
       }
     } catch (err) {
-      console.error('Error loading client:', err);
+      logger.logError('Error loading client', err);
     } finally {
       setLoading(false);
     }
@@ -280,7 +281,7 @@ const AgentClientDetail: React.FC = () => {
                               toast.error(result.error || 'Erreur lors du téléchargement');
                             }
                           } catch (err) {
-                            console.error('Download error:', err);
+                            logger.logError('Download error', err);
                             toast.error('Erreur lors du téléchargement');
                           }
                         }}

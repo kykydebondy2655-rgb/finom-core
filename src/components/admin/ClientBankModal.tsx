@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@/components/finom/Button';
 import { isValidIBAN, isValidBIC } from '@/lib/validators';
+import logger from '@/lib/logger';
 
 interface ClientBankModalProps {
   isOpen: boolean;
@@ -70,9 +71,9 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
       });
       onSuccess();
       onClose();
-    } catch (err: any) {
-      console.error('Error updating bank account:', err);
-      setError(err.message || 'Erreur lors de la mise à jour');
+    } catch (err: unknown) {
+      logger.logError('Error updating bank account', err);
+      setError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
     } finally {
       setLoading(false);
     }

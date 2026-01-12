@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { formatDate } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface ReceivedDocument {
   id: string;
@@ -84,13 +85,13 @@ const ReceivedDocumentsList: React.FC<ReceivedDocumentsListProps> = ({
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error loading received documents:', error);
+        logger.warn('Error loading received documents', { error: error.message });
         return;
       }
 
       setDocuments(data || []);
     } catch (err) {
-      console.error('Error:', err);
+      logger.logError('Error loading documents', err);
     } finally {
       setLoading(false);
     }
@@ -121,7 +122,7 @@ const ReceivedDocumentsList: React.FC<ReceivedDocumentsListProps> = ({
       
       toast.success('Téléchargement terminé');
     } catch (err) {
-      console.error('Download error:', err);
+      logger.logError('Download error', err);
       toast.error('Erreur lors du téléchargement');
     } finally {
       setDownloading(null);

@@ -6,6 +6,7 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import AssignmentModal from '@/components/admin/AssignmentModal';
 import { adminApi, formatDate } from '@/services/api';
+import logger from '@/lib/logger';
 
 const AdminAssignments: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const AdminAssignments: React.FC = () => {
       const data = await adminApi.getClientAssignments();
       setAssignments(data || []);
     } catch (err) {
-      console.error('Error loading assignments:', err);
+      logger.logError('Error loading assignments', err);
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,7 @@ const AdminAssignments: React.FC = () => {
       await adminApi.deleteAssignment(id);
       loadAssignments();
     } catch (err) {
-      console.error('Error deleting assignment:', err);
+      logger.logError('Error deleting assignment', err);
     } finally {
       setDeleting(null);
     }

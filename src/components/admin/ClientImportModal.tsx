@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '@/components/finom/Button';
 import { adminApi, Profile } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface ClientImportModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, onClose, 
       const data = await adminApi.getAllAgents();
       setAgents(data || []);
     } catch (err) {
-      console.error('Error loading agents:', err);
+      logger.logError('Error loading agents', err);
     }
   };
 
