@@ -485,6 +485,7 @@ export type Database = {
       }
       loan_applications: {
         Row: {
+          agency_fees: number | null
           amount: number
           assurance_status: string | null
           created_at: string
@@ -493,12 +494,16 @@ export type Database = {
           duration: number
           fees_used: number | null
           id: string
+          insurance_cost: number | null
           insurance_rate_used: number | null
           interest_rate_used: number | null
           is_draft: boolean | null
+          monthly_credit: number | null
+          monthly_insurance: number | null
           monthly_payment: number | null
           monthly_payment_est: number | null
           next_action: string | null
+          notary_fees: number | null
           notary_iban: string | null
           notary_ref: string | null
           project_type: string | null
@@ -511,11 +516,14 @@ export type Database = {
           status: string | null
           total_amount: number | null
           total_cost_est: number | null
+          total_fees: number | null
           total_interest: number | null
           updated_at: string
           user_id: string
+          works_amount: number | null
         }
         Insert: {
+          agency_fees?: number | null
           amount: number
           assurance_status?: string | null
           created_at?: string
@@ -524,12 +532,16 @@ export type Database = {
           duration: number
           fees_used?: number | null
           id?: string
+          insurance_cost?: number | null
           insurance_rate_used?: number | null
           interest_rate_used?: number | null
           is_draft?: boolean | null
+          monthly_credit?: number | null
+          monthly_insurance?: number | null
           monthly_payment?: number | null
           monthly_payment_est?: number | null
           next_action?: string | null
+          notary_fees?: number | null
           notary_iban?: string | null
           notary_ref?: string | null
           project_type?: string | null
@@ -542,11 +554,14 @@ export type Database = {
           status?: string | null
           total_amount?: number | null
           total_cost_est?: number | null
+          total_fees?: number | null
           total_interest?: number | null
           updated_at?: string
           user_id: string
+          works_amount?: number | null
         }
         Update: {
+          agency_fees?: number | null
           amount?: number
           assurance_status?: string | null
           created_at?: string
@@ -555,12 +570,16 @@ export type Database = {
           duration?: number
           fees_used?: number | null
           id?: string
+          insurance_cost?: number | null
           insurance_rate_used?: number | null
           interest_rate_used?: number | null
           is_draft?: boolean | null
+          monthly_credit?: number | null
+          monthly_insurance?: number | null
           monthly_payment?: number | null
           monthly_payment_est?: number | null
           next_action?: string | null
+          notary_fees?: number | null
           notary_iban?: string | null
           notary_ref?: string | null
           project_type?: string | null
@@ -573,9 +592,11 @@ export type Database = {
           status?: string | null
           total_amount?: number | null
           total_cost_est?: number | null
+          total_fees?: number | null
           total_interest?: number | null
           updated_at?: string
           user_id?: string
+          works_amount?: number | null
         }
         Relationships: [
           {
