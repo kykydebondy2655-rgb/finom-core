@@ -102,7 +102,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
-  color: var(--color-secondary);
+  color: var(--color-text);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.1;
