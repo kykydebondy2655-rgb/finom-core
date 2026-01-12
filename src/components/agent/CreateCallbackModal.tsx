@@ -2,12 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import { agentApi } from '@/services/api';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface CreateCallbackModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   preselectedClientId?: string;
+  preselectedClientName?: string;
 }
 
 interface ClientOption {
@@ -19,24 +29,26 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
-  preselectedClientId
+  preselectedClientId,
+  preselectedClientName
 }) => {
   const { user } = useAuth();
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [selectedClient, setSelectedClient] = useState(preselectedClientId || '');
-  const [scheduledDate, setScheduledDate] = useState('');
-  const [scheduledTime, setScheduledTime] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [scheduledTime, setScheduledTime] = useState('10:00');
   const [reason, setReason] = useState('');
+  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingClients, setLoadingClients] = useState(true);
 
   useEffect(() => {
     if (isOpen && user) {
       loadClients();
-      // Set default date/time to tomorrow at 10:00
+      // Set default date to tomorrow
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      setScheduledDate(tomorrow.toISOString().split('T')[0]);
+      setSelectedDate(tomorrow);
       setScheduledTime('10:00');
     }
   }, [isOpen, user]);
@@ -67,17 +79,19 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !selectedClient || !scheduledDate || !scheduledTime) return;
+    if (!user || !selectedClient || !selectedDate || !scheduledTime) return;
 
     try {
       setLoading(true);
-      const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      const scheduledAt = new Date(`${dateStr}T${scheduledTime}`).toISOString();
       
       await agentApi.createCallback({
         agent_id: user.id,
         client_id: selectedClient,
         scheduled_at: scheduledAt,
         reason: reason || null,
+        notes: notes || null,
         status: 'planned'
       });
       
@@ -94,29 +108,43 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
   const resetForm = () => {
     setSelectedClient(preselectedClientId || '');
     setReason('');
+    setNotes('');
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    setSelectedDate(tomorrow);
+    setScheduledTime('10:00');
   };
 
-  if (!isOpen) return null;
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>📞 Planifier un rappel</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            📞 Planifier un rappel
+          </DialogTitle>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Client *</label>
+        <form onSubmit={handleSubmit} className="space-y-5 pt-2">
+          {/* Client Selection */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Client *</label>
             {loadingClients ? (
-              <p className="loading-text">Chargement...</p>
+              <p className="text-sm text-muted-foreground italic">Chargement...</p>
+            ) : preselectedClientId ? (
+              <div className="p-3 bg-muted rounded-md font-medium">
+                {preselectedClientName || 'Client sélectionné'}
+              </div>
             ) : (
               <select
                 value={selectedClient}
                 onChange={(e) => setSelectedClient(e.target.value)}
                 required
-                disabled={!!preselectedClientId}
+                className="w-full p-3 border border-input rounded-md bg-background text-foreground"
               >
                 <option value="">Sélectionner un client</option>
                 {clients.map((client) => (
@@ -128,132 +156,78 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
             )}
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Date *</label>
-              <input
-                type="date"
-                value={scheduledDate}
-                onChange={(e) => setScheduledDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                required
+          {/* Date Selection with Calendar */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Date du rappel *</label>
+            <div className="border border-input rounded-md p-3 bg-background">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                locale={fr}
+                disabled={(date) => date < new Date()}
+                className="mx-auto"
               />
-            </div>
-            <div className="form-group">
-              <label>Heure *</label>
-              <input
-                type="time"
-                value={scheduledTime}
-                onChange={(e) => setScheduledTime(e.target.value)}
-                required
-              />
+              {selectedDate && (
+                <div className="mt-2 text-center text-sm font-medium text-primary">
+                  📅 {format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Motif du rappel</label>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Ex: Suivi dossier de prêt, Relance documents..."
-              rows={3}
+          {/* Time Selection */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Heure *</label>
+            <input
+              type="time"
+              value={scheduledTime}
+              onChange={(e) => setScheduledTime(e.target.value)}
+              required
+              className="w-full p-3 border border-input rounded-md bg-background text-foreground"
             />
           </div>
 
-          <div className="modal-actions">
-            <Button variant="ghost" type="button" onClick={onClose}>
+          {/* Reason */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Motif du rappel</label>
+            <input
+              type="text"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Ex: Suivi dossier de prêt, Relance documents..."
+              className="w-full p-3 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Notes / Commentaires</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Ajoutez des notes pour ce rappel..."
+              rows={3}
+              className="w-full p-3 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground resize-vertical"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button variant="ghost" type="button" onClick={handleClose}>
               Annuler
             </Button>
             <Button 
               variant="primary" 
               type="submit" 
-              disabled={loading || !selectedClient || !scheduledDate || !scheduledTime}
+              disabled={loading || !selectedClient || !selectedDate || !scheduledTime}
             >
-              {loading ? 'Création...' : 'Planifier le rappel'}
+              {loading ? 'Création...' : '✓ Planifier le rappel'}
             </Button>
           </div>
         </form>
-
-        <style>{`
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-          }
-          .modal-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 480px;
-            max-height: 90vh;
-            overflow-y: auto;
-          }
-          .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .modal-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-          }
-          .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-tertiary);
-          }
-          form {
-            padding: 1.5rem;
-          }
-          .form-group {
-            margin-bottom: 1.25rem;
-          }
-          .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-          }
-          .form-group input,
-          .form-group select,
-          .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-          }
-          .form-group textarea {
-            resize: vertical;
-          }
-          .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-          }
-          .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-border);
-          }
-          .loading-text {
-            color: var(--color-text-tertiary);
-            font-style: italic;
-          }
-        `}</style>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
