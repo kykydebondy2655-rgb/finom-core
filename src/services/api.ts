@@ -659,6 +659,58 @@ async getAllClients() {
       .maybeSingle();
     if (error) throw error;
     return data?.agent || null;
+  },
+
+  // Get client bank account (admin only)
+  async getClientBankAccount(clientId: string) {
+    const { data, error } = await supabase
+      .from('bank_accounts')
+      .select('*')
+      .eq('user_id', clientId)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+
+  // Update or create client bank account (admin only)
+  async updateClientBankAccount(clientId: string, updates: { balance?: number; iban?: string }) {
+    // First check if account exists
+    const { data: existing } = await supabase
+      .from('bank_accounts')
+      .select('id')
+      .eq('user_id', clientId)
+      .maybeSingle();
+
+    if (existing) {
+      // Update existing account
+      const { data, error } = await supabase
+        .from('bank_accounts')
+        .update({
+          balance: updates.balance,
+          iban: updates.iban,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', clientId)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new account
+      const { data, error } = await supabase
+        .from('bank_accounts')
+        .insert({
+          user_id: clientId,
+          iban: updates.iban || '',
+          bic: 'XXXXXXXX',
+          balance: updates.balance || 0,
+          currency: 'EUR'
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    }
   }
 };
 
