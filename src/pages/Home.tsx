@@ -98,10 +98,10 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className="security-item">
-                                    <span className="security-icon">📈</span>
+                                    <span className="security-icon">🏦</span>
                                     <div>
-                                        <strong>+200 000 Projets Financés</strong>
-                                        <p>Une expertise reconnue au service de votre projet immobilier.</p>
+                                        <strong>Banque 100% Sécurisée</strong>
+                                        <p>Fonds garantis et protégés par nos partenaires bancaires agréés.</p>
                                     </div>
                                 </div>
                             </div>
