@@ -14,6 +14,11 @@ import Contact from './pages/Contact';
 import Faq from './pages/Faq';
 import NotFound from './pages/NotFound';
 
+// Legal Pages (Anti-Phishing Compliance)
+import LegalNotice from './pages/legal/LegalNotice';
+import PrivacyPolicy from './pages/legal/PrivacyPolicy';
+import TermsOfService from './pages/legal/TermsOfService';
+
 // Client Pages
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
@@ -54,6 +59,11 @@ function App() {
                                 <Route path="/how-it-works" element={<HowItWorks />} />
                                 <Route path="/contact" element={<Contact />} />
                                 <Route path="/faq" element={<Faq />} />
+                                
+                                {/* ============= LEGAL ROUTES (Anti-Phishing) ============= */}
+                                <Route path="/legal" element={<LegalNotice />} />
+                                <Route path="/privacy" element={<PrivacyPolicy />} />
+                                <Route path="/terms" element={<TermsOfService />} />
 
                                 {/* ============= CLIENT ROUTES ============= */}
                                 <Route 

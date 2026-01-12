@@ -1,8 +1,23 @@
+# FINOM - Robots Configuration
+# Permettre l'indexation par tous les moteurs de recherche légitimes
+
 User-agent: Googlebot
 Allow: /
+Disallow: /dashboard
+Disallow: /loans
+Disallow: /banking
+Disallow: /profile
+Disallow: /agent
+Disallow: /admin
 
 User-agent: Bingbot
 Allow: /
+Disallow: /dashboard
+Disallow: /loans
+Disallow: /banking
+Disallow: /profile
+Disallow: /agent
+Disallow: /admin
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +27,12 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /loans
+Disallow: /banking
+Disallow: /profile
+Disallow: /agent
+Disallow: /admin
+
+# Sitemap
+Sitemap: https://pret-finom.co/sitemap.xml
