@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, AuthUser } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
@@ -16,6 +16,7 @@ import { loansApi } from '@/services/api';
 import { emailService } from '@/services/emailService';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import logger from '@/lib/logger';
 
 interface FormData {
   propertyPrice: number;
@@ -145,7 +146,7 @@ const Simulator = () => {
 
       // Send confirmation email (non-blocking)
       if (user.email) {
-        const clientName = (user as any).firstName || 'Client';
+        const clientName = user.firstName || 'Client';
         emailService.sendLoanSubmitted(
           user.email,
           clientName,
@@ -153,18 +154,18 @@ const Simulator = () => {
           result.loanAmount,
           result.durationMonths,
           result.monthlyTotal
-        ).catch(err => console.error('Email error:', err));
+        ).catch(err => logger.logError('Email send error', err));
       }
 
       // Notify admins (non-blocking)
-      const displayName = (user as any).firstName || user.email || 'Client';
+      const displayName = user.firstName || user.email || 'Client';
       notifyAdmins(newLoan.id, result.loanAmount, displayName)
-        .catch(err => console.error('Notification error:', err));
+        .catch(err => logger.logError('Admin notification error', err));
 
       toast.success('Votre demande de prêt a été créée avec succès !');
       navigate('/loans');
     } catch (err) {
-      console.error('Error creating loan:', err);
+      logger.logError('Error creating loan', err);
       toast.error('Erreur lors de la création de votre demande');
     } finally {
       setLoading(false);
