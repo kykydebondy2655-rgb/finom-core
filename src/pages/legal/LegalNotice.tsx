@@ -18,38 +18,35 @@ const LegalNotice: React.FC = () => {
           <section>
             <h2>1. Éditeur du site</h2>
             <div className="info-block">
-              <p><strong>Raison sociale :</strong> FINOM SAS</p>
-              <p><strong>Forme juridique :</strong> Société par Actions Simplifiée</p>
-              <p><strong>Capital social :</strong> 100 000 €</p>
-              <p><strong>Siège social :</strong> 15 Avenue des Champs-Élysées, 75008 Paris, France</p>
-              <p><strong>RCS :</strong> Paris B 123 456 789</p>
-              <p><strong>SIRET :</strong> 123 456 789 00012</p>
-              <p><strong>Code APE :</strong> 6419Z - Autres intermédiations monétaires</p>
-              <p><strong>TVA Intracommunautaire :</strong> FR 12 123456789</p>
+              <p><strong>Nom :</strong> FINOM</p>
               <p><strong>Téléphone :</strong> +31 20 524 9111</p>
               <p><strong>Email :</strong> contact@pret-finom.co</p>
+              <p><strong>Site web :</strong> pret-finom.co</p>
             </div>
           </section>
 
           <section>
             <h2>2. Directeur de la publication</h2>
-            <p>Le directeur de la publication est le Président de FINOM SAS.</p>
+            <p>Le directeur de la publication est le représentant légal de FINOM.</p>
           </section>
 
           <section>
             <h2>3. Hébergeur</h2>
             <div className="info-block">
-              <p><strong>Nom :</strong> Lovable Technologies</p>
-              <p><strong>Adresse :</strong> San Francisco, CA, États-Unis</p>
-              <p><strong>Site web :</strong> https://lovable.dev</p>
+              <p><strong>Nom :</strong> Cloudflare, Inc.</p>
+              <p><strong>Adresse :</strong> 101 Townsend St, San Francisco, CA 94107, États-Unis</p>
+              <p><strong>Site web :</strong> https://www.cloudflare.com</p>
             </div>
           </section>
 
           <section>
-            <h2>4. Activité réglementée</h2>
-            <p>FINOM SAS exerce une activité d'intermédiaire en opérations de banque et en services de paiement (IOBSP) immatriculée à l'ORIAS sous le numéro 12 345 678.</p>
-            <p>Vous pouvez vérifier cette immatriculation sur le site de l'ORIAS : <a href="https://www.orias.fr" target="_blank" rel="noopener noreferrer">www.orias.fr</a></p>
-            <p>FINOM SAS est soumise au contrôle de l'Autorité de Contrôle Prudentiel et de Résolution (ACPR) - 4 Place de Budapest, CS 92459, 75436 Paris Cedex 09.</p>
+            <h2>4. Partenaires bancaires</h2>
+            <p>FINOM travaille en partenariat avec des établissements financiers agréés :</p>
+            <ul className="partner-list">
+              <li><strong>Treezor</strong> — Établissement de monnaie électronique agréé par l'ACPR (France)</li>
+              <li><strong>Solaris</strong> — Banque agréée par la BaFin (Allemagne)</li>
+            </ul>
+            <p>Ces partenaires sont régulés et conformes aux réglementations européennes.</p>
           </section>
 
           <section>
@@ -60,9 +57,9 @@ const LegalNotice: React.FC = () => {
 
           <section>
             <h2>6. Protection des données personnelles</h2>
-            <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez de droits sur vos données personnelles.</p>
+            <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez de droits sur vos données personnelles.</p>
             <p>Pour plus d'informations, consultez notre <a href="/privacy">Politique de Confidentialité</a>.</p>
-            <p><strong>Délégué à la Protection des Données (DPO) :</strong> dpo@pret-finom.co</p>
+            <p><strong>Contact :</strong> contact@pret-finom.co</p>
           </section>
 
           <section>
@@ -72,13 +69,7 @@ const LegalNotice: React.FC = () => {
 
           <section>
             <h2>8. Médiation</h2>
-            <p>En cas de litige, vous pouvez recourir gratuitement au médiateur de la consommation :</p>
-            <div className="info-block">
-              <p><strong>Médiateur de l'ASF :</strong></p>
-              <p>Association Française des Sociétés Financières</p>
-              <p>75 rue Taitbout, 75009 Paris</p>
-              <p><a href="https://lemediateur.asf-france.com" target="_blank" rel="noopener noreferrer">lemediateur.asf-france.com</a></p>
-            </div>
+            <p>En cas de litige, vous pouvez contacter notre service client à contact@pret-finom.co pour rechercher une solution amiable.</p>
           </section>
 
           <section>

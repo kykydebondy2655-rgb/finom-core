@@ -30,39 +30,31 @@ const About: React.FC = () => {
           <section className="about-section">
             <h2>Notre mission</h2>
             <p>
-              FINOM est un <strong>Intermédiaire en Opérations de Banque et en Services de Paiement (IOBSP)</strong>,
-              immatriculé à l'ORIAS et soumis au contrôle de l'Autorité de Contrôle Prudentiel et de Résolution (ACPR).
+              FINOM propose un <strong>service de simulation de prêt immobilier</strong> gratuit et sans engagement.
             </p>
             <p>
               Notre rôle est de vous accompagner dans la recherche du financement le plus adapté à votre projet immobilier.
-              Nous analysons votre situation, comparons les offres de nos partenaires bancaires et négocions pour vous 
-              les meilleures conditions.
+              Nous analysons votre situation et vous orientons vers les meilleures solutions disponibles.
             </p>
             <div className="info-box">
               <strong>Important :</strong> Nous ne sommes pas une banque et ne délivrons pas de crédits directement.
-              Nous agissons en tant qu'intermédiaire entre vous et les établissements de crédit.
+              Ce service est informatif et d'accompagnement.
             </div>
           </section>
 
           {/* Regulatory Section */}
           <section className="about-section regulatory">
-            <h2>Nos agréments et contrôles</h2>
+            <h2>Nos partenaires bancaires</h2>
             <div className="credentials-grid">
               <div className="credential-card">
-                <div className="credential-icon">📋</div>
-                <h3>ORIAS</h3>
-                <p>Immatriculé sous le n° 12 345 678</p>
-                <a href="https://www.orias.fr" target="_blank" rel="noopener noreferrer">
-                  Vérifier sur orias.fr →
-                </a>
+                <div className="credential-icon">🏦</div>
+                <h3>Treezor</h3>
+                <p>Établissement de monnaie électronique agréé par l'ACPR (France)</p>
               </div>
               <div className="credential-card">
                 <div className="credential-icon">🏛️</div>
-                <h3>ACPR</h3>
-                <p>Sous le contrôle de l'Autorité de Contrôle Prudentiel et de Résolution</p>
-                <a href="https://acpr.banque-france.fr" target="_blank" rel="noopener noreferrer">
-                  En savoir plus →
-                </a>
+                <h3>Solaris</h3>
+                <p>Banque agréée par la BaFin (Allemagne)</p>
               </div>
               <div className="credential-card">
                 <div className="credential-icon">🇪🇺</div>
@@ -112,35 +104,23 @@ const About: React.FC = () => {
 
           {/* Company Info Section */}
           <section className="about-section company-info">
-            <h2>Informations légales</h2>
+            <h2>Contact</h2>
             <div className="company-details">
               <div className="detail-row">
-                <span className="detail-label">Raison sociale</span>
-                <span className="detail-value">FINOM SAS</span>
+                <span className="detail-label">Nom</span>
+                <span className="detail-value">FINOM</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Forme juridique</span>
-                <span className="detail-value">Société par Actions Simplifiée</span>
+                <span className="detail-label">Téléphone</span>
+                <span className="detail-value">+31 20 524 9111</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Capital social</span>
-                <span className="detail-value">100 000 €</span>
+                <span className="detail-label">Email</span>
+                <span className="detail-value">contact@pret-finom.co</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Siège social</span>
-                <span className="detail-value">15 Avenue des Champs-Élysées, 75008 Paris</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">RCS</span>
-                <span className="detail-value">Paris B 123 456 789</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">SIRET</span>
-                <span className="detail-value">123 456 789 00012</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">TVA</span>
-                <span className="detail-value">FR 12 123456789</span>
+                <span className="detail-label">Site web</span>
+                <span className="detail-value">pret-finom.co</span>
               </div>
             </div>
           </section>

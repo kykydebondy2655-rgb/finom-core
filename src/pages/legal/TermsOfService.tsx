@@ -135,7 +135,6 @@ const TermsOfService: React.FC = () => {
             <div className="info-block">
               <p><strong>Email :</strong> contact@pret-finom.co</p>
               <p><strong>Téléphone :</strong> +31 20 524 9111</p>
-              <p><strong>Adresse :</strong> FINOM SAS, 15 Avenue des Champs-Élysées, 75008 Paris</p>
             </div>
           </section>
         </div>
