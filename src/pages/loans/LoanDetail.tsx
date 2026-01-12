@@ -214,6 +214,18 @@ const LoanDetail: React.FC = () => {
                 <Card className="summary-card" padding="lg">
                   <h3>Résumé du financement</h3>
                   <div className="summary-rows">
+                    {loan.property_price && loan.property_price > 0 && (
+                      <div className="summary-row">
+                        <span>Prix du bien</span>
+                        <strong>{formatCurrency(loan.property_price)}</strong>
+                      </div>
+                    )}
+                    {loan.down_payment !== undefined && loan.down_payment !== null && (
+                      <div className="summary-row highlight-apport">
+                        <span>Apport personnel</span>
+                        <strong>{formatCurrency(loan.down_payment)} {loan.property_price && loan.property_price > 0 ? `(${((loan.down_payment / loan.property_price) * 100).toFixed(0)}%)` : ''}</strong>
+                      </div>
+                    )}
                     <div className="summary-row">
                       <span>Montant emprunté</span>
                       <strong>{formatCurrency(loan.amount)}</strong>
@@ -531,6 +543,23 @@ const LoanDetail: React.FC = () => {
           .summary-row.highlight {
             color: var(--color-primary);
             font-size: 1.1rem;
+          }
+
+          .summary-row.highlight-apport {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 0.875rem 1rem;
+            margin: 0.25rem -1rem;
+            border-radius: var(--radius-sm);
+            border-bottom: none;
+            font-weight: 600;
+          }
+
+          .summary-row.highlight-apport span {
+            color: #047857;
+          }
+
+          .summary-row.highlight-apport strong {
+            color: #065f46;
           }
 
           .status-card h3,

@@ -96,6 +96,8 @@ const NewLoanApplication: React.FC = () => {
         debt_ratio_est: Math.round(debtRatio * 100) / 100,
         total_interest: Math.round(totalInterest * 100) / 100,
         total_amount: Math.round((loanAmount + totalInterest) * 100) / 100,
+        down_payment: formData.downPayment,
+        property_price: formData.amount,
         status: 'pending',
         is_draft: false,
       });
