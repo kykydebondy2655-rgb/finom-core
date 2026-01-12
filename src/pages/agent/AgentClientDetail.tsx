@@ -10,6 +10,7 @@ import { agentApi, adminApi, formatCurrency, formatDate } from '@/services/api';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
 import { useToast } from '@/components/finom/Toast';
+import { storageService } from '@/services/storageService';
 import type { Profile, LoanApplication, Document } from '@/services/api';
 
 const AgentClientDetail: React.FC = () => {
@@ -178,6 +179,30 @@ const AgentClientDetail: React.FC = () => {
                         <span className="doc-meta">{doc.category} • {formatDate(doc.uploaded_at)}</span>
                       </div>
                       <StatusBadge status={doc.status} size="sm" />
+                      <button 
+                        className="download-btn"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (!doc.file_path) {
+                            toast.error('Chemin du fichier non disponible');
+                            return;
+                          }
+                          try {
+                            const result = await storageService.getDocumentUrl(doc.file_path);
+                            if (result.success && result.url) {
+                              window.open(result.url, '_blank');
+                            } else {
+                              toast.error(result.error || 'Erreur lors du téléchargement');
+                            }
+                          } catch (err) {
+                            console.error('Download error:', err);
+                            toast.error('Erreur lors du téléchargement');
+                          }
+                        }}
+                        title="Télécharger"
+                      >
+                        ⬇️
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -226,6 +251,8 @@ const AgentClientDetail: React.FC = () => {
           .doc-info { flex: 1; }
           .doc-name { font-weight: 600; display: block; }
           .doc-meta { font-size: 0.8rem; color: var(--color-text-tertiary); }
+          .download-btn { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s; }
+          .download-btn:hover { background: #e2e8f0; }
           .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 2rem; }
           .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
