@@ -85,7 +85,14 @@ export const storageService = {
         return { success: false, error: error.message };
       }
 
-      return { success: true, url: data.signedUrl };
+      // Ensure we have the full URL (SDK should provide it, but just in case)
+      let fullUrl = data.signedUrl;
+      if (fullUrl && fullUrl.startsWith('/')) {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        fullUrl = `${supabaseUrl}/storage/v1${fullUrl}`;
+      }
+
+      return { success: true, url: fullUrl };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to get URL';
       console.error('Storage URL error:', errorMessage);
