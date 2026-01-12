@@ -7,6 +7,7 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import { agentApi, formatDate } from '@/services/api';
+import logger from '@/lib/logger';
 
 const AgentClients: React.FC = () => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ const AgentClients: React.FC = () => {
       const data = await agentApi.getAssignedClients(user.id);
       setClients(data || []);
     } catch (err) {
-      console.error('Error loading clients:', err);
+      logger.logError('Error loading clients', err);
     } finally {
       setLoading(false);
     }

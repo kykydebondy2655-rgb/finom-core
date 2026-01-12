@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import type { Notification } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface UseRealtimeNotificationsReturn {
   notifications: Notification[];
@@ -39,7 +40,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
       if (error) throw error;
       setNotifications(data || []);
     } catch (err) {
-      console.error('Error fetching notifications:', err);
+      logger.logError('Error fetching notifications', err);
     } finally {
       setLoading(false);
     }
@@ -108,7 +109,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
         prev.map((n) => (n.id === id ? { ...n, read: true } : n))
       );
     } catch (err) {
-      console.error('Error marking notification as read:', err);
+      logger.logError('Error marking notification as read', err);
     }
   };
 
@@ -126,7 +127,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
         prev.map((n) => ({ ...n, read: true }))
       );
     } catch (err) {
-      console.error('Error marking all notifications as read:', err);
+      logger.logError('Error marking all notifications as read', err);
     }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from '@/components/finom/Button';
+import logger from '@/lib/logger';
 
 interface CreateAgentModalProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose, on
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error('Error creating agent:', err);
+      logger.logError('Error creating agent', err);
       setError(err.message || 'Erreur lors de la création');
     } finally {
       setLoading(false);

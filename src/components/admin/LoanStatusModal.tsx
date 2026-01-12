@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from '@/components/finom/Button';
 import { adminApi } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface LoanStatusModalProps {
   isOpen: boolean;
@@ -60,7 +61,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error('Error updating loan status:', err);
+      logger.logError('Error updating loan status', err);
       setError(err?.message || 'Erreur lors de la mise à jour');
     } finally {
       setLoading(false);

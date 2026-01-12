@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import { formatCurrency } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface SequestrePanelProps {
   loanId: string;
@@ -52,7 +53,7 @@ const SequestrePanel: React.FC<SequestrePanelProps> = ({
       });
       setIsEditing(false);
     } catch (err) {
-      console.error('Error updating sequestre:', err);
+      logger.logError('Error updating sequestre', err);
     } finally {
       setSaving(false);
     }

@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { emailService } from '@/services/emailService';
+import logger from '@/lib/logger';
 
 export interface AuthUser {
     id: string;
@@ -89,7 +90,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 role
             });
         } catch (error) {
-            console.error('Failed to fetch user profile:', error);
+            logger.logError('Failed to fetch user profile', error);
             setUser({
                 id: authUser.id,
                 email: authUser.email || '',
@@ -176,7 +177,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // Send welcome email (non-blocking)
         emailService.sendWelcome(email, firstName).catch(err => 
-            console.error('Failed to send welcome email:', err)
+            logger.logError('Failed to send welcome email', err)
         );
 
         return registeredUser;

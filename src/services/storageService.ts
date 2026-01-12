@@ -3,6 +3,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import logger from '@/lib/logger';
 
 const BUCKET_NAME = 'documents';
 
@@ -50,7 +51,7 @@ export const storageService = {
         });
 
       if (error) {
-        console.error('Upload error:', error);
+        logger.warn('Storage upload error', { error: error.message });
         return { success: false, error: error.message };
       }
 
@@ -66,7 +67,7 @@ export const storageService = {
       };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
-      console.error('Storage upload error:', errorMessage);
+      logger.logError('Storage upload failed', err);
       return { success: false, error: errorMessage };
     }
   },
@@ -81,7 +82,7 @@ export const storageService = {
         .createSignedUrl(filePath, expiresIn);
 
       if (error) {
-        console.error('Get URL error:', error);
+        logger.warn('Storage get URL error', { error: error.message });
         return { success: false, error: error.message };
       }
 
@@ -98,14 +99,14 @@ export const storageService = {
       
       // Double-check we have a valid URL
       if (!fullUrl || (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://'))) {
-        console.error('Invalid URL generated:', fullUrl);
+        logger.warn('Invalid URL generated', { url: fullUrl });
         return { success: false, error: 'URL invalide générée' };
       }
 
       return { success: true, url: fullUrl };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to get URL';
-      console.error('Storage URL error:', errorMessage);
+      logger.logError('Storage URL error', err);
       return { success: false, error: errorMessage };
     }
   },
@@ -120,14 +121,14 @@ export const storageService = {
         .remove([filePath]);
 
       if (error) {
-        console.error('Delete error:', error);
+        logger.warn('Storage delete error', { error: error.message });
         return { success: false, error: error.message };
       }
 
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Delete failed';
-      console.error('Storage delete error:', errorMessage);
+      logger.logError('Storage delete error', err);
       return { success: false, error: errorMessage };
     }
   },
@@ -151,7 +152,7 @@ export const storageService = {
         });
 
       if (error) {
-        console.error('List error:', error);
+        logger.warn('Storage list error', { error: error.message });
         return { success: false, error: error.message };
       }
 
@@ -167,7 +168,7 @@ export const storageService = {
       return { success: true, files };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'List failed';
-      console.error('Storage list error:', errorMessage);
+      logger.logError('Storage list error', err);
       return { success: false, error: errorMessage };
     }
   },
@@ -186,14 +187,14 @@ export const storageService = {
         .download(filePath);
 
       if (error) {
-        console.error('Download error:', error);
+        logger.warn('Storage download error', { error: error.message });
         return { success: false, error: error.message };
       }
 
       return { success: true, blob: data };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Download failed';
-      console.error('Storage download error:', errorMessage);
+      logger.logError('Storage download error', err);
       return { success: false, error: errorMessage };
     }
   },

@@ -10,6 +10,7 @@ import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
 import CallModal from '@/components/agent/CallModal';
 import CallHistoryPanel from '@/components/agent/CallHistoryPanel';
 import { agentApi, formatDateTime } from '@/services/api';
+import logger from '@/lib/logger';
 
 const AgentCallbacks: React.FC = () => {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ const AgentCallbacks: React.FC = () => {
       const data = await agentApi.getCallbacks(user.id);
       setCallbacks(data || []);
     } catch (err) {
-      console.error('Error loading callbacks:', err);
+      logger.logError('Error loading callbacks', err);
     } finally {
       setLoading(false);
     }
@@ -52,7 +53,7 @@ const AgentCallbacks: React.FC = () => {
       });
       loadCallbacks();
     } catch (err) {
-      console.error('Error updating callback:', err);
+      logger.logError('Error updating callback', err);
     }
   };
 
@@ -72,7 +73,7 @@ const AgentCallbacks: React.FC = () => {
       setEditingNotesId(null);
       loadCallbacks();
     } catch (err) {
-      console.error('Error saving notes:', err);
+      logger.logError('Error saving notes', err);
     }
   };
 

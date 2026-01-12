@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
+import logger from '@/lib/logger';
 
 interface DocumentStatusModalProps {
   isOpen: boolean;
@@ -87,14 +88,14 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
         });
 
       if (notifError) {
-        console.error('Notification error:', notifError);
+        logger.warn('Notification creation failed', { error: notifError.message });
       }
 
       toast.success('Statut du document mis à jour');
       onSuccess();
       onClose();
     } catch (err) {
-      console.error('Update error:', err);
+      logger.logError('Document status update error', err);
       toast.error('Erreur lors de la mise à jour');
     } finally {
       setLoading(false);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@/components/finom/Button';
 import { adminApi } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface AssignmentModalProps {
   isOpen: boolean;
@@ -60,7 +61,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
           }))
       );
     } catch (err) {
-      console.error('Error loading data:', err);
+      logger.logError('Error loading assignment data', err);
       setError('Erreur lors du chargement');
     } finally {
       setLoadingData(false);
@@ -79,7 +80,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
       onClose();
       resetForm();
     } catch (err: any) {
-      console.error('Error creating assignment:', err);
+      logger.logError('Error creating assignment', err);
       setError(err?.message || 'Erreur lors de la création');
     } finally {
       setLoading(false);
