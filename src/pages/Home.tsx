@@ -98,10 +98,10 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className="security-item">
-                                    <span className="security-icon">🚫</span>
+                                    <span className="security-icon">📈</span>
                                     <div>
-                                        <strong>Aucun Paiement Requis</strong>
-                                        <p>Nous ne demandons jamais vos coordonnées bancaires pour la simulation.</p>
+                                        <strong>+200 000 Projets Financés</strong>
+                                        <p>Une expertise reconnue au service de votre projet immobilier.</p>
                                     </div>
                                 </div>
                             </div>
