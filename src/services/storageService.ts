@@ -85,11 +85,21 @@ export const storageService = {
         return { success: false, error: error.message };
       }
 
-      // Ensure we have the full URL (SDK should provide it, but just in case)
+      // The SDK returns signedUrl - ensure it's a full URL
       let fullUrl = data.signedUrl;
-      if (fullUrl && fullUrl.startsWith('/')) {
+      
+      // Check if it's a relative URL (starts with / but not //)
+      if (fullUrl && fullUrl.startsWith('/') && !fullUrl.startsWith('//')) {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        fullUrl = `${supabaseUrl}/storage/v1${fullUrl}`;
+        if (supabaseUrl) {
+          fullUrl = `${supabaseUrl}/storage/v1${fullUrl}`;
+        }
+      }
+      
+      // Double-check we have a valid URL
+      if (!fullUrl || (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://'))) {
+        console.error('Invalid URL generated:', fullUrl);
+        return { success: false, error: 'URL invalide générée' };
       }
 
       return { success: true, url: fullUrl };
