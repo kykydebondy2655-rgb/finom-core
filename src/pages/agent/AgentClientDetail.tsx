@@ -9,6 +9,8 @@ import StatusBadge from '@/components/common/StatusBadge';
 import { agentApi, adminApi, formatCurrency, formatDate } from '@/services/api';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
+import DocumentStatusModal from '@/components/agent/DocumentStatusModal';
+import LoanStatusModal from '@/components/agent/LoanStatusModal';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import type { Profile, LoanApplication, Document } from '@/services/api';
@@ -25,6 +27,10 @@ const AgentClientDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents'>('info');
   const [showCallbackModal, setShowCallbackModal] = useState(false);
+  const [showDocumentStatusModal, setShowDocumentStatusModal] = useState(false);
+  const [showLoanStatusModal, setShowLoanStatusModal] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
   const toast = useToast();
 
   // Detect if accessed from admin or agent route
@@ -148,14 +154,25 @@ const AgentClientDetail: React.FC = () => {
               ) : (
                 <div className="loans-list">
                   {loans.map(loan => (
-                    <div key={loan.id} className="loan-item" onClick={() => navigate(`/loans/${loan.id}`)}>
-                      <div className="loan-main">
+                    <div key={loan.id} className="loan-item">
+                      <div className="loan-main" onClick={() => navigate(`/loans/${loan.id}`)}>
                         <span className="loan-ref">#{loan.id.slice(0, 8)}</span>
                         <span className="loan-amount">{formatCurrency(loan.amount)}</span>
                       </div>
                       <div className="loan-meta">
                         <span>{loan.duration} ans • {loan.rate}%</span>
                         <StatusBadge status={loan.status} size="sm" />
+                        <button 
+                          className="status-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedLoan(loan);
+                            setShowLoanStatusModal(true);
+                          }}
+                          title="Modifier le statut"
+                        >
+                          ✏️
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -179,6 +196,17 @@ const AgentClientDetail: React.FC = () => {
                         <span className="doc-meta">{doc.category} • {formatDate(doc.uploaded_at)}</span>
                       </div>
                       <StatusBadge status={doc.status} size="sm" />
+                      <button 
+                        className="status-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDocument(doc);
+                          setShowDocumentStatusModal(true);
+                        }}
+                        title="Modifier le statut"
+                      >
+                        ✏️
+                      </button>
                       <button 
                         className="download-btn"
                         onClick={async (e) => {
@@ -222,6 +250,38 @@ const AgentClientDetail: React.FC = () => {
           preselectedClientName={`${client.first_name} ${client.last_name}`}
         />
 
+        {/* Document Status Modal */}
+        <DocumentStatusModal
+          isOpen={showDocumentStatusModal}
+          onClose={() => {
+            setShowDocumentStatusModal(false);
+            setSelectedDocument(null);
+          }}
+          onSuccess={loadClientData}
+          document={selectedDocument ? {
+            id: selectedDocument.id,
+            file_name: selectedDocument.file_name,
+            status: selectedDocument.status || 'pending',
+            user_id: selectedDocument.user_id,
+          } : null}
+        />
+
+        {/* Loan Status Modal */}
+        <LoanStatusModal
+          isOpen={showLoanStatusModal}
+          onClose={() => {
+            setShowLoanStatusModal(false);
+            setSelectedLoan(null);
+          }}
+          onSuccess={loadClientData}
+          loan={selectedLoan ? {
+            id: selectedLoan.id,
+            status: selectedLoan.status || 'pending',
+            user_id: selectedLoan.user_id,
+            amount: selectedLoan.amount,
+          } : null}
+        />
+
         <style>{`
           .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
           .page-header { color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
@@ -251,8 +311,9 @@ const AgentClientDetail: React.FC = () => {
           .doc-info { flex: 1; }
           .doc-name { font-weight: 600; display: block; }
           .doc-meta { font-size: 0.8rem; color: var(--color-text-tertiary); }
-          .download-btn { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s; }
-          .download-btn:hover { background: #e2e8f0; }
+          .download-btn, .status-btn { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s; }
+          .download-btn:hover, .status-btn:hover { background: #e2e8f0; }
+          .loan-main { cursor: pointer; flex: 1; display: flex; align-items: center; }
           .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 2rem; }
           .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
