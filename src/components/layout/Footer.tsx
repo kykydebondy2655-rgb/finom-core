@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          <div className="footer-links-grid">
+<div className="footer-links-grid">
             <div className="footer-column">
               <h4>Services</h4>
               <Link to="/simulator">Simulateur de prêt</Link>
@@ -32,18 +32,25 @@ const Footer: React.FC = () => {
             </div>
 
             <div className="footer-column">
+              <h4>À propos</h4>
+              <Link to="/about">Qui sommes-nous</Link>
+              <Link to="/contact">Nous contacter</Link>
+              <a href="https://www.orias.fr" target="_blank" rel="noopener noreferrer">Vérifier ORIAS</a>
+              <a href="https://acpr.banque-france.fr" target="_blank" rel="noopener noreferrer">ACPR</a>
+            </div>
+
+            <div className="footer-column">
               <h4>Légal</h4>
               <Link to="/legal">Mentions légales</Link>
               <Link to="/privacy">Politique de confidentialité</Link>
               <Link to="/terms">CGU</Link>
-              <a href="https://www.orias.fr" target="_blank" rel="noopener noreferrer">Vérifier ORIAS</a>
             </div>
 
             <div className="footer-column">
               <h4>Contact</h4>
-              <Link to="/contact">Nous contacter</Link>
               <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a>
               <a href="tel:+33123456789">+33 (0)1 23 45 67 89</a>
+              <span className="secure-note">🔒 pret-finom.co</span>
             </div>
           </div>
         </div>
@@ -144,10 +151,18 @@ const Footer: React.FC = () => {
           font-weight: 600;
         }
 
-        .footer-links-grid {
+.footer-links-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           gap: 2rem;
+        }
+
+        .secure-note {
+          display: block;
+          color: #22C55E;
+          font-size: 0.85rem;
+          font-weight: 600;
+          margin-top: 0.5rem;
         }
 
         .footer-column h4 {
