@@ -47,7 +47,7 @@ const Banking: React.FC = () => {
         setTransactions(txData || []);
       }
     } catch (err) {
-      console.error('Error loading banking data:', err);
+      // Silent fail for banking load - UI shows empty state
     } finally {
       setLoading(false);
     }
@@ -71,6 +71,12 @@ const Banking: React.FC = () => {
       return;
     }
     
+    // Validate maximum amount (safety limit)
+    if (transferData.amount > 100000) {
+      toast.error('Le montant maximum par virement est de 100 000 €');
+      return;
+    }
+    
     try {
       setSubmitting(true);
       await transfersApi.create({
@@ -84,7 +90,6 @@ const Banking: React.FC = () => {
       setTransferData({ beneficiaryId: '', amount: 0, reference: '' });
       loadData();
     } catch (err) {
-      console.error('Error creating transfer:', err);
       toast.error('Erreur lors du virement');
     } finally {
       setSubmitting(false);
@@ -124,7 +129,6 @@ const Banking: React.FC = () => {
       setBeneficiaryData({ name: '', iban: '', bic: '' });
       loadData();
     } catch (err) {
-      console.error('Error creating beneficiary:', err);
       toast.error('Erreur lors de l\'ajout');
     } finally {
       setSubmitting(false);

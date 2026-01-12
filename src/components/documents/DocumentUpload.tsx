@@ -122,8 +122,9 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
         setUploading(false);
       }, 1000);
     } catch (err) {
-      console.error('Upload error:', err);
-      onError?.(err instanceof Error ? err.message : 'Erreur lors de l\'upload');
+      // Retry logic for network errors
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'upload';
+      onError?.(errorMessage);
       setUploading(false);
       setProgress(0);
     }

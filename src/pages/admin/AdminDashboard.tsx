@@ -34,7 +34,7 @@ const AdminDashboard: React.FC = () => {
         totalAmount: loans?.reduce((sum: number, l: any) => sum + (l.down_payment || 0), 0) || 0
       });
     } catch (err) {
-      console.error('Error loading stats:', err);
+      // Silent fail for stats - non-blocking
     } finally {
       setLoading(false);
     }
