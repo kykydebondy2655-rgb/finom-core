@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Simulator from './pages/Simulator';
+import Rates from './pages/Rates';
 import HowItWorks from './pages/HowItWorks';
 import Contact from './pages/Contact';
 import Faq from './pages/Faq';
@@ -49,6 +50,7 @@ function App() {
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/register" element={<Register />} />
                                 <Route path="/simulator" element={<Simulator />} />
+                                <Route path="/rates" element={<Rates />} />
                                 <Route path="/how-it-works" element={<HowItWorks />} />
                                 <Route path="/contact" element={<Contact />} />
                                 <Route path="/faq" element={<Faq />} />

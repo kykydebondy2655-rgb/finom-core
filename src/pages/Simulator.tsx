@@ -3,25 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
-
-// Rate calculation based on profile
-const getRateForProfile = (duration: number, contributionPercent: number) => {
-    let profile = 'standard';
-    let rate = 3.01;
-    
-    if (contributionPercent >= 0.20) {
-        profile = 'excellent';
-        rate = 2.75;
-    } else if (contributionPercent >= 0.10) {
-        profile = 'good';
-        rate = 2.95;
-    }
-    
-    if (duration <= 15) rate -= 0.15;
-    else if (duration >= 25) rate += 0.20;
-    
-    return { rate: Math.max(rate, 2.50), profile };
-};
+import { getRateForProfile, PROFILE_LABELS, RateProfile } from '@/lib/rates';
 
 const Simulator = () => {
     const navigate = useNavigate();
@@ -29,9 +11,10 @@ const Simulator = () => {
         amount: 250000,
         downPayment: 30000,
         duration: 25,
-        rate: 3.01,
+        rate: 3.22,
         includeInsurance: true,
-        profile: 'standard'
+        profile: 'standard' as RateProfile,
+        profileLabel: 'Profil Standard'
     });
 
     const [result, setResult] = useState<any>(null);
@@ -52,17 +35,19 @@ const Simulator = () => {
 
     const calculate = () => {
         let computedRate = formData.rate;
-        let profile = 'standard';
+        let profile: RateProfile = 'standard';
+        let profileLabel = 'Profil Standard';
 
         if (formData.amount > 0) {
             const contributionPercent = formData.downPayment / formData.amount;
             const rateData = getRateForProfile(formData.duration, contributionPercent);
             computedRate = rateData.rate;
             profile = rateData.profile;
+            profileLabel = rateData.profileLabel;
         }
 
         if (computedRate !== formData.rate || profile !== formData.profile) {
-            setFormData(prev => ({ ...prev, rate: computedRate, profile }));
+            setFormData(prev => ({ ...prev, rate: computedRate, profile, profileLabel }));
         }
 
         const loanAmount = Math.max(0, formData.amount - formData.downPayment);
@@ -176,7 +161,7 @@ const Simulator = () => {
                             <div className="rate-display">
                                 <span className="rate-label">Taux estimé</span>
                                 <span className="rate-value">{formData.rate.toFixed(2)}%</span>
-                                <span className="profile-badge">{formData.profile}</span>
+                                <span className="profile-badge">{formData.profileLabel}</span>
                             </div>
                         </Card>
 

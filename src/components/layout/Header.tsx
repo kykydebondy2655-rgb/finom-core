@@ -20,8 +20,9 @@ const Header: React.FC = () => {
 
   const publicLinks = [
     { path: '/', label: 'Accueil' },
+    { path: '/rates', label: 'Taux' },
+    { path: '/how-it-works', label: 'Fonctionnement' },
     { path: '/simulator', label: 'Simulateur' },
-    { path: '/how-it-works', label: 'Comment ça marche' },
     { path: '/faq', label: 'FAQ' },
     { path: '/contact', label: 'Contact' },
   ];
