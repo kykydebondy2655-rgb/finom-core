@@ -36,26 +36,6 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
       }}
     >
       {config.label}
-
-      <style>{`
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          font-weight: 600;
-          border-radius: 9999px;
-          white-space: nowrap;
-        }
-
-        .status-badge-sm {
-          padding: 0.25rem 0.625rem;
-          font-size: 0.7rem;
-        }
-
-        .status-badge-md {
-          padding: 0.375rem 0.875rem;
-          font-size: 0.8rem;
-        }
-      `}</style>
     </span>
   );
 };

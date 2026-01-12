@@ -3,9 +3,9 @@ import Button from '../components/finom/Button';
 
 const NotFound = () => {
     return (
-        <div className="container" style={{ padding: '100px 0', textAlign: 'center' }}>
+        <div className="container not-found-container">
             <h1>404</h1>
-            <p style={{ marginBottom: '2rem', color: 'var(--color-text-secondary)' }}>Page non trouvée</p>
+            <p className="not-found-subtitle">Page non trouvée</p>
             <Button to="/" variant="primary">Retour à l'accueil</Button>
         </div>
     );
