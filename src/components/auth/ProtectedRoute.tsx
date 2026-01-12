@@ -44,7 +44,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check role permissions if specified
   if (allowedRoles && allowedRoles.length > 0) {
-    if (!allowedRoles.includes(user.role)) {
+    const userRole = user.role as UserRole;
+    if (!userRole || !allowedRoles.includes(userRole)) {
       // Redirect to appropriate dashboard based on role
       const dashboardRoutes: Record<UserRole, string> = {
         client: '/dashboard',
@@ -52,7 +53,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         admin: '/admin/dashboard',
       };
       
-      return <Navigate to={dashboardRoutes[user.role]} replace />;
+      const redirectPath = userRole && dashboardRoutes[userRole] 
+        ? dashboardRoutes[userRole] 
+        : '/dashboard';
+      
+      return <Navigate to={redirectPath} replace />;
     }
   }
 

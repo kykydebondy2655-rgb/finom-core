@@ -8,15 +8,26 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import CallModal from '@/components/agent/CallModal';
 import { agentApi, formatDateTime } from '@/services/api';
+import type { ClientAssignment, Callback, Profile } from '@/services/api';
+import { logger } from '@/lib/logger';
+
+// Extended types for joined data
+interface ClientAssignmentWithProfile extends ClientAssignment {
+  client?: Profile;
+}
+
+interface CallbackWithClient extends Callback {
+  client?: Profile;
+}
 
 const AgentDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [clients, setClients] = useState<any[]>([]);
-  const [callbacks, setCallbacks] = useState<any[]>([]);
+  const [clients, setClients] = useState<ClientAssignmentWithProfile[]>([]);
+  const [callbacks, setCallbacks] = useState<CallbackWithClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCallModal, setShowCallModal] = useState(false);
-  const [selectedCallback, setSelectedCallback] = useState<any>(null);
+  const [selectedCallback, setSelectedCallback] = useState<CallbackWithClient | null>(null);
 
   useEffect(() => {
     if (user) loadData();
@@ -33,7 +44,7 @@ const AgentDashboard: React.FC = () => {
       setClients(clientsData || []);
       setCallbacks(callbacksData || []);
     } catch (err) {
-      console.error('Error loading agent data:', err);
+      logger.logError('Error loading agent data', err);
     } finally {
       setLoading(false);
     }
