@@ -100,17 +100,26 @@ const ReceivedDocumentsList: React.FC<ReceivedDocumentsListProps> = ({
     try {
       setDownloading(doc.id);
       
-      // Get signed URL
-      const result = await storageService.getDocumentUrl(doc.file_path, 3600);
+      // Download as blob for reliable file download
+      const result = await storageService.downloadDocument(doc.file_path);
       
-      if (!result.success || !result.url) {
+      if (!result.success || !result.blob) {
         throw new Error(result.error || 'Impossible de récupérer le document');
       }
 
-      // Open in new tab for download
-      window.open(result.url, '_blank');
+      // Create blob URL and trigger download
+      const blobUrl = URL.createObjectURL(result.blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = doc.file_name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
-      toast.success('Téléchargement lancé');
+      // Clean up blob URL after short delay
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      
+      toast.success('Téléchargement terminé');
     } catch (err) {
       console.error('Download error:', err);
       toast.error('Erreur lors du téléchargement');
