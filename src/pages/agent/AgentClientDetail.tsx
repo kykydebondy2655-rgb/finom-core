@@ -11,9 +11,10 @@ import { useUserRoles } from '@/hooks/useUserRoles';
 import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
 import DocumentStatusModal from '@/components/agent/DocumentStatusModal';
 import LoanStatusModal from '@/components/agent/LoanStatusModal';
+import ClientBankModal from '@/components/admin/ClientBankModal';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
-import type { Profile, LoanApplication, Document } from '@/services/api';
+import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 
 const AgentClientDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,11 +25,13 @@ const AgentClientDetail: React.FC = () => {
   const [client, setClient] = useState<Profile | null>(null);
   const [loans, setLoans] = useState<LoanApplication[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [bankAccount, setBankAccount] = useState<BankAccount | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents'>('info');
   const [showCallbackModal, setShowCallbackModal] = useState(false);
   const [showDocumentStatusModal, setShowDocumentStatusModal] = useState(false);
   const [showLoanStatusModal, setShowLoanStatusModal] = useState(false);
+  const [showBankModal, setShowBankModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
   const toast = useToast();
@@ -47,14 +50,16 @@ const AgentClientDetail: React.FC = () => {
       
       // Use admin API for admins, agent API for agents
       if (isAdmin || isAdminRoute) {
-        const [clientData, loansData, docsData] = await Promise.all([
+        const [clientData, loansData, docsData, bankData] = await Promise.all([
           adminApi.getClientById(id),
           adminApi.getClientLoans(id),
-          adminApi.getClientDocuments(id)
+          adminApi.getClientDocuments(id),
+          adminApi.getClientBankAccount(id)
         ]);
         setClient(clientData);
         setLoans(loansData || []);
         setDocuments(docsData || []);
+        setBankAccount(bankData);
       } else {
         // Agent: use agent-specific API that respects RLS via client_assignments
         const [clientData, loansData, docsData] = await Promise.all([
@@ -132,18 +137,49 @@ const AgentClientDetail: React.FC = () => {
           </div>
 
           {activeTab === 'info' && (
-            <Card className="info-card fade-in" padding="lg">
-              <h3>Informations personnelles</h3>
-              <div className="info-grid">
-                <div className="info-row"><span>Nom</span><strong>{client.first_name} {client.last_name}</strong></div>
-                <div className="info-row"><span>Email</span><strong>{client.email || '-'}</strong></div>
-                <div className="info-row"><span>Téléphone</span><strong>{client.phone || '-'}</strong></div>
-                <div className="info-row"><span>Adresse</span><strong>{client.address || '-'}</strong></div>
-                <div className="info-row"><span>Statut KYC</span><StatusBadge status={client.kyc_status} size="sm" /></div>
-                <div className="info-row"><span>Niveau KYC</span><strong>{client.kyc_level || 1}</strong></div>
-                <div className="info-row"><span>Inscrit le</span><strong>{formatDate(client.created_at)}</strong></div>
-              </div>
-            </Card>
+            <>
+              <Card className="info-card fade-in" padding="lg">
+                <h3>Informations personnelles</h3>
+                <div className="info-grid">
+                  <div className="info-row"><span>Nom</span><strong>{client.first_name} {client.last_name}</strong></div>
+                  <div className="info-row"><span>Email</span><strong>{client.email || '-'}</strong></div>
+                  <div className="info-row"><span>Téléphone</span><strong>{client.phone || '-'}</strong></div>
+                  <div className="info-row"><span>Adresse</span><strong>{client.address || '-'}</strong></div>
+                  <div className="info-row"><span>Statut KYC</span><StatusBadge status={client.kyc_status} size="sm" /></div>
+                  <div className="info-row"><span>Niveau KYC</span><strong>{client.kyc_level || 1}</strong></div>
+                  <div className="info-row"><span>Inscrit le</span><strong>{formatDate(client.created_at)}</strong></div>
+                </div>
+              </Card>
+
+              {/* Admin-only: Bank Account Section */}
+              {isAdmin && (
+                <div className="bank-card-wrapper">
+                  <Card className="bank-card fade-in" padding="lg">
+                    <div className="bank-header">
+                      <h3>💳 Compte bancaire</h3>
+                      <Button variant="primary" size="sm" onClick={() => setShowBankModal(true)}>
+                        ✏️ Modifier
+                      </Button>
+                    </div>
+                    <div className="info-grid">
+                      <div className="info-row">
+                        <span>Solde</span>
+                        <strong className="balance-value">{formatCurrency(bankAccount?.balance || 0)}</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>IBAN</span>
+                        <strong className="iban-value">{bankAccount?.iban || 'Non défini'}</strong>
+                      </div>
+                      <div className="info-row">
+                        <span>BIC</span>
+                        <strong>{bankAccount?.bic || '-'}</strong>
+                      </div>
+                    </div>
+                    <p className="admin-notice">⚠️ Seul un administrateur peut modifier ces informations</p>
+                  </Card>
+                </div>
+              )}
+            </>
           )}
 
           {activeTab === 'loans' && (
@@ -282,6 +318,22 @@ const AgentClientDetail: React.FC = () => {
           } : null}
         />
 
+        {/* Admin Bank Account Modal */}
+        {isAdmin && client && id && (
+          <ClientBankModal
+            isOpen={showBankModal}
+            onClose={() => setShowBankModal(false)}
+            onSuccess={() => {
+              toast.success('Compte bancaire mis à jour');
+              loadClientData();
+            }}
+            clientId={id}
+            currentBalance={bankAccount?.balance || null}
+            currentIban={bankAccount?.iban || null}
+            clientName={`${client.first_name} ${client.last_name}`}
+          />
+        )}
+
         <style>{`
           .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
           .page-header { color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
@@ -318,6 +370,14 @@ const AgentClientDetail: React.FC = () => {
           .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          
+          /* Bank account section styles */
+          .bank-card-wrapper { margin-top: 1rem; }
+          .bank-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+          .bank-header h3 { margin: 0; }
+          .balance-value { color: var(--color-success); font-size: 1.1rem; }
+          .iban-value { font-family: monospace; letter-spacing: 0.05em; }
+          .admin-notice { margin-top: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: var(--radius-sm); font-size: 0.85rem; color: #92400e; }
         `}</style>
       </div>
     </PageLayout>
