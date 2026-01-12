@@ -1,0 +1,4 @@
+# Cloudflare Pages SPA Routing
+# Toutes les routes non-fichiers redirigent vers index.html
+
+/*    /index.html   200
