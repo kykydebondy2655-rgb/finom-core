@@ -673,7 +673,7 @@ async getAllClients() {
   },
 
   // Update or create client bank account (admin only)
-  async updateClientBankAccount(clientId: string, updates: { balance?: number; iban?: string }) {
+  async updateClientBankAccount(clientId: string, updates: { balance?: number; iban?: string; bic?: string }) {
     // First check if account exists
     const { data: existing } = await supabase
       .from('bank_accounts')
@@ -688,6 +688,7 @@ async getAllClients() {
         .update({
           balance: updates.balance,
           iban: updates.iban,
+          bic: updates.bic,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', clientId)
@@ -702,7 +703,7 @@ async getAllClients() {
         .insert({
           user_id: clientId,
           iban: updates.iban || '',
-          bic: 'XXXXXXXX',
+          bic: updates.bic || 'XXXXXXXX',
           balance: updates.balance || 0,
           currency: 'EUR'
         })

@@ -330,6 +330,7 @@ const AgentClientDetail: React.FC = () => {
             clientId={id}
             currentBalance={bankAccount?.balance || null}
             currentIban={bankAccount?.iban || null}
+            currentBic={bankAccount?.bic || null}
             clientName={`${client.first_name} ${client.last_name}`}
           />
         )}
