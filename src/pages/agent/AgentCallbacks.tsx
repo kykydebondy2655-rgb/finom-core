@@ -10,19 +10,25 @@ import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
 import CallModal from '@/components/agent/CallModal';
 import CallHistoryPanel from '@/components/agent/CallHistoryPanel';
 import { agentApi, formatDateTime } from '@/services/api';
+import type { Callback, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+
+// Extended type for callbacks with client profile
+interface CallbackWithClient extends Callback {
+  client?: Profile | null;
+}
 
 const AgentCallbacks: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [callbacks, setCallbacks] = useState<any[]>([]);
+  const [callbacks, setCallbacks] = useState<CallbackWithClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'planned' | 'completed'>('planned');
   
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCallModal, setShowCallModal] = useState(false);
-  const [selectedCallback, setSelectedCallback] = useState<any>(null);
+  const [selectedCallback, setSelectedCallback] = useState<CallbackWithClient | null>(null);
   
   // Notes editing
   const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
@@ -57,12 +63,12 @@ const AgentCallbacks: React.FC = () => {
     }
   };
 
-  const handleCall = (callback: any) => {
+  const handleCall = (callback: CallbackWithClient) => {
     setSelectedCallback(callback);
     setShowCallModal(true);
   };
 
-  const startEditNotes = (callback: any) => {
+  const startEditNotes = (callback: CallbackWithClient) => {
     setEditingNotesId(callback.id);
     setNotesText(callback.notes || '');
   };
@@ -97,7 +103,7 @@ const AgentCallbacks: React.FC = () => {
     if (!acc[date]) acc[date] = [];
     acc[date].push(callback);
     return acc;
-  }, {} as Record<string, any[]>);
+  }, {} as Record<string, CallbackWithClient[]>);
 
   if (loading) {
     return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
@@ -158,7 +164,7 @@ const AgentCallbacks: React.FC = () => {
                   </div>
                 ) : (
                   <div className="callbacks-grouped">
-                    {Object.entries(groupedCallbacks).map(([date, dateCallbacks]: [string, any[]]) => (
+                    {Object.entries(groupedCallbacks).map(([date, dateCallbacks]) => (
                       <div key={date} className="date-group">
                         <h4 className="date-header">{date}</h4>
                         <div className="callbacks-list">
