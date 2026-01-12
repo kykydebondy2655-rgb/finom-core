@@ -5,6 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
+import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 const Profile = () => {
     const { user, logout } = useAuth();
@@ -65,19 +67,32 @@ const Profile = () => {
 
         setLoading(true);
 
-        await supabase
-            .from('profiles')
-            .update({
-                first_name: formData.firstName,
-                last_name: formData.lastName,
-                phone: formData.phone,
-                address: formData.address
-            })
-            .eq('id', user.id);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
+                    phone: formData.phone,
+                    address: formData.address
+                })
+                .eq('id', user.id);
 
-        setLoading(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+            if (error) {
+                logger.error('Profile update failed', { error: error.message });
+                toast.error('Erreur lors de la mise à jour du profil');
+                return;
+            }
+
+            setSaved(true);
+            toast.success('Profil mis à jour avec succès');
+            setTimeout(() => setSaved(false), 3000);
+        } catch (err) {
+            logger.logError('Profile update error', err);
+            toast.error('Une erreur inattendue est survenue');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleLogout = async () => {

@@ -7,7 +7,7 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
-import type { LoanApplication, Document, Message } from '@/services/api';
+import type { LoanApplication, Document, Message, Profile } from '@/services/api';
 import DocumentUpload from '@/components/documents/DocumentUpload';
 import DocumentChecklist from '@/components/loans/DocumentChecklist';
 import NotaryPanel from '@/components/loans/NotaryPanel';
@@ -17,6 +17,7 @@ import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModa
 import { useToast } from '@/components/finom/Toast';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import type { ProjectType } from '@/lib/documentChecklist';
+import { logger } from '@/lib/logger';
 
 const LoanDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +28,7 @@ const LoanDetail: React.FC = () => {
   const [loan, setLoan] = useState<LoanApplication | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [assignedAgent, setAssignedAgent] = useState<any>(null);
+  const [assignedAgent, setAssignedAgent] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline'>('overview');
@@ -35,7 +36,7 @@ const LoanDetail: React.FC = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
-  const [clientProfile, setClientProfile] = useState<any>(null);
+  const [clientProfile, setClientProfile] = useState<Profile | null>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -71,7 +72,7 @@ const LoanDetail: React.FC = () => {
         }
       }
     } catch (err) {
-      console.error('Error loading loan:', err);
+      logger.logError('Error loading loan', err);
       setError('Impossible de charger ce dossier');
     } finally {
       setLoading(false);
@@ -107,7 +108,7 @@ const LoanDetail: React.FC = () => {
       const msgsData = await messagesApi.getByLoan(id);
       setMessages(msgsData || []);
     } catch (err) {
-      console.error('Error sending message:', err);
+      logger.logError('Error sending message', err);
     } finally {
       setSendingMessage(false);
     }
