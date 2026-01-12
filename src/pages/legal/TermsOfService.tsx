@@ -31,7 +31,7 @@ const TermsOfService: React.FC = () => {
               <li>Suivre l'avancement de leur demande</li>
               <li>Échanger avec un conseiller dédié</li>
             </ul>
-            <p>FINOM agit en qualité d'Intermédiaire en Opérations de Banque et en Services de Paiement (IOBSP), immatriculé à l'ORIAS.</p>
+            <p>FINOM est un service opéré par FINOM Payments B.V., établissement de monnaie électronique agréé par De Nederlandsche Bank (DNB).</p>
           </section>
 
           <section>
@@ -126,7 +126,7 @@ const TermsOfService: React.FC = () => {
 
           <section>
             <h2>13. Droit applicable</h2>
-            <p>Les présentes CGU sont régies par le droit français. Tout litige relève de la compétence exclusive des tribunaux français.</p>
+            <p>Les présentes CGU sont régies par le droit néerlandais, conformément au siège social de FINOM Payments B.V. Pour les consommateurs résidant en France, les dispositions impératives du droit français de la consommation demeurent applicables.</p>
           </section>
 
           <section>
@@ -140,100 +140,6 @@ const TermsOfService: React.FC = () => {
         </div>
       </div>
       <Footer />
-
-      <style>{`
-        .legal-page {
-          min-height: 100vh;
-          background: var(--color-surface);
-          padding: 2rem 1rem 4rem;
-        }
-
-        .legal-container {
-          max-width: 800px;
-          margin: 0 auto;
-          background: white;
-          border-radius: var(--radius-lg);
-          padding: 3rem;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .legal-container h1 {
-          font-size: 2rem;
-          font-weight: 800;
-          color: var(--color-text);
-          margin-bottom: 0.5rem;
-        }
-
-        .last-updated {
-          color: var(--color-text-secondary);
-          font-size: 0.9rem;
-          margin-bottom: 2rem;
-          padding-bottom: 2rem;
-          border-bottom: 1px solid var(--color-border);
-        }
-
-        .legal-container section {
-          margin-bottom: 2rem;
-        }
-
-        .legal-container h2 {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: var(--color-text);
-          margin-bottom: 1rem;
-        }
-
-        .legal-container p {
-          color: var(--color-text-secondary);
-          line-height: 1.7;
-          margin-bottom: 0.75rem;
-        }
-
-        .legal-container ul {
-          color: var(--color-text-secondary);
-          line-height: 1.7;
-          padding-left: 1.5rem;
-          margin-bottom: 1rem;
-        }
-
-        .legal-container li {
-          margin-bottom: 0.5rem;
-        }
-
-        .legal-container a {
-          color: var(--color-primary);
-          text-decoration: underline;
-        }
-
-        .legal-container a:hover {
-          color: var(--color-primary-dark);
-        }
-
-        .info-block {
-          background: var(--color-surface);
-          border-radius: var(--radius-md);
-          padding: 1.5rem;
-          margin: 1rem 0;
-        }
-
-        .info-block p {
-          margin-bottom: 0.5rem;
-        }
-
-        .info-block p:last-child {
-          margin-bottom: 0;
-        }
-
-        @media (max-width: 768px) {
-          .legal-container {
-            padding: 1.5rem;
-          }
-          
-          .legal-container h1 {
-            font-size: 1.5rem;
-          }
-        }
-      `}</style>
     </>
   );
 };

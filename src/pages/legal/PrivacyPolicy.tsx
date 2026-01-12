@@ -57,7 +57,7 @@ const PrivacyPolicy: React.FC = () => {
             <h2>4. Base légale du traitement</h2>
             <ul>
               <li><strong>Exécution du contrat :</strong> traitement de votre demande de prêt</li>
-              <li><strong>Obligation légale :</strong> lutte anti-blanchiment, obligations IOBSP</li>
+              <li><strong>Obligation légale :</strong> lutte anti-blanchiment, obligations réglementaires</li>
               <li><strong>Intérêt légitime :</strong> amélioration des services, sécurité</li>
               <li><strong>Consentement :</strong> communications marketing (opt-in)</li>
             </ul>
@@ -148,100 +148,6 @@ const PrivacyPolicy: React.FC = () => {
         </div>
       </div>
       <Footer />
-
-      <style>{`
-        .legal-page {
-          min-height: 100vh;
-          background: var(--color-surface);
-          padding: 2rem 1rem 4rem;
-        }
-
-        .legal-container {
-          max-width: 800px;
-          margin: 0 auto;
-          background: white;
-          border-radius: var(--radius-lg);
-          padding: 3rem;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .legal-container h1 {
-          font-size: 2rem;
-          font-weight: 800;
-          color: var(--color-text);
-          margin-bottom: 0.5rem;
-        }
-
-        .last-updated {
-          color: var(--color-text-secondary);
-          font-size: 0.9rem;
-          margin-bottom: 2rem;
-          padding-bottom: 2rem;
-          border-bottom: 1px solid var(--color-border);
-        }
-
-        .legal-container section {
-          margin-bottom: 2rem;
-        }
-
-        .legal-container h2 {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: var(--color-text);
-          margin-bottom: 1rem;
-        }
-
-        .legal-container p {
-          color: var(--color-text-secondary);
-          line-height: 1.7;
-          margin-bottom: 0.75rem;
-        }
-
-        .legal-container ul {
-          color: var(--color-text-secondary);
-          line-height: 1.7;
-          padding-left: 1.5rem;
-          margin-bottom: 1rem;
-        }
-
-        .legal-container li {
-          margin-bottom: 0.5rem;
-        }
-
-        .legal-container a {
-          color: var(--color-primary);
-          text-decoration: underline;
-        }
-
-        .legal-container a:hover {
-          color: var(--color-primary-dark);
-        }
-
-        .info-block {
-          background: var(--color-surface);
-          border-radius: var(--radius-md);
-          padding: 1.5rem;
-          margin: 1rem 0;
-        }
-
-        .info-block p {
-          margin-bottom: 0.5rem;
-        }
-
-        .info-block p:last-child {
-          margin-bottom: 0;
-        }
-
-        @media (max-width: 768px) {
-          .legal-container {
-            padding: 1.5rem;
-          }
-          
-          .legal-container h1 {
-            font-size: 1.5rem;
-          }
-        }
-      `}</style>
     </>
   );
 };

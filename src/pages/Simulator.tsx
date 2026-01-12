@@ -207,7 +207,7 @@ const Simulator = () => {
         <section className="hero-simulator fade-in">
           <div className="container">
             <div className="hero-content">
-              <span className="badge-hero">BANQUE DIGITALE</span>
+              <span className="badge-hero">SIMULATEUR DE PRÊT</span>
               <h1>Simulez votre projet immobilier</h1>
               <p>Proposition immédiate & dossier 100% en ligne.</p>
             </div>
