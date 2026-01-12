@@ -15,6 +15,9 @@ const baseStyles = `
   .header { background: linear-gradient(135deg, #FE42B4 0%, #D61F8D 100%); padding: 40px 30px; text-align: center; }
   .header h1 { color: white; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
   .content { padding: 40px 30px; }
+  .footer { background: #F1F5F9; padding: 30px; text-align: center; font-size: 12px; color: #64748B; line-height: 1.6; }
+  .footer a { color: #FE42B4; text-decoration: underline; }
+  .footer-legal { margin-top: 15px; padding-top: 15px; border-top: 1px solid #E2E8F0; font-size: 11px; color: #94A3B8; }
   .footer { background: #F1F5F9; padding: 30px; text-align: center; font-size: 13px; color: #64748B; }
   .button { display: inline-block; background: #FE42B4; color: white !important; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; margin: 20px 0; }
   .button:hover { background: #D61F8D; }
@@ -74,7 +77,15 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
               </div>
               <a href="#" class="button">Accéder à mon espace</a>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            <div class="footer">
+              <p><strong>FINOM SAS</strong> - Courtier en prêt immobilier</p>
+              <p>15 Avenue des Champs-Élysées, 75008 Paris</p>
+              <p><a href="https://pret-finom.co">pret-finom.co</a> | <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a></p>
+              <div class="footer-legal">
+                <p>IOBSP immatriculé ORIAS n° 12 345 678 - <a href="https://www.orias.fr">Vérifier</a></p>
+                <p>Sous contrôle ACPR - <a href="https://pret-finom.co/legal">Mentions légales</a> - <a href="https://pret-finom.co/privacy">Confidentialité</a></p>
+              </div>
+            </div>
           </div>
         </body>
         </html>
