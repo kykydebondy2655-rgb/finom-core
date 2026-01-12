@@ -217,6 +217,23 @@ const Banking: React.FC = () => {
                         <span className="b-iban">{b.iban}</span>
                       </div>
                       <StatusBadge status={b.status} size="sm" />
+                      <button 
+                        className="delete-btn"
+                        onClick={async () => {
+                          if (confirm(`Supprimer ${b.name} ?`)) {
+                            try {
+                              await beneficiariesApi.delete(b.id);
+                              toast.success('Bénéficiaire supprimé');
+                              loadData();
+                            } catch (err) {
+                              toast.error('Erreur lors de la suppression');
+                            }
+                          }
+                        }}
+                        title="Supprimer"
+                      >
+                        🗑️
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -335,6 +352,8 @@ const Banking: React.FC = () => {
           .tx-amount { font-weight: 700; }
           .tx-amount.positive { color: var(--color-success); }
           .tx-amount.negative { color: var(--color-danger); }
+          .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s; opacity: 0.6; }
+          .delete-btn:hover { background: #fee2e2; opacity: 1; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           

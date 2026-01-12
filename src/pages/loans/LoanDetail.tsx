@@ -9,12 +9,18 @@ import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
 import type { LoanApplication, Document, Message } from '@/services/api';
 import DocumentUpload from '@/components/documents/DocumentUpload';
+import DocumentChecklist from '@/components/loans/DocumentChecklist';
+import NotaryPanel from '@/components/loans/NotaryPanel';
+import SequestrePanel from '@/components/loans/SequestrePanel';
 import { useToast } from '@/components/finom/Toast';
+import { useUserRoles } from '@/hooks/useUserRoles';
+import type { ProjectType } from '@/lib/documentChecklist';
 
 const LoanDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isAgent, isAdmin } = useUserRoles();
   
   const [loan, setLoan] = useState<LoanApplication | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -286,6 +292,42 @@ const LoanDetail: React.FC = () => {
                     </div>
                   </div>
                 </Card>
+
+                {/* Séquestre Panel - visible to all */}
+                <SequestrePanel
+                  loanId={loan.id}
+                  sequestreStatus={loan.sequestre_status || 'none'}
+                  amountExpected={loan.sequestre_amount_expected || 0}
+                  amountReceived={loan.sequestre_amount_received || 0}
+                  onUpdate={isAgent || isAdmin ? async (data) => {
+                    await loansApi.update(loan.id, data);
+                    loadLoanData();
+                    toast.success('Séquestre mis à jour');
+                  } : undefined}
+                  readOnly={!isAgent && !isAdmin}
+                />
+
+                {/* Notary Panel - visible to all */}
+                <NotaryPanel
+                  loanId={loan.id}
+                  notaryRef={loan.notary_ref || null}
+                  notaryIban={loan.notary_iban || null}
+                  onUpdate={isAgent || isAdmin ? async (data) => {
+                    await loansApi.update(loan.id, data);
+                    loadLoanData();
+                    toast.success('Informations notaire mises à jour');
+                  } : undefined}
+                  readOnly={!isAgent && !isAdmin}
+                />
+
+                {/* Document Checklist based on project type */}
+                {(loan as any).project_type && (
+                  <DocumentChecklist
+                    projectType={(loan as any).project_type as ProjectType}
+                    uploadedDocuments={documents}
+                    onUploadClick={() => setActiveTab('documents')}
+                  />
+                )}
               </div>
             </div>
           )}

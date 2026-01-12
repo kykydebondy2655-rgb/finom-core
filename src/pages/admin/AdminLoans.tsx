@@ -45,8 +45,10 @@ const AdminLoans: React.FC = () => {
   const statusCounts = {
     all: loans.length,
     pending: loans.filter(l => l.status === 'pending').length,
+    documents_required: loans.filter(l => l.status === 'documents_required').length,
     in_review: loans.filter(l => l.status === 'in_review').length,
     approved: loans.filter(l => l.status === 'approved').length,
+    funded: loans.filter(l => l.status === 'funded').length,
     rejected: loans.filter(l => l.status === 'rejected').length,
   };
 
@@ -68,15 +70,26 @@ const AdminLoans: React.FC = () => {
         <div className="container">
           {/* Filters */}
           <div className="filters fade-in">
-            {Object.entries(statusCounts).map(([key, count]) => (
-              <button 
-                key={key}
-                className={`filter-btn ${filter === key ? 'active' : ''}`}
-                onClick={() => setFilter(key)}
-              >
-                {key === 'all' ? 'Tous' : key === 'in_review' ? 'En analyse' : key.charAt(0).toUpperCase() + key.slice(1)} ({count})
-              </button>
-            ))}
+              {Object.entries(statusCounts).map(([key, count]) => {
+                const labelMap: Record<string, string> = {
+                  all: 'Tous',
+                  pending: 'En attente',
+                  documents_required: 'Docs requis',
+                  in_review: 'En analyse',
+                  approved: 'Approuvé',
+                  funded: 'Financé',
+                  rejected: 'Refusé',
+                };
+                return (
+                  <button 
+                    key={key}
+                    className={`filter-btn ${filter === key ? 'active' : ''}`}
+                    onClick={() => setFilter(key)}
+                  >
+                    {labelMap[key] || key} ({count})
+                  </button>
+                );
+              })}
           </div>
 
           <Card className="loans-card fade-in" padding="lg">

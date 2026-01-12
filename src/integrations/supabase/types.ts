@@ -492,6 +492,7 @@ export type Database = {
           next_action: string | null
           notary_iban: string | null
           notary_ref: string | null
+          project_type: string | null
           property_price: number | null
           rate: number
           rejection_reason: string | null
@@ -522,6 +523,7 @@ export type Database = {
           next_action?: string | null
           notary_iban?: string | null
           notary_ref?: string | null
+          project_type?: string | null
           property_price?: number | null
           rate: number
           rejection_reason?: string | null
@@ -552,6 +554,7 @@ export type Database = {
           next_action?: string | null
           notary_iban?: string | null
           notary_ref?: string | null
+          project_type?: string | null
           property_price?: number | null
           rate?: number
           rejection_reason?: string | null

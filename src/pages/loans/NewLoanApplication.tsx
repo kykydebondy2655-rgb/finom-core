@@ -100,6 +100,7 @@ const NewLoanApplication: React.FC = () => {
         total_amount: Math.round((loanAmount + totalInterest) * 100) / 100,
         down_payment: formData.downPayment,
         property_price: formData.amount,
+        project_type: formData.projectType,
         status: 'pending',
         is_draft: false,
       });
