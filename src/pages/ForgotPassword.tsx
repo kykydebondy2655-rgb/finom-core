@@ -61,13 +61,13 @@ const ForgotPassword = () => {
     return (
       <div className="auth-page">
         <div className="auth-container">
-          <div className="auth-card">
+          <div className="auth-card auth-card-centered">
             <div className="success-icon">✓</div>
             <h1 className="auth-title">Email envoyé !</h1>
             <p className="auth-subtitle">
               Si un compte existe avec cette adresse email, vous recevrez un lien pour réinitialiser votre mot de passe.
             </p>
-            <p className="auth-subtitle" style={{ marginTop: '1rem' }}>
+            <p className="auth-subtitle auth-subtitle-spaced">
               Vérifiez également vos spams si vous ne voyez pas l'email.
             </p>
             <Link to="/login">
@@ -78,55 +78,6 @@ const ForgotPassword = () => {
           </div>
         </div>
 
-        <style>{`
-          .auth-page {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, var(--color-bg) 0%, #e0e5ec 100%);
-            padding: 2rem;
-          }
-
-          .auth-container {
-            width: 100%;
-            max-width: 450px;
-          }
-
-          .auth-card {
-            background: white;
-            padding: 3rem;
-            border-radius: var(--radius-lg);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            text-align: center;
-          }
-
-          .success-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--color-success, #22c55e);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 1.5rem;
-          }
-
-          .auth-title {
-            margin-bottom: 0.5rem;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            line-height: 1.2;
-          }
-
-          .auth-subtitle {
-            color: #666;
-            line-height: 1.5;
-          }
-        `}</style>
       </div>
     );
   }
@@ -169,84 +120,6 @@ const ForgotPassword = () => {
         </div>
       </div>
 
-      <style>{`
-        .auth-page {
-          min-height: 100vh;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: linear-gradient(135deg, var(--color-bg) 0%, #e0e5ec 100%);
-          padding: 2rem;
-        }
-
-        .auth-container {
-          width: 100%;
-          max-width: 450px;
-        }
-
-        .auth-card {
-          background: white;
-          padding: 3rem;
-          border-radius: var(--radius-lg);
-          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .auth-title {
-          text-align: center;
-          margin-bottom: 0.5rem;
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: var(--color-primary);
-          line-height: 1.2;
-        }
-
-        .auth-subtitle {
-          text-align: center;
-          color: #666;
-          margin-bottom: 2rem;
-          line-height: 1.5;
-        }
-
-        .error-message {
-          background-color: #fee;
-          color: var(--color-danger);
-          padding: 0.75rem;
-          border-radius: var(--radius-md);
-          margin-bottom: 1rem;
-          font-size: 0.9rem;
-        }
-
-        .auth-footer {
-          text-align: center;
-          margin-top: 1.5rem;
-          color: #666;
-        }
-
-        .auth-footer a {
-          color: var(--color-primary);
-          font-weight: 500;
-        }
-
-        .field-error {
-          color: var(--color-danger);
-          font-size: 0.8rem;
-          margin-top: 0.25rem;
-          display: block;
-        }
-
-        .input-error {
-          border-color: var(--color-danger) !important;
-        }
-
-        @media (max-width: 480px) {
-          .auth-card {
-            padding: 2rem;
-          }
-          .auth-page {
-            padding: 1rem;
-          }
-        }
-      `}</style>
     </div>
   );
 };
