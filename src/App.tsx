@@ -44,6 +44,8 @@ import AdminLoans from './pages/admin/AdminLoans';
 import AdminAgents from './pages/admin/AdminAgents';
 import AdminAssignments from './pages/admin/AdminAssignments';
 
+import CookieBanner from './components/common/CookieBanner';
+
 import './styles/finom.css';
 import './styles/components.css';
 
@@ -212,6 +214,7 @@ function App() {
                                 <Route path="*" element={<NotFound />} />
                             </Routes>
                         </main>
+                        <CookieBanner />
                     </div>
                 </Router>
             </ToastProvider>
