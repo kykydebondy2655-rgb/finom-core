@@ -463,39 +463,96 @@ export const agentApi = {
 
 // ============= ADMIN SERVICES =============
 export const adminApi = {
-  async getAllClients() {
-    // Get all users with 'client' role from user_roles table
-    const { data, error } = await supabase
+async getAllClients() {
+    // Get user IDs with 'client' role
+    const { data: roleData, error: roleError } = await supabase
       .from('user_roles')
-      .select(`
-        user_id,
-        role,
-        profiles:user_id(*)
-      `)
+      .select('user_id')
       .eq('role', 'client');
-    if (error) throw error;
-    // Flatten to return profile data
-    return data?.map(r => {
-      const profile = r.profiles as any;
-      return profile ? { ...profile, id: r.user_id } : null;
-    }).filter(Boolean) || [];
+    if (roleError) throw roleError;
+    if (!roleData || roleData.length === 0) return [];
+    
+    // Get profiles for those user IDs
+    const userIds = roleData.map(r => r.user_id);
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds);
+    if (profileError) throw profileError;
+    return profiles || [];
   },
 
   async getAllAgents() {
-    // Get all users with 'agent' role from user_roles table
-    const { data, error } = await supabase
+    // Get user IDs with 'agent' role
+    const { data: roleData, error: roleError } = await supabase
       .from('user_roles')
-      .select(`
-        user_id,
-        role,
-        profiles:user_id(*)
-      `)
+      .select('user_id')
       .eq('role', 'agent');
+    if (roleError) throw roleError;
+    if (!roleData || roleData.length === 0) return [];
+    
+    // Get profiles for those user IDs
+    const userIds = roleData.map(r => r.user_id);
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds);
+    if (profileError) throw profileError;
+    return profiles || [];
+  },
+
+  // Create a new agent account
+  async createAgent(email: string, password: string, firstName: string, lastName: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          role: 'agent'
+        }
+      }
+    });
     if (error) throw error;
-    return data?.map(r => {
-      const profile = r.profiles as any;
-      return profile ? { ...profile, id: r.user_id } : null;
-    }).filter(Boolean) || [];
+    return data;
+  },
+
+  // Create a new client account
+  async createClient(email: string, password: string, firstName: string, lastName: string, phone?: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          role: 'client'
+        }
+      }
+    });
+    if (error) throw error;
+    
+    // Update phone if provided
+    if (phone && data.user) {
+      await supabase.from('profiles').update({ phone }).eq('id', data.user.id);
+    }
+    
+    return data;
+  },
+
+  // Batch create assignments
+  async createBatchAssignments(assignments: { agentUserId: string; clientUserId: string }[]) {
+    const insertData = assignments.map(a => ({
+      agent_user_id: a.agentUserId,
+      client_user_id: a.clientUserId
+    }));
+    const { data, error } = await supabase
+      .from('client_assignments')
+      .insert(insertData)
+      .select();
+    if (error) throw error;
+    return data;
   },
 
   async getAllLoans() {
