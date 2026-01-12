@@ -24,7 +24,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Banking from './pages/Banking';
 import LoansList from './pages/loans/LoansList';
-import NewLoanApplication from './pages/loans/NewLoanApplication';
+// NewLoanApplication removed - redirects to Simulator
 import LoanDetail from './pages/loans/LoanDetail';
 
 // Agent Pages
@@ -102,7 +102,7 @@ function App() {
                                     path="/loans/new" 
                                     element={
                                         <ProtectedRoute allowedRoles={['client']}>
-                                            <NewLoanApplication />
+                                            <Simulator />
                                         </ProtectedRoute>
                                     } 
                                 />

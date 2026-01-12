@@ -3,11 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { emailService } from '@/services/emailService';
 
-interface AuthUser {
+export interface AuthUser {
     id: string;
     email: string;
     firstName?: string;
     lastName?: string;
+    phone?: string;
+    address?: string;
     role: 'client' | 'agent' | 'admin';
 }
 
@@ -82,6 +84,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 email: authUser.email || '',
                 firstName: profile?.first_name || undefined,
                 lastName: profile?.last_name || undefined,
+                phone: profile?.phone || undefined,
+                address: profile?.address || undefined,
                 role
             });
         } catch (error) {
@@ -125,6 +129,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             email: authUser.email || '',
             firstName: profile?.first_name || undefined,
             lastName: profile?.last_name || undefined,
+            phone: profile?.phone || undefined,
+            address: profile?.address || undefined,
             role
         };
 

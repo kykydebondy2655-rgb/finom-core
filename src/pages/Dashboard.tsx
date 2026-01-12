@@ -5,12 +5,13 @@ import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor } from '../services/api';
+import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, LoanApplication } from '../services/api';
+import logger from '../lib/logger';
 
 const Dashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [loans, setLoans] = useState<any[]>([]);
+    const [loans, setLoans] = useState<LoanApplication[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,7 +27,7 @@ const Dashboard = () => {
             const data = await loansApi.getByUser(user!.id);
             setLoans(data || []);
         } catch (error) {
-            console.error('Failed to load loans:', error);
+            logger.logError('Failed to load loans', error);
         } finally {
             setLoading(false);
         }
@@ -91,7 +92,7 @@ const Dashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {loans.slice(0, 5).map((loan: any) => (
+                                    {loans.slice(0, 5).map((loan: LoanApplication) => (
                                         <tr
                                             key={loan.id}
                                             onClick={() => navigate(`/loans/${loan.id}`)}
