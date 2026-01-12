@@ -7,6 +7,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Simulator from './pages/Simulator';
 import Rates from './pages/Rates';
 import HowItWorks from './pages/HowItWorks';
@@ -54,6 +56,8 @@ function App() {
                                 <Route path="/" element={<Home />} />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/register" element={<Register />} />
+                                <Route path="/forgot-password" element={<ForgotPassword />} />
+                                <Route path="/reset-password" element={<ResetPassword />} />
                                 <Route path="/simulator" element={<Simulator />} />
                                 <Route path="/rates" element={<Rates />} />
                                 <Route path="/how-it-works" element={<HowItWorks />} />

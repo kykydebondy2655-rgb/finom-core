@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { registerSchema, RegisterFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 
 const Register = () => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<RegisterFormData>({
         email: '',
         password: '',
         confirmPassword: '',
@@ -12,6 +13,7 @@ const Register = () => {
         lastName: ''
     });
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const { register, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
@@ -34,35 +36,34 @@ const Register = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setFieldErrors({});
 
-        // Validate required fields
-        if (!formData.firstName.trim() || !formData.lastName.trim()) {
-            setError('Le prénom et le nom sont obligatoires');
-            return;
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            setError('Les mots de passe ne correspondent pas');
-            return;
-        }
-
-        if (formData.password.length < 6) {
-            setError('Le mot de passe doit contenir au moins 6 caractères');
+        // Validation Zod
+        const result = registerSchema.safeParse(formData);
+        if (!result.success) {
+            const errors: Record<string, string> = {};
+            result.error.errors.forEach((err) => {
+                if (err.path[0]) {
+                    errors[err.path[0] as string] = err.message;
+                }
+            });
+            setFieldErrors(errors);
             return;
         }
 
         setLoading(true);
 
         try {
-            await register(formData.email, formData.password, formData.firstName, formData.lastName);
+            await register(result.data.email, result.data.password, result.data.firstName, result.data.lastName);
             // After successful registration, redirect to the intended page or dashboard
             if (from) {
                 navigate(from, { replace: true });
             } else {
                 navigate('/dashboard', { replace: true });
             }
-        } catch (err: any) {
-            setError(err?.message || 'Erreur lors de l\'inscription');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Erreur lors de l\'inscription';
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -91,9 +92,11 @@ const Register = () => {
                                     name="firstName"
                                     value={formData.firstName}
                                     onChange={handleChange}
-                                    required
-                                    className="form-input"
+                                    className={`form-input ${fieldErrors.firstName ? 'input-error' : ''}`}
                                 />
+                                {fieldErrors.firstName && (
+                                    <span className="field-error">{fieldErrors.firstName}</span>
+                                )}
                             </div>
                             <div className="form-group">
                                 <label>Nom *</label>
@@ -102,9 +105,11 @@ const Register = () => {
                                     name="lastName"
                                     value={formData.lastName}
                                     onChange={handleChange}
-                                    required
-                                    className="form-input"
+                                    className={`form-input ${fieldErrors.lastName ? 'input-error' : ''}`}
                                 />
+                                {fieldErrors.lastName && (
+                                    <span className="field-error">{fieldErrors.lastName}</span>
+                                )}
                             </div>
                         </div>
 
@@ -115,9 +120,12 @@ const Register = () => {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                required
-                                className="form-input"
+                                className={`form-input ${fieldErrors.email ? 'input-error' : ''}`}
+                                placeholder="votre@email.com"
                             />
+                            {fieldErrors.email && (
+                                <span className="field-error">{fieldErrors.email}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -127,9 +135,12 @@ const Register = () => {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                required
-                                className="form-input"
+                                className={`form-input ${fieldErrors.password ? 'input-error' : ''}`}
+                                placeholder="Minimum 6 caractères"
                             />
+                            {fieldErrors.password && (
+                                <span className="field-error">{fieldErrors.password}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -139,9 +150,11 @@ const Register = () => {
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                required
-                                className="form-input"
+                                className={`form-input ${fieldErrors.confirmPassword ? 'input-error' : ''}`}
                             />
+                            {fieldErrors.confirmPassword && (
+                                <span className="field-error">{fieldErrors.confirmPassword}</span>
+                            )}
                         </div>
 
                         <Button type="submit" isLoading={loading} variant="primary" className="full-width">
@@ -200,6 +213,17 @@ const Register = () => {
                     border-radius: var(--radius-md);
                     margin-bottom: 1rem;
                     font-size: 0.9rem;
+                }
+
+                .field-error {
+                    color: var(--color-danger);
+                    font-size: 0.8rem;
+                    margin-top: 0.25rem;
+                    display: block;
+                }
+
+                .input-error {
+                    border-color: var(--color-danger) !important;
                 }
 
                 .auth-footer {

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 
 const Login = () => {
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const { login, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
@@ -36,13 +38,29 @@ const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setFieldErrors({});
+
+        // Validation Zod
+        const result = loginSchema.safeParse(formData);
+        if (!result.success) {
+            const errors: Record<string, string> = {};
+            result.error.errors.forEach((err) => {
+                if (err.path[0]) {
+                    errors[err.path[0] as string] = err.message;
+                }
+            });
+            setFieldErrors(errors);
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const loggedUser = await login(formData.email, formData.password);
+            const loggedUser = await login(result.data.email, result.data.password);
             redirectUser(loggedUser.role);
-        } catch (err: any) {
-            setError(err?.message || 'Erreur de connexion');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Erreur de connexion';
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -64,10 +82,13 @@ const Login = () => {
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                required
-                                className="form-input"
+                                className={`form-input ${fieldErrors.email ? 'input-error' : ''}`}
                                 autoComplete="off"
+                                placeholder="votre@email.com"
                             />
+                            {fieldErrors.email && (
+                                <span className="field-error">{fieldErrors.email}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -76,10 +97,16 @@ const Login = () => {
                                 type="password"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                required
-                                className="form-input"
+                                className={`form-input ${fieldErrors.password ? 'input-error' : ''}`}
                                 autoComplete="new-password"
                             />
+                            {fieldErrors.password && (
+                                <span className="field-error">{fieldErrors.password}</span>
+                            )}
+                        </div>
+
+                        <div className="forgot-password-link">
+                            <Link to="/forgot-password">Mot de passe oublié ?</Link>
                         </div>
 
                         <Button type="submit" isLoading={loading} variant="primary" className="full-width">
@@ -137,6 +164,27 @@ const Login = () => {
                     padding: 0.75rem;
                     border-radius: var(--radius-md);
                     margin-bottom: 1rem;
+                    font-size: 0.9rem;
+                }
+
+                .field-error {
+                    color: var(--color-danger);
+                    font-size: 0.8rem;
+                    margin-top: 0.25rem;
+                    display: block;
+                }
+
+                .input-error {
+                    border-color: var(--color-danger) !important;
+                }
+
+                .forgot-password-link {
+                    text-align: right;
+                    margin-bottom: 1.5rem;
+                }
+
+                .forgot-password-link a {
+                    color: var(--color-primary);
                     font-size: 0.9rem;
                 }
 
