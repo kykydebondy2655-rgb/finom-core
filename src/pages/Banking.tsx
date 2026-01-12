@@ -169,7 +169,7 @@ const Banking: React.FC = () => {
 
           {!account && (
             <Card className="warning-card fade-in" padding="md">
-              <p style={{ margin: 0, color: 'var(--color-warning)' }}>
+              <p className="warning-card-text">
                 ⚠️ Vous n'avez pas encore de compte bancaire associé. Contactez le support pour en créer un.
               </p>
             </Card>
@@ -334,45 +334,6 @@ const Banking: React.FC = () => {
           </div>
         )}
 
-        <style>{`
-          .banking-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-primary) 0%, #1e3a5f 100%); color: white; padding: 3rem 1.5rem; margin-bottom: 2rem; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.5rem; }
-          .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
-          .balance-card { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: linear-gradient(135deg, #1e3a5f 0%, var(--color-secondary) 100%); color: white; }
-          .balance-label { font-size: 0.9rem; opacity: 0.8; }
-          .balance-amount { font-size: 2.5rem; font-weight: 700; display: block; margin: 0.5rem 0; }
-          .account-iban { font-family: monospace; font-size: 0.85rem; opacity: 0.7; }
-          .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
-          .tab { padding: 0.75rem 1.5rem; border: none; background: white; border-radius: var(--radius-full); font-weight: 600; color: var(--color-text-secondary); cursor: pointer; }
-          .tab.active { background: var(--color-primary); color: white; }
-          .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-          .card-header h3 { margin: 0; }
-          .empty-text { color: var(--color-text-tertiary); text-align: center; padding: 2rem; }
-          .transactions-list, .beneficiaries-list { display: flex; flex-direction: column; gap: 0.5rem; }
-          .transaction-item, .beneficiary-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8fafc; border-radius: var(--radius-md); }
-          .tx-label, .b-name { font-weight: 600; }
-          .tx-date, .b-iban { font-size: 0.8rem; color: var(--color-text-tertiary); }
-          .tx-amount { font-weight: 700; }
-          .tx-amount.positive { color: var(--color-success); }
-          .tx-amount.negative { color: var(--color-danger); }
-          .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s; opacity: 0.6; }
-          .delete-btn:hover { background: #fee2e2; opacity: 1; }
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          
-          /* Modal styles */
-          .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-          .modal-content { background: white; padding: 2rem; border-radius: var(--radius-lg); max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
-          .modal-content h3 { margin: 0 0 1.5rem; font-size: 1.25rem; }
-          .modal-content .form-group { margin-bottom: 1.25rem; }
-          .modal-content .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
-          .modal-content .form-group input,
-          .modal-content .form-group select { width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 1rem; }
-          .modal-content .form-group input:focus,
-          .modal-content .form-group select:focus { outline: none; border-color: var(--color-primary); }
-          .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
-        `}</style>
       </div>
     </PageLayout>
   );
