@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import { agentApi, adminApi, formatCurrency, formatDate } from '@/services/api';
 import { useUserRoles } from '@/hooks/useUserRoles';
+import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
+import { useToast } from '@/components/finom/Toast';
 import type { Profile, LoanApplication, Document } from '@/services/api';
 
 const AgentClientDetail: React.FC = () => {
@@ -21,6 +23,8 @@ const AgentClientDetail: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents'>('info');
+  const [showCallbackModal, setShowCallbackModal] = useState(false);
+  const toast = useToast();
 
   // Detect if accessed from admin or agent route
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -110,7 +114,7 @@ const AgentClientDetail: React.FC = () => {
           <div className="quick-actions fade-in">
             <Button variant="primary">📞 Appeler</Button>
             <Button variant="secondary">📧 Envoyer un email</Button>
-            <Button variant="ghost">+ Planifier un rappel</Button>
+            <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Planifier un rappel</Button>
           </div>
 
           {/* Tabs */}
@@ -181,6 +185,17 @@ const AgentClientDetail: React.FC = () => {
             </Card>
           )}
         </div>
+
+        {/* Callback Modal */}
+        <CreateCallbackModal
+          isOpen={showCallbackModal}
+          onClose={() => setShowCallbackModal(false)}
+          onSuccess={() => {
+            toast.success('Rappel planifié avec succès');
+          }}
+          preselectedClientId={id}
+          preselectedClientName={`${client.first_name} ${client.last_name}`}
+        />
 
         <style>{`
           .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
