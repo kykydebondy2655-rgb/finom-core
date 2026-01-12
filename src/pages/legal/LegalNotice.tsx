@@ -26,7 +26,7 @@ const LegalNotice: React.FC = () => {
               <p><strong>SIRET :</strong> 123 456 789 00012</p>
               <p><strong>Code APE :</strong> 6419Z - Autres intermédiations monétaires</p>
               <p><strong>TVA Intracommunautaire :</strong> FR 12 123456789</p>
-              <p><strong>Téléphone :</strong> +33 (0)1 23 45 67 89</p>
+              <p><strong>Téléphone :</strong> +31 20 524 9111</p>
               <p><strong>Email :</strong> contact@pret-finom.co</p>
             </div>
           </section>

@@ -134,7 +134,7 @@ const TermsOfService: React.FC = () => {
             <p>Pour toute question relative aux présentes CGU, contactez-nous :</p>
             <div className="info-block">
               <p><strong>Email :</strong> contact@pret-finom.co</p>
-              <p><strong>Téléphone :</strong> +33 (0)1 23 45 67 89</p>
+              <p><strong>Téléphone :</strong> +31 20 524 9111</p>
               <p><strong>Adresse :</strong> FINOM SAS, 15 Avenue des Champs-Élysées, 75008 Paris</p>
             </div>
           </section>
