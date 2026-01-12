@@ -12,6 +12,8 @@ import DocumentUpload from '@/components/documents/DocumentUpload';
 import DocumentChecklist from '@/components/loans/DocumentChecklist';
 import NotaryPanel from '@/components/loans/NotaryPanel';
 import SequestrePanel from '@/components/loans/SequestrePanel';
+import ReceivedDocumentsList from '@/components/documents/ReceivedDocumentsList';
+import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
 import { useToast } from '@/components/finom/Toast';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import type { ProjectType } from '@/lib/documentChecklist';
@@ -32,6 +34,8 @@ const LoanDetail: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(false);
+  const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
+  const [clientProfile, setClientProfile] = useState<any>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -44,7 +48,7 @@ const LoanDetail: React.FC = () => {
       setLoading(true);
       const [loanData, docsData, msgsData] = await Promise.all([
         loansApi.getById(id),
-        documentsApi.getByLoan(id),
+        documentsApi.getByLoan(id, 'outgoing'), // Only client-uploaded docs
         messagesApi.getByLoan(id)
       ]);
       setLoan(loanData);
@@ -56,6 +60,12 @@ const LoanDetail: React.FC = () => {
         try {
           const agent = await adminApi.getClientAgent(loanData.user_id);
           setAssignedAgent(agent);
+          
+          // For admin/agent, also load client profile
+          if (isAdmin || isAgent) {
+            const profile = await adminApi.getClientById(loanData.user_id);
+            setClientProfile(profile);
+          }
         } catch {
           // User may not have permission to get agent info
         }
@@ -335,16 +345,28 @@ const LoanDetail: React.FC = () => {
           {/* Documents Tab */}
           {activeTab === 'documents' && (
             <div className="tab-content fade-in">
+              {/* Client-uploaded Documents */}
               <Card padding="lg">
                 <div className="documents-header">
-                  <h3>Documents du dossier</h3>
-                  <Button 
-                    variant="secondary" 
-                    size="sm"
-                    onClick={() => setShowUploadSection(!showUploadSection)}
-                  >
-                    {showUploadSection ? '✕ Fermer' : '+ Ajouter un document'}
-                  </Button>
+                  <h3>📤 Documents envoyés</h3>
+                  <div className="documents-actions">
+                    {(isAdmin || isAgent) && loan && (
+                      <Button 
+                        variant="primary" 
+                        size="sm"
+                        onClick={() => setShowAdminUploadModal(true)}
+                      >
+                        📥 Envoyer au client
+                      </Button>
+                    )}
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => setShowUploadSection(!showUploadSection)}
+                    >
+                      {showUploadSection ? '✕ Fermer' : '+ Ajouter un document'}
+                    </Button>
+                  </div>
                 </div>
 
                 {showUploadSection && (
@@ -365,7 +387,7 @@ const LoanDetail: React.FC = () => {
                 {documents.length === 0 && !showUploadSection ? (
                   <div className="empty-docs">
                     <span className="empty-icon">📄</span>
-                    <p>Aucun document dans ce dossier</p>
+                    <p>Aucun document envoyé dans ce dossier</p>
                     <Button variant="primary" size="sm" onClick={() => setShowUploadSection(true)}>
                       Ajouter un document
                     </Button>
@@ -373,7 +395,7 @@ const LoanDetail: React.FC = () => {
                 ) : documents.length > 0 && (
                   <div className="documents-list">
                     {documents.map(doc => (
-                      <div key={doc.id} className="document-item">
+                      <div key={doc.id} className="document-item outgoing">
                         <div className="doc-icon">📄</div>
                         <div className="doc-info">
                           <span className="doc-name">{doc.file_name}</span>
@@ -387,6 +409,21 @@ const LoanDetail: React.FC = () => {
                   </div>
                 )}
               </Card>
+
+              {/* Received Documents - Only visible to client OR admin viewing client's loan */}
+              {id && <ReceivedDocumentsList loanId={id} />}
+
+              {/* Admin Upload Modal */}
+              {(isAdmin || isAgent) && loan && clientProfile && (
+                <AdminDocumentUploadModal
+                  isOpen={showAdminUploadModal}
+                  onClose={() => setShowAdminUploadModal(false)}
+                  onSuccess={loadLoanData}
+                  clientId={loan.user_id}
+                  clientName={`${clientProfile?.first_name || ''} ${clientProfile?.last_name || ''}`}
+                  loanId={id}
+                />
+              )}
             </div>
           )}
 
@@ -643,10 +680,18 @@ const LoanDetail: React.FC = () => {
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
           }
 
           .documents-header h3 {
             margin: 0;
+          }
+
+          .documents-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
           }
 
           .upload-section {

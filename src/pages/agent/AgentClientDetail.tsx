@@ -12,6 +12,7 @@ import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
 import DocumentStatusModal from '@/components/agent/DocumentStatusModal';
 import LoanStatusModal from '@/components/agent/LoanStatusModal';
 import ClientBankModal from '@/components/admin/ClientBankModal';
+import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
@@ -32,6 +33,7 @@ const AgentClientDetail: React.FC = () => {
   const [showDocumentStatusModal, setShowDocumentStatusModal] = useState(false);
   const [showLoanStatusModal, setShowLoanStatusModal] = useState(false);
   const [showBankModal, setShowBankModal] = useState(false);
+  const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
   const toast = useToast();
@@ -227,12 +229,23 @@ const AgentClientDetail: React.FC = () => {
 
           {activeTab === 'documents' && (
             <Card className="docs-card fade-in" padding="lg">
-              <h3>Documents</h3>
+              <div className="docs-header">
+                <h3>📤 Documents du client</h3>
+                {isAdmin && client && (
+                  <Button 
+                    variant="primary" 
+                    size="sm"
+                    onClick={() => setShowAdminUploadModal(true)}
+                  >
+                    📥 Envoyer un document
+                  </Button>
+                )}
+              </div>
               {documents.length === 0 ? (
-                <p className="empty-text">Aucun document</p>
+                <p className="empty-text">Aucun document uploadé par le client</p>
               ) : (
                 <div className="docs-list">
-                  {documents.map(doc => (
+                  {documents.filter(d => (d as any).direction !== 'incoming').map(doc => (
                     <div key={doc.id} className="doc-item">
                       <span className="doc-icon">📄</span>
                       <div className="doc-info">
@@ -277,6 +290,46 @@ const AgentClientDetail: React.FC = () => {
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Documents envoyés au client */}
+              {documents.filter(d => (d as any).direction === 'incoming').length > 0 && (
+                <div className="sent-docs-section">
+                  <h4>📥 Documents envoyés au client</h4>
+                  <div className="docs-list">
+                    {documents.filter(d => (d as any).direction === 'incoming').map(doc => (
+                      <div key={doc.id} className="doc-item sent">
+                        <span className="doc-icon">📋</span>
+                        <div className="doc-info">
+                          <span className="doc-name">{doc.file_name}</span>
+                          <span className="doc-meta">
+                            {doc.category} • {formatDate(doc.uploaded_at)}
+                            {(doc as any).motif && ` • ${(doc as any).motif.slice(0, 50)}...`}
+                          </span>
+                        </div>
+                        <StatusBadge status="approved" size="sm" />
+                        <button 
+                          className="download-btn"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (!doc.file_path) return;
+                            try {
+                              const result = await storageService.getDocumentUrl(doc.file_path);
+                              if (result.success && result.url) {
+                                window.open(result.url, '_blank');
+                              }
+                            } catch (err) {
+                              toast.error('Erreur lors du téléchargement');
+                            }
+                          }}
+                          title="Télécharger"
+                        >
+                          ⬇️
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </Card>
@@ -343,8 +396,24 @@ const AgentClientDetail: React.FC = () => {
           />
         )}
 
+        {/* Admin Document Upload Modal */}
+        {isAdmin && client && id && (
+          <AdminDocumentUploadModal
+            isOpen={showAdminUploadModal}
+            onClose={() => setShowAdminUploadModal(false)}
+            onSuccess={loadClientData}
+            clientId={id}
+            clientName={`${client.first_name} ${client.last_name}`}
+          />
+        )}
+
         <style>{`
           .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
+          .docs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+          .docs-header h3 { margin: 0; }
+          .sent-docs-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+          .sent-docs-section h4 { margin: 0 0 1rem 0; color: var(--color-text-secondary); }
+          .doc-item.sent { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; }
           .page-header { color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
           .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
           .header-content { display: flex; justify-content: space-between; align-items: flex-start; }
