@@ -362,45 +362,54 @@ export type Database = {
       documents: {
         Row: {
           category: string | null
+          direction: string | null
           expires_at: string | null
           file_name: string
           file_path: string
           file_type: string | null
           id: string
           loan_id: string | null
+          motif: string | null
           rejection_reason: string | null
           status: string | null
           uploaded_at: string
+          uploaded_by: string | null
           user_id: string
           validated_at: string | null
           validated_by: string | null
         }
         Insert: {
           category?: string | null
+          direction?: string | null
           expires_at?: string | null
           file_name: string
           file_path: string
           file_type?: string | null
           id?: string
           loan_id?: string | null
+          motif?: string | null
           rejection_reason?: string | null
           status?: string | null
           uploaded_at?: string
+          uploaded_by?: string | null
           user_id: string
           validated_at?: string | null
           validated_by?: string | null
         }
         Update: {
           category?: string | null
+          direction?: string | null
           expires_at?: string | null
           file_name?: string
           file_path?: string
           file_type?: string | null
           id?: string
           loan_id?: string | null
+          motif?: string | null
           rejection_reason?: string | null
           status?: string | null
           uploaded_at?: string
+          uploaded_by?: string | null
           user_id?: string
           validated_at?: string | null
           validated_by?: string | null

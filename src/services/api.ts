@@ -76,22 +76,51 @@ export const loansApi = {
 
 // ============= DOCUMENTS =============
 export const documentsApi = {
-  async getByLoan(loanId: string) {
-    const { data, error } = await supabase
+  async getByLoan(loanId: string, direction: 'outgoing' | 'incoming' | 'all' = 'all') {
+    let query = supabase
       .from('documents')
       .select('*')
       .eq('loan_id', loanId)
       .order('uploaded_at', { ascending: false });
+    
+    if (direction !== 'all') {
+      query = query.eq('direction', direction);
+    }
+    
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   },
 
-  async getByUser(userId: string) {
-    const { data, error } = await supabase
+  async getByUser(userId: string, direction: 'outgoing' | 'incoming' | 'all' = 'all') {
+    let query = supabase
       .from('documents')
       .select('*')
       .eq('user_id', userId)
       .order('uploaded_at', { ascending: false });
+    
+    if (direction !== 'all') {
+      query = query.eq('direction', direction);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  async getReceivedByUser(userId: string, loanId?: string) {
+    let query = supabase
+      .from('documents')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('direction', 'incoming')
+      .order('uploaded_at', { ascending: false });
+    
+    if (loanId) {
+      query = query.eq('loan_id', loanId);
+    }
+    
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   },
@@ -99,7 +128,40 @@ export const documentsApi = {
   async upload(doc: TablesInsert<'documents'>) {
     const { data, error } = await supabase
       .from('documents')
-      .insert(doc)
+      .insert({
+        ...doc,
+        direction: doc.direction || 'outgoing'
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async uploadForClient(doc: {
+    userId: string;
+    loanId?: string;
+    fileName: string;
+    filePath: string;
+    fileType?: string;
+    category: string;
+    motif: string;
+    uploadedBy: string;
+  }) {
+    const { data, error } = await supabase
+      .from('documents')
+      .insert({
+        user_id: doc.userId,
+        loan_id: doc.loanId || null,
+        file_name: doc.fileName,
+        file_path: doc.filePath,
+        file_type: doc.fileType || null,
+        category: doc.category,
+        direction: 'incoming',
+        motif: doc.motif,
+        uploaded_by: doc.uploadedBy,
+        status: 'approved'
+      })
       .select()
       .single();
     if (error) throw error;
