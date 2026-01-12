@@ -1,18 +1,42 @@
 # Cloudflare Pages Security Headers
 # Production-ready headers for pret-finom.co
+# Target: A+ on securityheaders.com
 
 /*
+  # HSTS - Force HTTPS for 2 years with subdomains and preload
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  
+  # Prevent clickjacking
   X-Frame-Options: DENY
+  
+  # Prevent MIME type sniffing
   X-Content-Type-Options: nosniff
+  
+  # XSS Protection (legacy browsers)
   X-XSS-Protection: 1; mode=block
+  
+  # Referrer Policy - Send origin only on cross-origin requests
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  
+  # Permissions Policy - Disable all sensitive features
+  Permissions-Policy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=()
+  
+  # Content Security Policy - Strict, no unsafe-eval
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; block-all-mixed-content
+  
+  # Cross-Origin policies for additional isolation
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
+  Cross-Origin-Resource-Policy: same-origin
 
-# Cache static assets
+# Cache static assets aggressively
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Don't cache HTML
+# Don't cache HTML - ensure fresh content
 /*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Root index
+/
   Cache-Control: no-cache, no-store, must-revalidate

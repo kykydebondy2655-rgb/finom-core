@@ -18,10 +18,11 @@ const PrivacyPolicy: React.FC = () => {
           <section>
             <h2>1. Responsable du traitement</h2>
             <div className="info-block">
-              <p><strong>FINOM SAS</strong></p>
-              <p>15 Avenue des Champs-Élysées, 75008 Paris, France</p>
+              <p><strong>FINOM Payments B.V.</strong></p>
+              <p>Jachthavenweg 109H, 1081 KM Amsterdam, Pays-Bas</p>
+              <p>KVK : 78680751</p>
               <p>Email : contact@pret-finom.co</p>
-              <p>DPO : dpo@pret-finom.co</p>
+              <p>Téléphone : +31 20 524 9111</p>
             </div>
           </section>
 
@@ -97,7 +98,7 @@ const PrivacyPolicy: React.FC = () => {
               <li><strong>Droit d'opposition :</strong> vous opposer au traitement</li>
               <li><strong>Droit de retirer votre consentement :</strong> à tout moment</li>
             </ul>
-            <p>Pour exercer vos droits, contactez-nous à : <a href="mailto:dpo@pret-finom.co">dpo@pret-finom.co</a></p>
+            <p>Pour exercer vos droits, contactez-nous à : <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a></p>
           </section>
 
           <section>
@@ -131,13 +132,13 @@ const PrivacyPolicy: React.FC = () => {
 
           <section>
             <h2>11. Réclamation</h2>
-            <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de la CNIL :</p>
+            <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de l'autorité de protection des données compétente :</p>
             <div className="info-block">
-              <p><strong>Commission Nationale de l'Informatique et des Libertés</strong></p>
-              <p>3 Place de Fontenoy, TSA 80715</p>
-              <p>75334 Paris Cedex 07</p>
-              <p><a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a></p>
+              <p><strong>Autoriteit Persoonsgegevens (Pays-Bas)</strong></p>
+              <p>Bezuidenhoutseweg 30, 2594 AV Den Haag</p>
+              <p><a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener noreferrer">autoriteitpersoonsgegevens.nl</a></p>
             </div>
+            <p className="note">Pour les utilisateurs français, vous pouvez également contacter la CNIL : <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a></p>
           </section>
 
           <section>
