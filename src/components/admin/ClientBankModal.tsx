@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@/components/finom/Button';
-import { isValidIBAN } from '@/lib/validators';
+import { isValidIBAN, isValidBIC } from '@/lib/validators';
 
 interface ClientBankModalProps {
   isOpen: boolean;
@@ -9,6 +9,7 @@ interface ClientBankModalProps {
   clientId: string;
   currentBalance: number | null;
   currentIban: string | null;
+  currentBic: string | null;
   clientName: string;
 }
 
@@ -19,10 +20,12 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
   clientId,
   currentBalance,
   currentIban,
+  currentBic,
   clientName
 }) => {
   const [balance, setBalance] = useState<string>('');
   const [iban, setIban] = useState<string>('');
+  const [bic, setBic] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,9 +33,10 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
     if (isOpen) {
       setBalance(currentBalance?.toString() || '0');
       setIban(currentIban || '');
+      setBic(currentBic || '');
       setError(null);
     }
-  }, [isOpen, currentBalance, currentIban]);
+  }, [isOpen, currentBalance, currentIban, currentBic]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +45,12 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
     // Validate IBAN if provided
     if (iban && !isValidIBAN(iban)) {
       setError('Format IBAN invalide');
+      return;
+    }
+
+    // Validate BIC if provided
+    if (bic && !isValidBIC(bic)) {
+      setError('Format BIC invalide (8 ou 11 caractères)');
       return;
     }
 
@@ -55,7 +65,8 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
       const { adminApi } = await import('@/services/api');
       await adminApi.updateClientBankAccount(clientId, {
         balance: numericBalance,
-        iban: iban.replace(/\s/g, '').toUpperCase()
+        iban: iban.replace(/\s/g, '').toUpperCase(),
+        bic: bic.replace(/\s/g, '').toUpperCase()
       });
       onSuccess();
       onClose();
@@ -106,6 +117,19 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
               maxLength={34}
             />
             <span className="form-hint">Format: FR76 suivi de 23 chiffres</span>
+          </div>
+
+          <div className="form-group">
+            <label>BIC / SWIFT</label>
+            <input
+              type="text"
+              value={bic}
+              onChange={e => setBic(e.target.value.toUpperCase())}
+              placeholder="BNPAFRPP"
+              className="form-input"
+              maxLength={11}
+            />
+            <span className="form-hint">Code banque (8 ou 11 caractères)</span>
           </div>
 
           <div className="modal-actions">
