@@ -7,8 +7,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
+import { useToast } from '@/components/finom/Toast';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -33,6 +35,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
   preselectedClientName
 }) => {
   const { user } = useAuth();
+  const toast = useToast();
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [selectedClient, setSelectedClient] = useState(preselectedClientId || '');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -79,13 +82,22 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !selectedClient || !selectedDate || !scheduledTime) return;
+    if (!user || !selectedClient || !selectedDate || !scheduledTime) {
+      toast.warning("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
 
     try {
       setLoading(true);
+      toast.info('Création du rappel...');
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const scheduledAt = new Date(`${dateStr}T${scheduledTime}`).toISOString();
-      
+      console.log('[CreateCallbackModal] createCallback', {
+        agent_id: user.id,
+        client_id: selectedClient,
+        scheduled_at: scheduledAt,
+      });
+
       await agentApi.createCallback({
         agent_id: user.id,
         client_id: selectedClient,
@@ -94,12 +106,14 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
         notes: notes || null,
         status: 'planned'
       });
-      
+
       onSuccess();
+      toast.success('Rappel planifié');
       onClose();
       resetForm();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating callback:', err);
+      toast.error(err?.message || "Impossible de planifier le rappel");
     } finally {
       setLoading(false);
     }
@@ -127,6 +141,9 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
           <DialogTitle className="flex items-center gap-2 text-xl">
             📞 Planifier un rappel
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Planifiez un rappel avec une date, une heure, un motif et des notes.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-5 pt-2">
