@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import logger from '@/lib/logger';
 
 type AppRole = 'client' | 'agent' | 'admin';
 
@@ -44,7 +45,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
         .eq('user_id', user.id);
 
       if (fetchError) {
-        console.error('Error fetching user roles:', fetchError);
+        logger.warn('Error fetching user roles', { error: fetchError.message });
         setError(fetchError.message);
         // Fallback to profile role for backward compatibility
         setRoles([user.role as AppRole || 'client']);
@@ -60,7 +61,7 @@ export const useUserRoles = (): UseUserRolesReturn => {
         setRoles([user.role as AppRole || 'client']);
       }
     } catch (err) {
-      console.error('Error in useUserRoles:', err);
+      logger.logError('Error in useUserRoles', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setRoles([user.role as AppRole || 'client']);
     } finally {

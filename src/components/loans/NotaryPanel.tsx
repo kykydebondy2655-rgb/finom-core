@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
+import logger from '@/lib/logger';
 
 interface NotaryPanelProps {
   loanId: string;
@@ -34,7 +35,7 @@ const NotaryPanel: React.FC<NotaryPanelProps> = ({
       });
       setIsEditing(false);
     } catch (err) {
-      console.error('Error updating notary info:', err);
+      logger.logError('Error updating notary info', err);
     } finally {
       setSaving(false);
     }

@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { emailService } from '@/services/emailService';
+import logger from '@/lib/logger';
 
 interface LoanStatusModalProps {
   isOpen: boolean;
@@ -103,7 +104,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
         });
 
       if (notifError) {
-        console.error('Notification error:', notifError);
+        logger.warn('Notification error', { error: notifError.message });
       }
 
       // Send email notification to client (non-blocking)
@@ -123,39 +124,39 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
               loan.amount,
               loan.rate || 0,
               loan.monthly_payment || 0
-            ).catch(err => console.error('Email send error:', err));
+            ).catch(err => logger.logError('Email send error', err));
           } else if (selectedStatus === 'rejected') {
             emailService.sendLoanRejected(
               clientProfile.email,
               clientProfile.first_name || 'Client',
               loan.id,
               rejectionReason
-            ).catch(err => console.error('Email send error:', err));
+            ).catch(err => logger.logError('Email send error', err));
           } else if (selectedStatus === 'funded') {
             emailService.sendNotification(
               clientProfile.email,
               clientProfile.first_name || 'Client',
               'Votre financement est débloqué ! 🎉',
               'Les fonds de votre prêt immobilier ont été versés. Félicitations pour votre nouveau projet !'
-            ).catch(err => console.error('Email send error:', err));
+            ).catch(err => logger.logError('Email send error', err));
           } else if (selectedStatus === 'documents_required') {
             emailService.sendDocumentRequired(
               clientProfile.email,
               clientProfile.first_name || 'Client',
               loan.id,
               ['Veuillez consulter votre espace client pour voir les documents requis']
-            ).catch(err => console.error('Email send error:', err));
+            ).catch(err => logger.logError('Email send error', err));
           }
         }
       } catch (emailErr) {
-        console.error('Failed to send status email:', emailErr);
+        logger.logError('Failed to send status email', emailErr);
       }
 
       toast.success('Statut du dossier mis à jour');
       onSuccess();
       onClose();
     } catch (err) {
-      console.error('Update error:', err);
+      logger.logError('Update error', err);
       toast.error('Erreur lors de la mise à jour');
     } finally {
       setLoading(false);

@@ -6,6 +6,7 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import CreateAgentModal from '@/components/admin/CreateAgentModal';
 import { adminApi, formatDate } from '@/services/api';
+import logger from '@/lib/logger';
 
 const AdminAgents: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const AdminAgents: React.FC = () => {
       const data = await adminApi.getAllAgents();
       setAgents(data || []);
     } catch (err) {
-      console.error('Error loading agents:', err);
+      logger.logError('Error loading agents', err);
     } finally {
       setLoading(false);
     }

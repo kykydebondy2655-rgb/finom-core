@@ -3,6 +3,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import logger from '@/lib/logger';
 
 export type EmailTemplate = 
   | 'welcome'
@@ -37,14 +38,14 @@ export const emailService = {
       });
 
       if (error) {
-        console.error('Email send error:', error);
+        logger.warn('Email send error', { error: error.message });
         return { success: false, error: error.message };
       }
 
       return { success: true, data };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Email service error:', errorMessage);
+      logger.warn('Email service error', { error: errorMessage });
       return { success: false, error: errorMessage };
     }
   },

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import { agentApi } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface CallModalProps {
   isOpen: boolean;
@@ -119,7 +120,7 @@ const CallModal: React.FC<CallModalProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      console.error('Error logging call:', err);
+      logger.logError('Error logging call', err);
     } finally {
       setLoading(false);
     }
