@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
             <div className="footer-column">
               <h4>Contact</h4>
               <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a>
-              <a href="tel:+33123456789">+33 (0)1 23 45 67 89</a>
+              <a href="tel:+31205249111">+31 20 524 9111</a>
               <span className="secure-note">🔒 pret-finom.co</span>
             </div>
           </div>

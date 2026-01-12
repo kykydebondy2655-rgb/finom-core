@@ -11,7 +11,7 @@ import Button from '../components/finom/Button';
 const companyInfo = {
     name: 'FINOM SAS',
     email: 'contact@pret-finom.co',
-    phone: '+33 (0)1 23 45 67 89',
+    phone: '+31 20 524 9111',
     address: '15 Avenue des Champs-Élysées, 75008 Paris',
     responseTime: {
         email: '24-48h',
