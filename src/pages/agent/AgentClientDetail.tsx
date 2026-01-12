@@ -124,8 +124,16 @@ const AgentClientDetail: React.FC = () => {
         <div className="container">
           {/* Quick Actions */}
           <div className="quick-actions fade-in">
-            <Button variant="primary">📞 Appeler</Button>
-            <Button variant="secondary">📧 Envoyer un email</Button>
+            <Button variant="primary" onClick={() => window.location.href = `tel:${client.phone || ''}`} disabled={!client.phone}>
+              📞 Appeler
+            </Button>
+            <Button 
+              variant="secondary" 
+              onClick={() => window.location.href = `mailto:${client.email || ''}`}
+              disabled={!client.email}
+            >
+              📧 Envoyer un email
+            </Button>
             <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Planifier un rappel</Button>
           </div>
 
