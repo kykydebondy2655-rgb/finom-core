@@ -9,13 +9,13 @@ interface ButtonProps {
     isLoading?: boolean;
     disabled?: boolean;
     className?: string;
-    onClick?: () => void;
+    onClick?: React.MouseEventHandler<HTMLElement>;
     type?: 'button' | 'submit' | 'reset';
     to?: string;
     outline?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
+const Button = React.forwardRef<HTMLElement, ButtonProps>(({
     children,
     variant = 'primary',
     size = 'md',
@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
     type = 'button',
     to,
     outline = false,
-}) => {
+}, ref) => {
     const baseClass = 'btn';
     const variantClass = `btn-${variant}`;
     const sizeClass = `btn-${size}`;
@@ -36,7 +36,7 @@ const Button: React.FC<ButtonProps> = ({
 
     if (to) {
         return (
-            <Link to={to} className={fullClass} onClick={onClick}>
+            <Link to={to} className={fullClass} onClick={onClick as any} ref={ref as any}>
                 {isLoading && <span className="spinner"></span>}
                 <span className="content">{children}</span>
             </Link>
@@ -45,15 +45,18 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <button
+            ref={ref as any}
             type={type}
             className={fullClass}
             disabled={disabled || isLoading}
-            onClick={onClick}
+            onClick={onClick as any}
         >
             {isLoading && <span className="spinner"></span>}
             <span className="content">{children}</span>
         </button>
     );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;
