@@ -9,10 +9,10 @@ import Button from '../components/finom/Button';
  * Renforce la crédibilité anti-phishing avec des coordonnées officielles
  */
 const companyInfo = {
-    name: 'FINOM SAS',
+    name: 'FINOM Payments B.V.',
     email: 'contact@pret-finom.co',
     phone: '+31 20 524 9111',
-    address: '15 Avenue des Champs-Élysées, 75008 Paris',
+    address: 'Jachthavenweg 109H, 1081 KM Amsterdam, Pays-Bas',
     responseTime: {
         email: '24-48h',
         phone: '< 5 min'
@@ -67,7 +67,7 @@ const Contact = () => {
                             et vous accompagner dans votre projet immobilier.
                         </p>
                         <p className="company-identifier">
-                            <strong>FINOM</strong> — Service de simulation de prêt immobilier
+                            <strong>FINOM Payments B.V.</strong> — Service de simulation de prêt immobilier
                         </p>
                     </header>
 

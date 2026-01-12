@@ -20,6 +20,7 @@ import NotFound from './pages/NotFound';
 import LegalNotice from './pages/legal/LegalNotice';
 import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
+import SecurityTrust from './pages/legal/SecurityTrust';
 import About from './pages/About';
 
 // Client Pages
@@ -70,6 +71,7 @@ function App() {
                                 <Route path="/legal" element={<LegalNotice />} />
                                 <Route path="/privacy" element={<PrivacyPolicy />} />
                                 <Route path="/terms" element={<TermsOfService />} />
+                                <Route path="/security" element={<SecurityTrust />} />
                                 <Route path="/about" element={<About />} />
 
                                 {/* ============= CLIENT ROUTES ============= */}

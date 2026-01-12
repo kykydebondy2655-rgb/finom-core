@@ -21,8 +21,8 @@ const About: React.FC = () => {
             </div>
             <h1>À propos de FINOM</h1>
             <p className="about-subtitle">
-              Courtier en prêt immobilier agréé, nous accompagnons les particuliers 
-              dans la réalisation de leur projet immobilier depuis notre siège parisien.
+              Service de simulation de prêt immobilier, nous accompagnons les particuliers 
+              dans la réalisation de leur projet immobilier.
             </p>
           </header>
 
