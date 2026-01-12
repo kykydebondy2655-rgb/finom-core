@@ -5,15 +5,12 @@ import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, type LoanApplication } from '../services/api';
-import { createLogger } from '../lib/logger';
+import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor } from '../services/api';
 
-const log = createLogger('Dashboard');
-
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [loans, setLoans] = useState<LoanApplication[]>([]);
+    const [loans, setLoans] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -29,7 +26,7 @@ const Dashboard: React.FC = () => {
             const data = await loansApi.getByUser(user!.id);
             setLoans(data || []);
         } catch (error) {
-            log.error('Failed to load loans:', error);
+            console.error('Failed to load loans:', error);
         } finally {
             setLoading(false);
         }
@@ -94,7 +91,7 @@ const Dashboard: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {loans.slice(0, 5).map((loan) => (
+                                    {loans.slice(0, 5).map((loan: any) => (
                                         <tr
                                             key={loan.id}
                                             onClick={() => navigate(`/loans/${loan.id}`)}

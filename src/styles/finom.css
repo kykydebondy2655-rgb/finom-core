@@ -1,52 +1,44 @@
 :root {
-  /* Finom Brand Colors - HSL Format for Tailwind Compatibility */
-  --color-primary: 330 99% 63%;
-  /* #FE42B4 → HSL(330, 99%, 63%) - Official Vibrant Pink */
-  --color-primary-dark: 330 77% 48%;
-  /* #D61F8D */
-  --color-primary-light: 330 100% 76%;
-  /* #FF85D1 */
+  /* Finom Brand Colors - Official Palette */
+  --color-primary: #FE42B4;
+  /* Official Vibrant Pink */
+  --color-primary-dark: #D61F8D;
+  --color-primary-light: #FF85D1;
 
-  --color-secondary: 0 0% 14%;
-  /* #242424 → HSL(0, 0%, 14%) - Official Charcoal */
+  --color-secondary: #242424;
+  /* Official Charcoal */
 
   /* Backgrounds */
-  --color-bg: 210 40% 98%;
-  /* #F8FAFC → HSL(210, 40%, 98%) */
-  --color-white: 0 0% 100%;
-  /* #FFFFFF */
-  --color-surface-hover: 210 40% 96%;
-  /* #F1F5F9 */
+  --color-bg: #F8FAFC;
+  /* Very light blue-grey for main bg */
+  --color-white: #FFFFFF;
+  --color-surface-hover: #F1F5F9;
+  /* Slight grey for hover states */
 
   /* Text */
-  --color-text: 222 47% 11%;
-  /* #0F172A → HSL(222, 47%, 11%) - Slate 900 */
-  --color-text-secondary: 215 16% 47%;
-  /* #64748B → HSL(215, 16%, 47%) - Slate 500 */
-  --color-text-tertiary: 215 19% 65%;
-  /* #94A3B8 → HSL(215, 19%, 65%) - Slate 400 */
-
-  /* Border */
-  --color-border: 214 32% 91%;
-  /* #E2E8F0 → HSL(214, 32%, 91%) */
+  --color-text: #0F172A;
+  /* Slate 900 for headings */
+  --color-text-secondary: #64748B;
+  /* Slate 500 for body */
+  --color-text-tertiary: #94A3B8;
+  /* Slate 400 for disabled/subtle */
 
   /* Role-Specific Colors (Muted for premium feel) */
-  --color-client: 330 99% 63%;
-  /* Same as primary */
-  --color-agent: 160 84% 39%;
-  /* #059669 → HSL(160, 84%, 39%) - Emerald 600 */
-  --color-admin: 263 70% 58%;
-  /* #7C3AED → HSL(263, 70%, 58%) - Violet 600 */
+  --color-client: #FE42B4;
+  --color-agent: #059669;
+  /* Emerald 600 */
+  --color-admin: #7C3AED;
+  /* Violet 600 */
 
   /* Semantic Colors */
-  --color-success: 160 84% 39%;
-  /* #10B981 → HSL(160, 84%, 39%) - Emerald 500 */
-  --color-warning: 38 92% 50%;
-  /* #F59E0B → HSL(38, 92%, 50%) - Amber 500 */
-  --color-danger: 0 84% 60%;
-  /* #EF4444 → HSL(0, 84%, 60%) - Red 500 */
-  --color-info: 217 91% 60%;
-  /* #3B82F6 → HSL(217, 91%, 60%) - Blue 500 */
+  --color-success: #10B981;
+  /* Emerald 500 */
+  --color-warning: #F59E0B;
+  /* Amber 500 */
+  --color-danger: #EF4444;
+  /* Red 500 */
+  --color-info: #3B82F6;
+  /* Blue 500 */
 
   /* Typography - Poppins */
   --font-heading: 'Poppins', sans-serif;
@@ -97,8 +89,8 @@
 
 body {
   font-family: var(--font-body);
-  background-color: hsl(var(--color-bg));
-  color: hsl(var(--color-text));
+  background-color: var(--color-bg);
+  color: var(--color-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -110,7 +102,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
-  color: hsl(var(--color-secondary));
+  color: var(--color-secondary);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.1;
@@ -159,14 +151,14 @@ button:active {
 }
 
 .btn-primary {
-  background-color: hsl(var(--color-primary));
+  background-color: var(--color-primary);
   color: white;
-  box-shadow: 0 4px 12px hsla(var(--color-primary) / 0.3);
+  box-shadow: 0 4px 12px rgba(254, 66, 180, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: hsl(var(--color-primary-dark));
-  box-shadow: 0 6px 16px hsla(var(--color-primary) / 0.4);
+  background-color: var(--color-primary-dark);
+  box-shadow: 0 6px 16px rgba(254, 66, 180, 0.4);
 }
 
 /* Utilities */
@@ -178,11 +170,11 @@ button:active {
 }
 
 .text-primary {
-  color: hsl(var(--color-primary));
+  color: var(--color-primary);
 }
 
 .text-secondary {
-  color: hsl(var(--color-text-secondary));
+  color: var(--color-text-secondary);
 }
 
 .text-center {
@@ -211,13 +203,13 @@ input,
 select,
 textarea {
   font-family: var(--font-body);
-  border: 2px solid hsl(var(--color-border));
+  border: 2px solid #F1F5F9;
   border-radius: var(--radius-md);
   padding: 0.875rem 1.25rem;
   transition: all var(--transition-normal);
   width: 100%;
-  background-color: hsl(var(--color-white));
-  color: hsl(var(--color-secondary));
+  background-color: var(--color-white);
+  color: var(--color-secondary);
   font-size: 1rem;
 }
 
@@ -225,9 +217,9 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: hsl(var(--color-primary));
-  box-shadow: 0 0 0 4px hsla(var(--color-primary) / 0.1);
-  background-color: hsl(var(--color-white));
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(254, 66, 180, 0.1);
+  background-color: var(--color-white);
 }
 
 /* Scrollbar */
@@ -240,12 +232,12 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(215 19% 65%);
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(215 16% 47%);
+  background: #94A3B8;
 }
 
 /* Base Safe Area Helper */
@@ -266,9 +258,9 @@ main {
   bottom: 0;
   left: 0;
   right: 0;
-  background: hsla(var(--color-white) / 0.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
-  border-top: 1px solid hsla(var(--color-text) / 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   padding: 0.75rem 1rem env(safe-area-inset-bottom);
   z-index: 2000;
   justify-content: space-around;
@@ -286,14 +278,14 @@ main {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: hsl(var(--color-text-secondary));
+  color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .tab-item.active {
-  color: hsl(var(--color-primary));
+  color: var(--color-primary);
 }
 
 .tab-icon {
@@ -302,11 +294,11 @@ main {
 
 /* Card base styles are now in Card.css - this is for global utility classes */
 .card-feature {
-  background: hsl(var(--color-white));
+  background: var(--color-white);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   box-shadow: var(--shadow-md);
-  border: 1px solid hsla(var(--color-text) / 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.03);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -339,7 +331,7 @@ main {
 
 /* Highlight text */
 .highlight {
-  color: hsl(var(--color-primary));
+  color: var(--color-primary);
 }
 
 /* Section title */
@@ -363,7 +355,7 @@ main {
 }
 
 .feature-card p {
-  color: hsl(var(--color-text-secondary));
+  color: var(--color-text-secondary);
 }
 
 /* Form group styles */
@@ -375,24 +367,24 @@ main {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: hsl(var(--color-secondary));
+  color: var(--color-secondary);
   font-size: 0.95rem;
 }
 
 .form-input {
   width: 100%;
   padding: 0.875rem 1.25rem;
-  border: 2px solid hsl(var(--color-border));
+  border: 2px solid #E2E8F0;
   border-radius: var(--radius-md);
   font-size: 1rem;
   transition: all var(--transition-normal);
-  background-color: hsl(var(--color-white));
+  background-color: var(--color-white);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: hsl(var(--color-primary));
-  box-shadow: 0 0 0 4px hsla(var(--color-primary) / 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(254, 66, 180, 0.1);
 }
 
 .full-width {

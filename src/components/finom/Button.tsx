@@ -9,13 +9,13 @@ interface ButtonProps {
     isLoading?: boolean;
     disabled?: boolean;
     className?: string;
-    onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
+    onClick?: React.MouseEventHandler<HTMLElement>;
     type?: 'button' | 'submit' | 'reset';
     to?: string;
     outline?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(({
+const Button = React.forwardRef<HTMLElement, ButtonProps>(({
     children,
     variant = 'primary',
     size = 'md',
@@ -36,12 +36,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
 
     if (to) {
         return (
-            <Link 
-                to={to} 
-                className={fullClass} 
-                onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>} 
-                ref={ref as React.Ref<HTMLAnchorElement>}
-            >
+            <Link to={to} className={fullClass} onClick={onClick as any} ref={ref as any}>
                 {isLoading && <span className="spinner"></span>}
                 <span className="content">{children}</span>
             </Link>
@@ -50,11 +45,11 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
 
     return (
         <button
-            ref={ref as React.Ref<HTMLButtonElement>}
+            ref={ref as any}
             type={type}
             className={fullClass}
             disabled={disabled || isLoading}
-            onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+            onClick={onClick as any}
         >
             {isLoading && <span className="spinner"></span>}
             <span className="content">{children}</span>
