@@ -172,6 +172,11 @@
   text-align: center;
 }
 
+.home-page .hero h1 {
+  color: #0F172A;
+  font-weight: 900;
+}
+
 .home-page .secure-badge {
   display: inline-flex;
   align-items: center;
@@ -192,7 +197,7 @@
 
 .home-page .hero-subtitle {
   font-size: 1.35rem;
-  color: #64748B;
+  color: #475569;
   margin-bottom: 2.5rem;
   line-height: 1.5;
   max-width: 580px;
@@ -239,7 +244,7 @@
 
 .home-page .no-data-warning {
   font-size: 0.85rem;
-  color: #64748B;
+  color: #475569;
   font-style: italic;
 }
 
