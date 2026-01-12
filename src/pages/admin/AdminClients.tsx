@@ -5,6 +5,7 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
+import ClientImportModal from '@/components/admin/ClientImportModal';
 import { adminApi, formatDate } from '@/services/api';
 
 const AdminClients: React.FC = () => {
@@ -12,6 +13,7 @@ const AdminClients: React.FC = () => {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
     loadClients();
@@ -48,8 +50,15 @@ const AdminClients: React.FC = () => {
         <div className="page-header">
           <div className="container">
             <button className="back-btn" onClick={() => navigate('/admin/dashboard')}>← Retour</button>
-            <h1>Gestion des clients</h1>
-            <p>{clients.length} clients enregistrés</p>
+            <div className="header-row">
+              <div>
+                <h1>Gestion des clients</h1>
+                <p>{clients.length} clients enregistrés</p>
+              </div>
+              <Button variant="primary" onClick={() => setShowImportModal(true)}>
+                📁 Importer CSV
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -66,7 +75,12 @@ const AdminClients: React.FC = () => {
 
           <Card className="clients-card fade-in" padding="lg">
             {filteredClients.length === 0 ? (
-              <p className="empty-text">Aucun client trouvé</p>
+              <div className="empty-state">
+                <p className="empty-text">Aucun client trouvé</p>
+                <Button variant="primary" onClick={() => setShowImportModal(true)}>
+                  Importer des clients
+                </Button>
+              </div>
             ) : (
               <div className="table-wrapper">
                 <table className="data-table">
@@ -103,10 +117,17 @@ const AdminClients: React.FC = () => {
           </Card>
         </div>
 
+        <ClientImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          onSuccess={loadClients}
+        />
+
         <style>{`
           .admin-clients-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
           .page-header { background: linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
           .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
+          .header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
           .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.25rem; }
           .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
           .toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
@@ -120,7 +141,8 @@ const AdminClients: React.FC = () => {
           .user-cell { display: flex; align-items: center; gap: 0.75rem; }
           .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--color-admin); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; }
           .date { color: var(--color-text-tertiary); font-size: 0.9rem; }
-          .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 3rem; }
+          .empty-state { text-align: center; padding: 3rem; }
+          .empty-text { color: var(--color-text-tertiary); margin-bottom: 1.5rem; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         `}</style>
