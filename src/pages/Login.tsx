@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/finom/Button';
 
@@ -7,8 +7,31 @@ const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get redirect destination from state or default based on role
+    const from = location.state?.from?.pathname;
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            redirectUser(user.role);
+        }
+    }, [isAuthenticated, user]);
+
+    const redirectUser = (role: string) => {
+        if (from) {
+            navigate(from, { replace: true });
+        } else if (role === 'admin') {
+            navigate('/admin/dashboard', { replace: true });
+        } else if (role === 'agent') {
+            navigate('/agent/dashboard', { replace: true });
+        } else {
+            navigate('/dashboard', { replace: true });
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,23 +40,7 @@ const Login = () => {
 
         try {
             const loggedUser = await login(formData.email, formData.password);
-
-            const pendingSim = localStorage.getItem('pendingSimulation');
-            if (pendingSim) {
-                const data = JSON.parse(pendingSim);
-                localStorage.removeItem('pendingSimulation');
-                navigate('/loans/new', { state: data });
-            } else {
-                // Use the role from the logged user (already fetched by AuthContext)
-                const role = loggedUser?.role || 'client';
-                if (role === 'admin') {
-                    navigate('/admin/dashboard');
-                } else if (role === 'agent') {
-                    navigate('/agent/dashboard');
-                } else {
-                    navigate('/dashboard');
-                }
-            }
+            redirectUser(loggedUser.role);
         } catch (err: any) {
             setError(err?.message || 'Erreur de connexion');
         } finally {
@@ -82,7 +89,7 @@ const Login = () => {
                     </form>
 
                     <p className="auth-footer">
-                        Pas encore de compte ? <Link to="/register">Créer un compte</Link>
+                        Pas encore de compte ? <Link to="/register" state={{ from: location.state?.from }}>Créer un compte</Link>
                     </p>
                 </div>
             </div>
