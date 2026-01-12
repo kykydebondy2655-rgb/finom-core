@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import ClientImportModal from '@/components/admin/ClientImportModal';
 import { adminApi, formatDate } from '@/services/api';
+import logger from '@/lib/logger';
 
 const AdminClients: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const AdminClients: React.FC = () => {
       const data = await adminApi.getAllClients();
       setClients(data || []);
     } catch (err) {
-      console.error('Error loading clients:', err);
+      logger.logError('Error loading clients', err);
     } finally {
       setLoading(false);
     }

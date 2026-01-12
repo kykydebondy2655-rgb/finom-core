@@ -13,6 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/components/finom/Toast';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import logger from '@/lib/logger';
 
 interface CreateCallbackModalProps {
   isOpen: boolean;
@@ -74,7 +75,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
         }))
       );
     } catch (err) {
-      console.error('Error loading clients:', err);
+      logger.logError('Error loading clients', err);
     } finally {
       setLoadingClients(false);
     }
@@ -92,7 +93,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
       toast.info('Création du rappel...');
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const scheduledAt = new Date(`${dateStr}T${scheduledTime}`).toISOString();
-      console.log('[CreateCallbackModal] createCallback', {
+      logger.debug('Creating callback', {
         agent_id: user.id,
         client_id: selectedClient,
         scheduled_at: scheduledAt,
@@ -112,7 +113,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
       onClose();
       resetForm();
     } catch (err: any) {
-      console.error('Error creating callback:', err);
+      logger.logError('Error creating callback', err);
       toast.error(err?.message || "Impossible de planifier le rappel");
     } finally {
       setLoading(false);

@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import Card from '@/components/finom/Card';
 import StatusBadge from '@/components/common/StatusBadge';
 import { agentApi, formatDateTime } from '@/services/api';
+import logger from '@/lib/logger';
 
 const CallHistoryPanel: React.FC = () => {
   const { user } = useAuth();
@@ -20,7 +21,7 @@ const CallHistoryPanel: React.FC = () => {
       const data = await agentApi.getCallLogs(user.id);
       setCallLogs(data || []);
     } catch (err) {
-      console.error('Error loading call logs:', err);
+      logger.logError('Error loading call logs', err);
     } finally {
       setLoading(false);
     }
