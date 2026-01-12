@@ -237,7 +237,7 @@ const Banking: React.FC = () => {
                   onChange={e => setTransferData(prev => ({ ...prev, beneficiaryId: e.target.value }))}
                 >
                   <option value="">Sélectionner...</option>
-                  {beneficiaries.filter(b => b.status === 'active').map(b => (
+                  {beneficiaries.map(b => (
                     <option key={b.id} value={b.id}>{b.name} - {b.iban}</option>
                   ))}
                 </select>
