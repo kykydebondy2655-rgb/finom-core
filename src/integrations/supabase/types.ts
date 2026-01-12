@@ -480,6 +480,7 @@ export type Database = {
           assurance_status: string | null
           created_at: string
           debt_ratio_est: number | null
+          down_payment: number | null
           duration: number
           fees_used: number | null
           id: string
@@ -491,6 +492,7 @@ export type Database = {
           next_action: string | null
           notary_iban: string | null
           notary_ref: string | null
+          property_price: number | null
           rate: number
           rejection_reason: string | null
           sequestre_amount_expected: number | null
@@ -508,6 +510,7 @@ export type Database = {
           assurance_status?: string | null
           created_at?: string
           debt_ratio_est?: number | null
+          down_payment?: number | null
           duration: number
           fees_used?: number | null
           id?: string
@@ -519,6 +522,7 @@ export type Database = {
           next_action?: string | null
           notary_iban?: string | null
           notary_ref?: string | null
+          property_price?: number | null
           rate: number
           rejection_reason?: string | null
           sequestre_amount_expected?: number | null
@@ -536,6 +540,7 @@ export type Database = {
           assurance_status?: string | null
           created_at?: string
           debt_ratio_est?: number | null
+          down_payment?: number | null
           duration?: number
           fees_used?: number | null
           id?: string
@@ -547,6 +552,7 @@ export type Database = {
           next_action?: string | null
           notary_iban?: string | null
           notary_ref?: string | null
+          property_price?: number | null
           rate?: number
           rejection_reason?: string | null
           sequestre_amount_expected?: number | null
