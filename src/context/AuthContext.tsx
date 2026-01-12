@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
+import { emailService } from '@/services/emailService';
 
 interface AuthUser {
     id: string;
@@ -166,6 +167,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
 
         setUser(registeredUser);
+
+        // Send welcome email (non-blocking)
+        emailService.sendWelcome(email, firstName).catch(err => 
+            console.error('Failed to send welcome email:', err)
+        );
+
         return registeredUser;
     };
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
+import NotificationBell from '@/components/notifications/NotificationBell';
 import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react';
 
 const Header: React.FC = () => {
@@ -79,6 +80,7 @@ const Header: React.FC = () => {
 
         {/* Desktop Actions */}
         <div className="header-actions">
+          {isAuthenticated && <NotificationBell />}
           {isAuthenticated ? (
             <div className="user-menu-wrapper">
               <button 
