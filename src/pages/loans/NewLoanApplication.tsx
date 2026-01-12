@@ -6,6 +6,8 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import { loansApi } from '@/services/api';
 import { calculateMonthlyPayment as calcMonthly, calculateTotalInterest } from '@/lib/loanCalculations';
+import { emailService } from '@/services/emailService';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FormData {
   amount: number;
@@ -86,7 +88,7 @@ const NewLoanApplication: React.FC = () => {
       const debtRatio = getDebtRatio();
       const totalInterest = (monthlyPayment * formData.duration * 12) - loanAmount;
 
-      await loansApi.create({
+      const newLoan = await loansApi.create({
         user_id: user.id,
         amount: loanAmount,
         duration: formData.duration,
@@ -102,6 +104,22 @@ const NewLoanApplication: React.FC = () => {
         is_draft: false,
       });
 
+      // Send confirmation email to client (non-blocking)
+      if (user.email) {
+        emailService.sendLoanSubmitted(
+          user.email,
+          user.firstName || 'Client',
+          newLoan.id,
+          loanAmount,
+          formData.duration * 12,
+          monthlyPayment
+        ).catch(err => console.error('Email send error:', err));
+      }
+
+      // Notify all admins about new loan application (non-blocking)
+      notifyAdminsNewLoan(newLoan.id, loanAmount, user.firstName || user.email || 'Client')
+        .catch(err => console.error('Admin notification error:', err));
+
       navigate('/loans');
     } catch (err) {
       console.error('Error creating loan:', err);
@@ -109,6 +127,30 @@ const NewLoanApplication: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper function to notify all admins
+  const notifyAdminsNewLoan = async (loanId: string, amount: number, clientName: string) => {
+    // Get all admin user IDs
+    const { data: adminRoles } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('role', 'admin');
+
+    if (!adminRoles || adminRoles.length === 0) return;
+
+    // Create notifications for all admins
+    const notifications = adminRoles.map(admin => ({
+      user_id: admin.user_id,
+      type: 'new_loan',
+      category: 'loan',
+      title: '📋 Nouvelle demande de prêt',
+      message: `${clientName} a soumis une demande de ${amount.toLocaleString('fr-FR')} €`,
+      related_entity: 'loan_applications',
+      related_id: loanId,
+    }));
+
+    await supabase.from('notifications').insert(notifications);
   };
 
   const renderStep = () => {

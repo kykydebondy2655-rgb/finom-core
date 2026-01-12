@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
+import { emailService } from '@/services/emailService';
 
 interface LoanStatusModalProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ interface LoanStatusModalProps {
     status: string;
     user_id: string;
     amount: number;
+    rate?: number;
+    monthly_payment?: number;
   } | null;
 }
 
@@ -101,6 +104,51 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
 
       if (notifError) {
         console.error('Notification error:', notifError);
+      }
+
+      // Send email notification to client (non-blocking)
+      try {
+        const { data: clientProfile } = await supabase
+          .from('profiles')
+          .select('email, first_name')
+          .eq('id', loan.user_id)
+          .single();
+
+        if (clientProfile?.email) {
+          if (selectedStatus === 'approved') {
+            emailService.sendLoanApproved(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              loan.id,
+              loan.amount,
+              loan.rate || 0,
+              loan.monthly_payment || 0
+            ).catch(err => console.error('Email send error:', err));
+          } else if (selectedStatus === 'rejected') {
+            emailService.sendLoanRejected(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              loan.id,
+              rejectionReason
+            ).catch(err => console.error('Email send error:', err));
+          } else if (selectedStatus === 'funded') {
+            emailService.sendNotification(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              'Votre financement est débloqué ! 🎉',
+              'Les fonds de votre prêt immobilier ont été versés. Félicitations pour votre nouveau projet !'
+            ).catch(err => console.error('Email send error:', err));
+          } else if (selectedStatus === 'documents_required') {
+            emailService.sendDocumentRequired(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              loan.id,
+              ['Veuillez consulter votre espace client pour voir les documents requis']
+            ).catch(err => console.error('Email send error:', err));
+          }
+        }
+      } catch (emailErr) {
+        console.error('Failed to send status email:', emailErr);
       }
 
       toast.success('Statut du dossier mis à jour');
