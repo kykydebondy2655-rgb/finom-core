@@ -20,6 +20,7 @@ import NotFound from './pages/NotFound';
 import LegalNotice from './pages/legal/LegalNotice';
 import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
+import About from './pages/About';
 
 // Client Pages
 import Dashboard from './pages/Dashboard';
@@ -64,10 +65,11 @@ function App() {
                                 <Route path="/contact" element={<Contact />} />
                                 <Route path="/faq" element={<Faq />} />
                                 
-                                {/* ============= LEGAL ROUTES (Anti-Phishing) ============= */}
+{/* ============= LEGAL ROUTES (Anti-Phishing) ============= */}
                                 <Route path="/legal" element={<LegalNotice />} />
                                 <Route path="/privacy" element={<PrivacyPolicy />} />
                                 <Route path="/terms" element={<TermsOfService />} />
+                                <Route path="/about" element={<About />} />
 
                                 {/* ============= CLIENT ROUTES ============= */}
                                 <Route 

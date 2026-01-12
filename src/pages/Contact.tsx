@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 
+/**
+ * Page Contact - Informations de contact vérifiables
+ * Renforce la crédibilité anti-phishing avec des coordonnées officielles
+ */
 const companyInfo = {
-    name: 'FINOM',
-    email: 'contact@finom.fr',
-    phone: '+33 1 23 45 67 89',
-    address: '123 Avenue des Champs-Élysées, 75008 Paris',
+    name: 'FINOM SAS',
+    email: 'contact@pret-finom.co',
+    phone: '+33 (0)1 23 45 67 89',
+    address: '15 Avenue des Champs-Élysées, 75008 Paris',
     responseTime: {
         email: '24-48h',
         phone: '< 5 min'
@@ -52,10 +57,17 @@ const Contact = () => {
             <div className="contact-page">
                 <div className="container">
                     <header className="contact-header">
-                        <h1>💬 Contactez-nous</h1>
+                        <div className="secure-badge">
+                            <span className="lock-icon">🔒</span>
+                            Connexion sécurisée HTTPS
+                        </div>
+                        <h1>Contactez-nous</h1>
                         <p className="contact-subtitle">
                             Notre équipe est à votre écoute pour répondre à toutes vos questions
                             et vous accompagner dans votre projet immobilier.
+                        </p>
+                        <p className="company-identifier">
+                            <strong>FINOM SAS</strong> — Courtier IOBSP immatriculé ORIAS
                         </p>
                     </header>
 
@@ -155,41 +167,79 @@ const Contact = () => {
                                 </div>
                             </div>
                             <div className="card faq-suggestion">
-                                <h3>❓ Consultez notre FAQ</h3>
+                                <h3>Consultez notre FAQ</h3>
                                 <p>Vous trouverez peut-être une réponse immédiate.</p>
                                 <Link to="/faq">
                                     <Button variant="secondary" className="full-width">Voir la FAQ</Button>
                                 </Link>
                             </div>
+
+                            <div className="card security-notice">
+                                <h3>🔐 Votre sécurité</h3>
+                                <ul>
+                                    <li>Nous ne demandons jamais vos identifiants bancaires</li>
+                                    <li>Aucun paiement requis pour la simulation</li>
+                                    <li>Vos données sont chiffrées (HTTPS/SSL)</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <style>{`
-                    .contact-page {
-                        min-height: 100vh;
-                        background: var(--color-bg);
-                        padding: 4rem 0;
-                    }
-                    .container {
-                        max-width: 1200px;
-                        margin: 0 auto;
+                    {/* Domain Banner */}
+                    <div className="domain-banner">
+                        <span className="domain-lock">🔒</span>
+                        Vous êtes sur <strong>pret-finom.co</strong> — Site officiel FINOM
+                    </div>
+                </div>
+            </div>
+            <Footer />
+
+            <style>{`
+                .contact-page {
+                    min-height: 100vh;
+                    background: #FAFBFC;
+                    padding: 2rem 0 0;
+                }
+                .container {
+                    max-width: 1200px;
+                    margin: 0 auto;
                         padding: 0 1.5rem;
                     }
                     .contact-header {
                         text-align: center;
                         margin-bottom: 3rem;
                     }
+                    .secure-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        background: #E8F5E9;
+                        color: #2E7D32;
+                        padding: 0.5rem 1rem;
+                        border-radius: 100px;
+                        font-weight: 600;
+                        font-size: 0.85rem;
+                        margin-bottom: 1.5rem;
+                        border: 1px solid #C8E6C9;
+                    }
+                    .lock-icon {
+                        font-size: 1rem;
+                    }
                     .contact-header h1 {
-                        font-size: 2.5rem;
-                        color: var(--color-primary);
+                        font-size: 2.25rem;
+                        color: #1E293B;
                         margin-bottom: 1rem;
+                        font-weight: 800;
                     }
                     .contact-subtitle {
                         font-size: 1.1rem;
-                        color: var(--color-text-secondary);
+                        color: #64748B;
                         max-width: 600px;
-                        margin: 0 auto;
+                        margin: 0 auto 1rem;
+                    }
+                    .company-identifier {
+                        font-size: 0.9rem;
+                        color: #475569;
                     }
                     .contact-grid {
                         display: grid;
@@ -266,13 +316,44 @@ const Contact = () => {
                         color: var(--color-text-secondary);
                         margin-bottom: 1rem;
                     }
+                    .security-notice {
+                        background: #F0FDF4;
+                        border: 1px solid #BBF7D0;
+                    }
+                    .security-notice h3 {
+                        color: #166534;
+                    }
+                    .security-notice ul {
+                        margin: 0;
+                        padding-left: 1.25rem;
+                        color: #166534;
+                    }
+                    .security-notice li {
+                        margin-bottom: 0.5rem;
+                        font-size: 0.9rem;
+                    }
+                    .domain-banner {
+                        background: #0F172A;
+                        color: #94A3B8;
+                        padding: 1rem;
+                        border-radius: 8px;
+                        text-align: center;
+                        font-size: 0.9rem;
+                        margin: 2rem 0;
+                    }
+                    .domain-banner strong {
+                        color: #E2E8F0;
+                    }
+                    .domain-lock {
+                        color: #22C55E;
+                        margin-right: 0.5rem;
+                    }
                     @media (max-width: 900px) {
                         .contact-grid {
                             grid-template-columns: 1fr;
                         }
                     }
                 `}</style>
-            </div>
         </>
     );
 };
