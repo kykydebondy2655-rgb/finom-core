@@ -26,7 +26,7 @@ const Home = () => {
                             </p>
                             <div className="cta-group">
                                 <Link to="/simulator">
-                                    <button className="btn-pill btn-primary" style={{ fontSize: '1.1rem' }}>
+                                    <button className="btn-pill btn-primary cta-button-large">
                                         Simuler mon prêt gratuitement
                                     </button>
                                 </Link>
@@ -50,7 +50,7 @@ const Home = () => {
                 <section id="how-it-works" className="section-features">
                     <div className="container">
                         <h2 className="text-center section-title">Pourquoi choisir FINOM ?</h2>
-                        <div className="bento-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                        <div className="bento-grid">
                             <div className="card feature-card">
                                 <div className="icon-box">📊</div>
                                 <h3>Simulation Transparente</h3>
@@ -118,160 +118,6 @@ const Home = () => {
                         </p>
                     </div>
                 </section>
-
-                <style>{`
-                    .hero {
-                        background: #FAFBFC;
-                        padding: 6rem 0 5rem;
-                        overflow: hidden;
-                        border-bottom: 1px solid #E2E8F0;
-                    }
-                    .hero-container {
-                        display: grid;
-                        grid-template-columns: 1fr;
-                        gap: 3rem;
-                        text-align: center;
-                    }
-                    .secure-badge {
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 0.5rem;
-                        background: #E8F5E9;
-                        color: #2E7D32;
-                        padding: 0.6rem 1.25rem;
-                        border-radius: 100px;
-                        font-weight: 600;
-                        font-size: 0.85rem;
-                        margin-bottom: 2rem;
-                        border: 1px solid #C8E6C9;
-                    }
-                    .lock-icon {
-                        font-size: 1rem;
-                    }
-                    .hero-subtitle {
-                        font-size: 1.35rem;
-                        color: #64748B;
-                        margin-bottom: 2.5rem;
-                        line-height: 1.5;
-                        max-width: 580px;
-                        margin-left: auto;
-                        margin-right: auto;
-                    }
-                    .cta-group {
-                        display: flex;
-                        gap: 2rem;
-                        align-items: center;
-                        justify-content: center;
-                        margin-bottom: 2.5rem;
-                    }
-                    .btn-secondary-link {
-                        font-weight: 600;
-                        color: #475569;
-                        text-decoration: underline;
-                        text-underline-offset: 4px;
-                    }
-                    .btn-secondary-link:hover {
-                        color: #1E293B;
-                    }
-                    .trust-markers {
-                        display: flex;
-                        gap: 1.5rem;
-                        justify-content: center;
-                        flex-wrap: wrap;
-                        margin-bottom: 1.5rem;
-                    }
-                    .trust-item {
-                        background: #F1F5F9;
-                        padding: 0.6rem 1.2rem;
-                        border-radius: 8px;
-                        font-size: 0.9rem;
-                        font-weight: 600;
-                        color: #475569;
-                        border: 1px solid #E2E8F0;
-                    }
-                    .no-data-warning {
-                        font-size: 0.85rem;
-                        color: #64748B;
-                        font-style: italic;
-                    }
-                    .section-features {
-                        padding: 6rem 0;
-                        background: #FFFFFF;
-                    }
-                    .section-security {
-                        padding: 5rem 0;
-                        background: #F8FAFC;
-                        border-top: 1px solid #E2E8F0;
-                        border-bottom: 1px solid #E2E8F0;
-                    }
-                    .security-content h2 {
-                        text-align: center;
-                        font-size: 1.75rem;
-                        font-weight: 700;
-                        color: #1E293B;
-                        margin-bottom: 3rem;
-                    }
-                    .security-grid {
-                        display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                        gap: 2rem;
-                        max-width: 900px;
-                        margin: 0 auto;
-                    }
-                    .security-item {
-                        display: flex;
-                        gap: 1rem;
-                        align-items: flex-start;
-                        background: white;
-                        padding: 1.5rem;
-                        border-radius: 12px;
-                        border: 1px solid #E2E8F0;
-                    }
-                    .security-icon {
-                        font-size: 1.5rem;
-                        flex-shrink: 0;
-                    }
-                    .security-item strong {
-                        display: block;
-                        color: #1E293B;
-                        font-weight: 600;
-                        margin-bottom: 0.25rem;
-                    }
-                    .security-item p {
-                        color: #64748B;
-                        font-size: 0.9rem;
-                        margin: 0;
-                        line-height: 1.5;
-                    }
-                    .section-domain {
-                        padding: 1.5rem 0;
-                        background: #0F172A;
-                    }
-                    .domain-display {
-                        text-align: center;
-                        color: #94A3B8;
-                        font-size: 0.9rem;
-                        margin: 0;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 0.5rem;
-                    }
-                    .domain-display strong {
-                        color: #E2E8F0;
-                    }
-                    .domain-lock {
-                        color: #22C55E;
-                    }
-                    @media (max-width: 968px) {
-                        .hero { padding: 4rem 0 3rem; }
-                        .hero-subtitle { font-size: 1.1rem; }
-                        .cta-group { flex-direction: column; gap: 1rem; }
-                        .section-features { padding: 4rem 0; }
-                        .section-security { padding: 3rem 0; }
-                        .security-content h2 { font-size: 1.5rem; }
-                    }
-                `}</style>
             </div>
             <Footer />
         </>

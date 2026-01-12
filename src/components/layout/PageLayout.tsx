@@ -18,18 +18,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       <main className="page-content">
         {children}
       </main>
-
-      <style>{`
-        .page-layout {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .page-content {
-          flex: 1;
-        }
-      `}</style>
     </div>
   );
 };

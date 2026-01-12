@@ -26,32 +26,6 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           {actionLabel}
         </Button>
       )}
-
-      <style>{`
-        .empty-state {
-          text-align: center;
-          padding: 3rem 1.5rem;
-        }
-
-        .empty-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-
-        .empty-title {
-          font-size: 1.25rem;
-          color: var(--color-text);
-          margin-bottom: 0.5rem;
-        }
-
-        .empty-description {
-          color: var(--color-text-secondary);
-          margin-bottom: 1.5rem;
-          max-width: 400px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-      `}</style>
     </div>
   );
 };
