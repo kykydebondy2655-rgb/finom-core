@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
@@ -7,6 +8,7 @@ import { getRateForProfile, PROFILE_LABELS, RateProfile } from '@/lib/rates';
 
 const Simulator = () => {
     const navigate = useNavigate();
+    const { user, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         amount: 250000,
         downPayment: 30000,
@@ -205,7 +207,17 @@ const Simulator = () => {
                                 </Card>
 
                                 <div className="cta-buttons">
-                                    <Button onClick={() => navigate('/register')} variant="primary" size="lg">
+                                    <Button 
+                                        onClick={() => {
+                                            if (isAuthenticated) {
+                                                navigate('/loans/new');
+                                            } else {
+                                                navigate('/login', { state: { from: { pathname: '/loans/new' } } });
+                                            }
+                                        }} 
+                                        variant="primary" 
+                                        size="lg"
+                                    >
                                         Démarrer ma demande
                                     </Button>
                                     <Button onClick={() => navigate('/how-it-works')} variant="ghost" size="md">

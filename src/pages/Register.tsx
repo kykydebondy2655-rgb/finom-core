@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/finom/Button';
 
@@ -13,8 +13,23 @@ const Register = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const { register, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get redirect destination from state
+    const from = location.state?.from?.pathname;
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            if (from) {
+                navigate(from, { replace: true });
+            } else {
+                navigate('/dashboard', { replace: true });
+            }
+        }
+    }, [isAuthenticated, user, from, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,14 +55,11 @@ const Register = () => {
 
         try {
             await register(formData.email, formData.password, formData.firstName, formData.lastName);
-
-            const pendingSim = localStorage.getItem('pendingSimulation');
-            if (pendingSim) {
-                const data = JSON.parse(pendingSim);
-                localStorage.removeItem('pendingSimulation');
-                navigate('/loans/new', { state: data });
+            // After successful registration, redirect to the intended page or dashboard
+            if (from) {
+                navigate(from, { replace: true });
             } else {
-                navigate('/dashboard');
+                navigate('/dashboard', { replace: true });
             }
         } catch (err: any) {
             setError(err?.message || 'Erreur lors de l\'inscription');
@@ -139,7 +151,7 @@ const Register = () => {
                     </form>
 
                     <p className="auth-footer">
-                        Déjà un compte ? <Link to="/login">Se connecter</Link>
+                        Déjà un compte ? <Link to="/login" state={{ from: location.state?.from }}>Se connecter</Link>
                     </p>
                 </div>
             </div>
