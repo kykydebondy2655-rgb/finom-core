@@ -28,7 +28,7 @@ const LoansList: React.FC = () => {
       const data = await loansApi.getByUser(user.id);
       setLoans(data || []);
     } catch (err) {
-      console.error('Error loading loans:', err);
+      // Log silently - error state handles UI feedback
       setError('Impossible de charger vos dossiers');
     } finally {
       setLoading(false);

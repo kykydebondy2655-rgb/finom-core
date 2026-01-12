@@ -6,15 +6,20 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import LoanStatusModal from '@/components/admin/LoanStatusModal';
-import { adminApi, formatCurrency, formatDate } from '@/services/api';
+import { adminApi, formatCurrency, formatDate, type LoanApplication, type Profile } from '@/services/api';
+import logger from '@/lib/logger';
+
+interface LoanWithUser extends LoanApplication {
+  user?: Profile | null;
+}
 
 const AdminLoans: React.FC = () => {
   const navigate = useNavigate();
-  const [loans, setLoans] = useState<any[]>([]);
+  const [loans, setLoans] = useState<LoanWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [selectedLoan, setSelectedLoan] = useState<any>(null);
+  const [selectedLoan, setSelectedLoan] = useState<LoanWithUser | null>(null);
 
   useEffect(() => {
     loadLoans();
@@ -26,13 +31,13 @@ const AdminLoans: React.FC = () => {
       const data = await adminApi.getAllLoans();
       setLoans(data || []);
     } catch (err) {
-      console.error('Error loading loans:', err);
+      logger.logError('Error loading loans', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEditStatus = (loan: any) => {
+  const handleEditStatus = (loan: LoanWithUser) => {
     setSelectedLoan(loan);
     setShowStatusModal(true);
   };

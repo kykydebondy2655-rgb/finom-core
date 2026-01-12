@@ -241,8 +241,8 @@ const Simulator = () => {
                   <input
                     type="number"
                     value={formData.propertyPrice}
-                    onChange={(e) => updateField('propertyPrice', Number(e.target.value))}
-                    min={10000}
+                    onChange={(e) => updateField('propertyPrice', Math.max(0, Number(e.target.value) || 0))}
+                    min={0}
                     step={5000}
                     className="number-input"
                   />
@@ -255,7 +255,7 @@ const Simulator = () => {
                     <input
                       type="number"
                       value={formData.notaryFees}
-                      onChange={(e) => updateField('notaryFees', Number(e.target.value))}
+                      onChange={(e) => updateField('notaryFees', Math.max(0, Number(e.target.value) || 0))}
                       min={0}
                       step={500}
                       className="number-input"
@@ -268,7 +268,7 @@ const Simulator = () => {
                     <input
                       type="number"
                       value={formData.agencyFees}
-                      onChange={(e) => updateField('agencyFees', Number(e.target.value))}
+                      onChange={(e) => updateField('agencyFees', Math.max(0, Number(e.target.value) || 0))}
                       min={0}
                       step={500}
                       className="number-input"
@@ -282,7 +282,7 @@ const Simulator = () => {
                   <input
                     type="number"
                     value={formData.worksAmount}
-                    onChange={(e) => updateField('worksAmount', Number(e.target.value))}
+                    onChange={(e) => updateField('worksAmount', Math.max(0, Number(e.target.value) || 0))}
                     min={0}
                     step={1000}
                     className="number-input"
@@ -299,7 +299,7 @@ const Simulator = () => {
                   <input
                     type="number"
                     value={formData.downPayment}
-                    onChange={(e) => updateField('downPayment', Number(e.target.value))}
+                    onChange={(e) => updateField('downPayment', Math.max(0, Number(e.target.value) || 0))}
                     min={0}
                     step={1000}
                     className="number-input"
@@ -441,13 +441,13 @@ const Simulator = () => {
 
                 {/* CTA Buttons */}
                 <div className="cta-buttons">
-                  <Button 
+                <Button 
                     onClick={handleCreateLoan} 
                     variant="primary" 
                     size="lg"
-                    disabled={loading}
+                    disabled={loading || !result?.isValid}
                   >
-                    {loading ? 'Création en cours...' : '📋 Faire une demande de prêt'}
+                    {loading ? '⏳ Création en cours...' : '📋 Faire une demande de prêt'}
                   </Button>
                   <Button onClick={() => navigate('/how-it-works')} variant="ghost" size="md">
                     Comment ça marche ?
