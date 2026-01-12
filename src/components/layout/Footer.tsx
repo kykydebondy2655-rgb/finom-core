@@ -17,8 +17,8 @@ const Footer: React.FC = () => {
             <span className="footer-logo">FINOM</span>
             <p className="footer-tagline">Votre partenaire financement immobilier</p>
             <div className="footer-certifications">
-              <span className="certification-badge">ORIAS N° 12 345 678</span>
-              <span className="certification-badge">ACPR</span>
+              <span className="certification-badge">Partenaire Treezor</span>
+              <span className="certification-badge">Partenaire Solaris</span>
             </div>
           </div>
 
@@ -35,8 +35,6 @@ const Footer: React.FC = () => {
               <h4>À propos</h4>
               <Link to="/about">Qui sommes-nous</Link>
               <Link to="/contact">Nous contacter</Link>
-              <a href="https://www.orias.fr" target="_blank" rel="noopener noreferrer">Vérifier ORIAS</a>
-              <a href="https://acpr.banque-france.fr" target="_blank" rel="noopener noreferrer">ACPR</a>
             </div>
 
             <div className="footer-column">
@@ -55,39 +53,26 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Informations légales obligatoires */}
+        {/* Informations légales */}
         <div className="footer-legal">
           <div className="legal-info">
-            <p><strong>FINOM SAS</strong> - Société par Actions Simplifiée au capital de 100 000 €</p>
-            <p>Siège social : 15 Avenue des Champs-Élysées, 75008 Paris, France</p>
-            <p>RCS Paris B 123 456 789 - SIRET 123 456 789 00012 - TVA FR 12 123456789</p>
+            <p><strong>FINOM</strong> — Service de simulation de prêt immobilier</p>
+            <p>Contact : contact@pret-finom.co | +31 20 524 9111</p>
           </div>
           
           <div className="regulatory-info">
             <p>
-              <strong>Intermédiaire en Opérations de Banque et en Services de Paiement (IOBSP)</strong>
-              <br />
-              Immatriculé à l'ORIAS sous le n° 12 345 678 - Vérifiable sur{' '}
-              <a href="https://www.orias.fr" target="_blank" rel="noopener noreferrer">www.orias.fr</a>
+              <strong>Partenaires bancaires agréés :</strong> Treezor (ACPR - France) et Solaris (BaFin - Allemagne)
             </p>
             <p>
-              Sous le contrôle de l'<strong>Autorité de Contrôle Prudentiel et de Résolution (ACPR)</strong>
-              <br />
-              4 Place de Budapest, CS 92459, 75436 Paris Cedex 09
-            </p>
-          </div>
-
-          <div className="mediation-info">
-            <p>
-              <strong>Médiation :</strong> En cas de litige, vous pouvez recourir gratuitement au 
-              médiateur de l'ASF - <a href="https://lemediateur.asf-france.com" target="_blank" rel="noopener noreferrer">lemediateur.asf-france.com</a>
+              Vos données sont protégées et hébergées en Europe, conformément au RGPD.
             </p>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="footer-bottom">
-          <p>© {currentYear} FINOM SAS. Tous droits réservés.</p>
+          <p>© {currentYear} FINOM. Tous droits réservés.</p>
           <p className="disclaimer">
             Un crédit vous engage et doit être remboursé. Vérifiez vos capacités de remboursement avant de vous engager.
           </p>

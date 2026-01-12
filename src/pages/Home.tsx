@@ -21,7 +21,7 @@ const Home = () => {
                                 avec <span className="highlight">FINOM</span>
                             </h1>
                             <p className="hero-subtitle">
-                                Courtier en prêt immobilier agréé ORIAS.
+                                Simulateur de prêt immobilier.
                                 Simulation gratuite, sans engagement, 100% confidentielle.
                             </p>
                             <div className="cta-group">
@@ -36,7 +36,7 @@ const Home = () => {
                             </div>
                             <div className="trust-markers">
                                 <span className="trust-item">🛡️ Données chiffrées</span>
-                                <span className="trust-item">✓ ORIAS - ACPR</span>
+                                <span className="trust-item">🇪🇺 Conforme RGPD</span>
                                 <span className="trust-item">📋 Sans engagement</span>
                             </div>
                             <p className="no-data-warning">
@@ -64,7 +64,7 @@ const Home = () => {
                             <div className="card feature-card">
                                 <div className="icon-box">👨‍💼</div>
                                 <h3>Conseiller Dédié</h3>
-                                <p>Un expert certifié IOBSP vous accompagne du début à la signature chez le notaire.</p>
+                                <p>Un expert vous accompagne du début à la signature chez le notaire.</p>
                             </div>
                         </div>
                     </div>
@@ -93,8 +93,8 @@ const Home = () => {
                                 <div className="security-item">
                                     <span className="security-icon">✅</span>
                                     <div>
-                                        <strong>Courtier Agréé</strong>
-                                        <p>FINOM est immatriculé ORIAS et contrôlé par l'ACPR.</p>
+                                        <strong>Partenaires Agréés</strong>
+                                        <p>Nous travaillons avec Treezor (ACPR) et Solaris (BaFin).</p>
                                     </div>
                                 </div>
                                 <div className="security-item">

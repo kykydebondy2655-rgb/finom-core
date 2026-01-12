@@ -67,7 +67,7 @@ const Contact = () => {
                             et vous accompagner dans votre projet immobilier.
                         </p>
                         <p className="company-identifier">
-                            <strong>FINOM SAS</strong> — Courtier IOBSP immatriculé ORIAS
+                            <strong>FINOM</strong> — Service de simulation de prêt immobilier
                         </p>
                     </header>
 
