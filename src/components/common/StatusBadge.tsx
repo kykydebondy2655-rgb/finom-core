@@ -28,6 +28,11 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
   // KYC statuses
   new: { label: 'Nouveau', color: '#1E40AF', bg: '#DBEAFE' },
   verified: { label: 'Vérifié', color: '#065F46', bg: '#D1FAE5' },
+  // Lead statuses
+  contacted: { label: 'Contacté', color: '#0891B2', bg: '#CFFAFE' },
+  qualified: { label: 'Qualifié', color: '#7C3AED', bg: '#EDE9FE' },
+  converted: { label: 'Converti', color: '#065F46', bg: '#D1FAE5' },
+  lost: { label: 'Perdu', color: '#991B1B', bg: '#FEE2E2' },
 };
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {

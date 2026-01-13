@@ -75,11 +75,16 @@ describe('getStatusLabel', () => {
   it('returns correct labels for known statuses', () => {
     expect(getStatusLabel('pending')).toBe('En attente');
     expect(getStatusLabel('in_review')).toBe('En cours d\'analyse');
+    expect(getStatusLabel('under_review')).toBe('En analyse');
+    expect(getStatusLabel('documents_required')).toBe('Documents requis');
+    expect(getStatusLabel('processing')).toBe('En traitement');
     expect(getStatusLabel('approved')).toBe('Approuvé');
     expect(getStatusLabel('rejected')).toBe('Refusé');
     expect(getStatusLabel('funded')).toBe('Financé');
     expect(getStatusLabel('completed')).toBe('Terminé');
     expect(getStatusLabel('draft')).toBe('Brouillon');
+    expect(getStatusLabel('validated')).toBe('Validé');
+    expect(getStatusLabel('received')).toBe('Reçu');
   });
 
   it('handles unknown statuses', () => {
@@ -93,8 +98,10 @@ describe('getStatusColor', () => {
   it('returns correct colors for known statuses', () => {
     expect(getStatusColor('pending')).toBe('var(--color-warning)');
     expect(getStatusColor('in_review')).toBe('var(--color-info)');
+    expect(getStatusColor('under_review')).toBe('var(--color-info)');
     expect(getStatusColor('approved')).toBe('var(--color-success)');
     expect(getStatusColor('rejected')).toBe('var(--color-danger)');
+    expect(getStatusColor('validated')).toBe('var(--color-success)');
   });
 
   it('returns default color for unknown statuses', () => {
