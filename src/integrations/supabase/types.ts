@@ -608,6 +608,51 @@ export type Database = {
           },
         ]
       }
+      login_history: {
+        Row: {
+          browser: string | null
+          device_type: string | null
+          email: string
+          first_name: string | null
+          id: string
+          ip_address: string | null
+          last_name: string | null
+          logged_in_at: string
+          os: string | null
+          user_agent: string | null
+          user_id: string
+          user_role: string
+        }
+        Insert: {
+          browser?: string | null
+          device_type?: string | null
+          email: string
+          first_name?: string | null
+          id?: string
+          ip_address?: string | null
+          last_name?: string | null
+          logged_in_at?: string
+          os?: string | null
+          user_agent?: string | null
+          user_id: string
+          user_role?: string
+        }
+        Update: {
+          browser?: string | null
+          device_type?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          ip_address?: string | null
+          last_name?: string | null
+          logged_in_at?: string
+          os?: string | null
+          user_agent?: string | null
+          user_id?: string
+          user_role?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           created_at: string

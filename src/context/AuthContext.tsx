@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import { detectDevice, getClientIP } from '@/lib/deviceDetector';
 
 export interface AuthUser {
     id: string;
@@ -141,7 +142,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
 
         setUser(loggedUser);
+
+        // Log the login (non-blocking)
+        logLoginHistory(loggedUser).catch(err => 
+            logger.logError('Failed to log login history', err)
+        );
+
         return loggedUser;
+    };
+
+    const logLoginHistory = async (loggedUser: AuthUser) => {
+        try {
+            const deviceInfo = detectDevice();
+            const ipAddress = await getClientIP();
+
+            await supabase.from('login_history').insert({
+                user_id: loggedUser.id,
+                email: loggedUser.email,
+                user_role: loggedUser.role,
+                first_name: loggedUser.firstName || null,
+                last_name: loggedUser.lastName || null,
+                ip_address: ipAddress,
+                user_agent: deviceInfo.userAgent,
+                device_type: deviceInfo.deviceType,
+                browser: deviceInfo.browser,
+                os: deviceInfo.os
+            });
+        } catch (err) {
+            logger.logError('Login history insert failed', err);
+        }
     };
 
     const clearMustChangePassword = () => {
