@@ -3,6 +3,7 @@
  * Tests the loan simulation functionality and calculations
  */
 
+// @ts-nocheck - Vitest types conflict with testing-library
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
