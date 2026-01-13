@@ -15,11 +15,18 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double-submission
+    if (loading) return;
+    
     setError('');
     setFieldErrors({});
 
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Validation Zod
-    const formData: ForgotPasswordFormData = { email };
+    const formData: ForgotPasswordFormData = { email: normalizedEmail };
     const result = forgotPasswordSchema.safeParse(formData);
 
     if (!result.success) {
@@ -45,7 +52,8 @@ const ForgotPassword = () => {
 
       if (resetError) {
         logger.error('Password reset request failed', { error: resetError.message });
-        setError(resetError.message);
+        // Don't reveal if email exists or not for security
+        setSuccess(true);
       } else {
         setSuccess(true);
         logger.info('Password reset email sent', { email: result.data.email });
@@ -63,7 +71,8 @@ const ForgotPassword = () => {
       }
     } catch (err) {
       logger.logError('Password reset error', err);
-      setError('Une erreur inattendue est survenue');
+      // Always show success to prevent email enumeration
+      setSuccess(true);
     } finally {
       setLoading(false);
     }

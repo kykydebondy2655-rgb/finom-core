@@ -65,6 +65,19 @@ const Profile = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user?.id) return;
+        
+        // Prevent double-submission
+        if (loading) return;
+
+        // Basic validation
+        if (formData.firstName.trim().length < 1) {
+            toast.error('Le prénom est requis');
+            return;
+        }
+        if (formData.lastName.trim().length < 1) {
+            toast.error('Le nom est requis');
+            return;
+        }
 
         setLoading(true);
 
@@ -72,10 +85,10 @@ const Profile = () => {
             const { error } = await supabase
                 .from('profiles')
                 .update({
-                    first_name: formData.firstName,
-                    last_name: formData.lastName,
-                    phone: formData.phone,
-                    address: formData.address
+                    first_name: formData.firstName.trim(),
+                    last_name: formData.lastName.trim(),
+                    phone: formData.phone.trim() || null,
+                    address: formData.address.trim() || null
                 })
                 .eq('id', user.id);
 

@@ -98,38 +98,57 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
     };
   }, [user?.id, fetchNotifications]);
 
-  const markAsRead = async (id: string) => {
+  const markAsRead = useCallback(async (id: string) => {
+    // Optimistic update first
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+    
     try {
-      await supabase
+      const { error } = await supabase
         .from('notifications')
         .update({ read: true })
         .eq('id', id);
       
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      if (error) {
+        // Rollback on error
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, read: false } : n))
+        );
+        throw error;
+      }
     } catch (err) {
       logger.logError('Error marking notification as read', err);
     }
-  };
+  }, []);
 
-  const markAllAsRead = async () => {
+  const markAllAsRead = useCallback(async () => {
     if (!user?.id) return;
     
+    // Store previous state for potential rollback
+    const previousNotifications = [...notifications];
+    
+    // Optimistic update
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, read: true }))
+    );
+    
     try {
-      await supabase
+      const { error } = await supabase
         .from('notifications')
         .update({ read: true })
         .eq('user_id', user.id)
         .eq('read', false);
       
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true }))
-      );
+      if (error) {
+        // Rollback on error
+        setNotifications(previousNotifications);
+        throw error;
+      }
     } catch (err) {
       logger.logError('Error marking all notifications as read', err);
     }
-  };
+  }, [user?.id, notifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 

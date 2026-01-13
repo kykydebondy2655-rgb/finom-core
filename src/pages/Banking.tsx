@@ -54,6 +54,9 @@ const Banking: React.FC = () => {
   };
 
   const handleCreateTransfer = async () => {
+    // Prevent double-submission
+    if (submitting) return;
+    
     if (!user || !transferData.beneficiaryId || transferData.amount <= 0) {
       toast.error('Veuillez remplir tous les champs');
       return;
@@ -77,13 +80,24 @@ const Banking: React.FC = () => {
       return;
     }
     
+    // Verify beneficiary exists and is active
+    const selectedBeneficiary = beneficiaries.find(b => b.id === transferData.beneficiaryId);
+    if (!selectedBeneficiary) {
+      toast.error('Bénéficiaire non trouvé');
+      return;
+    }
+    if (selectedBeneficiary.status !== 'active' && selectedBeneficiary.status !== 'pending') {
+      toast.error('Ce bénéficiaire n\'est pas actif');
+      return;
+    }
+    
     try {
       setSubmitting(true);
       await transfersApi.create({
         user_id: user.id,
         beneficiary_id: transferData.beneficiaryId,
         amount: transferData.amount,
-        reference: transferData.reference || undefined
+        reference: transferData.reference?.trim() || undefined
       });
       toast.success('Virement initié avec succès');
       setShowTransferModal(false);
@@ -99,6 +113,9 @@ const Banking: React.FC = () => {
   // IBAN validation is now imported from @/lib/validators
 
   const handleCreateBeneficiary = async () => {
+    // Prevent double-submission
+    if (submitting) return;
+    
     if (!user || !beneficiaryData.name || !beneficiaryData.iban) {
       toast.error('Veuillez remplir le nom et l\'IBAN');
       return;
@@ -111,8 +128,24 @@ const Banking: React.FC = () => {
     }
     
     // Validate IBAN format
-    if (!isValidIBAN(beneficiaryData.iban)) {
+    const cleanIban = beneficiaryData.iban.replace(/\s/g, '').toUpperCase();
+    if (!isValidIBAN(cleanIban)) {
       toast.error('Format IBAN invalide');
+      return;
+    }
+    
+    // Check for duplicate IBAN
+    const duplicateIban = beneficiaries.find(
+      b => b.iban.replace(/\s/g, '').toUpperCase() === cleanIban
+    );
+    if (duplicateIban) {
+      toast.error('Ce bénéficiaire existe déjà');
+      return;
+    }
+    
+    // Validate BIC if provided
+    if (beneficiaryData.bic && !isValidBIC(beneficiaryData.bic)) {
+      toast.error('Format BIC invalide');
       return;
     }
     
@@ -121,7 +154,7 @@ const Banking: React.FC = () => {
       await beneficiariesApi.create({
         user_id: user.id,
         name: beneficiaryData.name.trim(),
-        iban: beneficiaryData.iban.replace(/\s/g, '').toUpperCase(),
+        iban: cleanIban,
         bic: beneficiaryData.bic?.toUpperCase() || undefined
       });
       toast.success('Bénéficiaire ajouté');

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import Header from './Header';
 
 interface PageLayoutProps {
@@ -7,19 +7,21 @@ interface PageLayoutProps {
   className?: string;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ 
+const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({ 
   children, 
   showHeader = true,
   className = ''
-}) => {
+}, ref) => {
   return (
-    <div className={`page-layout ${className}`}>
+    <div ref={ref} className={`page-layout ${className}`}>
       {showHeader && <Header />}
       <main className="page-content">
         {children}
       </main>
     </div>
   );
-};
+});
+
+PageLayout.displayName = 'PageLayout';
 
 export default PageLayout;

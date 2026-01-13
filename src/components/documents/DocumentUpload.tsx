@@ -134,18 +134,25 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
     e.preventDefault();
     setIsDragging(false);
 
+    // Prevent multiple uploads while one is in progress
+    if (uploading) return;
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       uploadFile(files[0]);
     }
-  }, [user, loanId, category]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loanId, category, uploading]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Prevent multiple uploads while one is in progress
+    if (uploading) return;
+    
     const files = e.target.files;
     if (files && files.length > 0) {
       uploadFile(files[0]);
     }
-    // Reset input
+    // Reset input to allow re-uploading the same file
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
