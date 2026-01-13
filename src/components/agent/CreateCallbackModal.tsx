@@ -83,28 +83,38 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double-submission
+    if (loading) return;
+    
     if (!user || !selectedClient || !selectedDate || !scheduledTime) {
       toast.warning("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+    
+    // Validate that selected date is not in the past
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    const scheduledAt = new Date(`${dateStr}T${scheduledTime}`);
+    if (scheduledAt < new Date()) {
+      toast.warning("La date et l'heure doivent être dans le futur");
       return;
     }
 
     try {
       setLoading(true);
       toast.info('Création du rappel...');
-      const dateStr = format(selectedDate, 'yyyy-MM-dd');
-      const scheduledAt = new Date(`${dateStr}T${scheduledTime}`).toISOString();
       logger.debug('Creating callback', {
         agent_id: user.id,
         client_id: selectedClient,
-        scheduled_at: scheduledAt,
+        scheduled_at: scheduledAt.toISOString(),
       });
 
       await agentApi.createCallback({
         agent_id: user.id,
         client_id: selectedClient,
-        scheduled_at: scheduledAt,
-        reason: reason || null,
-        notes: notes || null,
+        scheduled_at: scheduledAt.toISOString(),
+        reason: reason.trim() || null,
+        notes: notes.trim() || null,
         status: 'planned'
       });
 

@@ -20,8 +20,32 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose, on
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double-submission
+    if (loading) return;
+    
+    // Validate all fields
     if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
       setError('Tous les champs sont requis');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Format d\'email invalide');
+      return;
+    }
+    
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+    
+    // Validate name length
+    if (formData.firstName.trim().length < 2 || formData.lastName.trim().length < 2) {
+      setError('Le prénom et le nom doivent contenir au moins 2 caractères');
       return;
     }
 
@@ -30,7 +54,12 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose, on
       setError(null);
       
       const { adminApi } = await import('@/services/api');
-      await adminApi.createAgent(formData.email, formData.password, formData.firstName, formData.lastName);
+      await adminApi.createAgent(
+        formData.email.toLowerCase().trim(),
+        formData.password,
+        formData.firstName.trim(),
+        formData.lastName.trim()
+      );
       
       resetForm();
       onSuccess();

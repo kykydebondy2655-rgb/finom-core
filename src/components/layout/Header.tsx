@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react';
 
-const Header: React.FC = () => {
+const Header = forwardRef<HTMLElement, object>((_props, ref) => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
   const navLinks = getNavLinks();
 
   return (
-    <header className="header">
+    <header ref={ref} className="header">
       <div className="header-container">
         <Link to={isAuthenticated ? '/dashboard' : '/'} className="logo">
           <span className="logo-text">FINOM</span>
@@ -176,6 +176,8 @@ const Header: React.FC = () => {
 
     </header>
   );
-};
+});
+
+Header.displayName = 'Header';
 
 export default Header;

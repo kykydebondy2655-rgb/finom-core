@@ -107,8 +107,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const login = async (email: string, password: string): Promise<AuthUser> => {
+        // Normalize email to lowercase
+        const normalizedEmail = email.toLowerCase().trim();
+        
         const { data, error } = await supabase.auth.signInWithPassword({
-            email,
+            email: normalizedEmail,
             password
         });
 
@@ -132,7 +135,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         const loggedUser: AuthUser = {
             id: authUser.id,
-            email: authUser.email || '',
+            email: authUser.email || normalizedEmail,
             firstName: profile?.first_name || undefined,
             lastName: profile?.last_name || undefined,
             phone: profile?.phone || undefined,
@@ -180,13 +183,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const register = async (email: string, password: string, firstName: string, lastName: string): Promise<AuthUser> => {
+        // Normalize email to lowercase to prevent case sensitivity issues
+        const normalizedEmail = email.toLowerCase().trim();
+        
         const { data, error } = await supabase.auth.signUp({
-            email,
+            email: normalizedEmail,
             password,
             options: {
                 data: {
-                    first_name: firstName,
-                    last_name: lastName
+                    first_name: firstName.trim(),
+                    last_name: lastName.trim()
                 },
                 emailRedirectTo: `${window.location.origin}/`
             }
@@ -207,16 +213,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // New users are always clients
         const registeredUser: AuthUser = {
             id: authUser.id,
-            email: authUser.email || '',
-            firstName: firstName,
-            lastName: lastName,
+            email: authUser.email || normalizedEmail,
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
             role: 'client'
         };
 
         setUser(registeredUser);
 
         // Send welcome email (non-blocking)
-        emailService.sendWelcome(email, firstName).catch(err => 
+        emailService.sendWelcome(normalizedEmail, firstName.trim()).catch(err => 
             logger.logError('Failed to send welcome email', err)
         );
 

@@ -28,15 +28,25 @@ const NotificationBell: React.FC = () => {
     }
   }, []);
 
+  const [markingAsRead, setMarkingAsRead] = useState<string | null>(null);
+  
   const handleNotificationClick = async (notification: typeof notifications[0]) => {
-    await markAsRead(notification.id);
-    setIsOpen(false);
+    // Prevent double-click
+    if (markingAsRead === notification.id) return;
     
-    // Navigate based on notification type
-    if (notification.related_entity === 'loan_applications' && notification.related_id) {
-      navigate(`/loans/${notification.related_id}`);
-    } else if (notification.related_entity === 'documents') {
-      navigate('/loans');
+    try {
+      setMarkingAsRead(notification.id);
+      await markAsRead(notification.id);
+      setIsOpen(false);
+      
+      // Navigate based on notification type
+      if (notification.related_entity === 'loan_applications' && notification.related_id) {
+        navigate(`/loans/${notification.related_id}`);
+      } else if (notification.related_entity === 'documents') {
+        navigate('/loans');
+      }
+    } finally {
+      setMarkingAsRead(null);
     }
   };
 

@@ -51,8 +51,14 @@ const AgentCallbacks: React.FC = () => {
     }
   };
 
+  const [updatingCallbackId, setUpdatingCallbackId] = useState<string | null>(null);
+  
   const markAsCompleted = async (id: string) => {
+    // Prevent double-click
+    if (updatingCallbackId === id) return;
+    
     try {
+      setUpdatingCallbackId(id);
       await agentApi.updateCallback(id, { 
         status: 'completed', 
         completed_at: new Date().toISOString() 
@@ -60,6 +66,8 @@ const AgentCallbacks: React.FC = () => {
       loadCallbacks();
     } catch (err) {
       logger.logError('Error updating callback', err);
+    } finally {
+      setUpdatingCallbackId(null);
     }
   };
 
@@ -73,13 +81,21 @@ const AgentCallbacks: React.FC = () => {
     setNotesText(callback.notes || '');
   };
 
+  const [savingNotes, setSavingNotes] = useState(false);
+  
   const saveNotes = async (id: string) => {
+    if (savingNotes) return;
+    
     try {
-      await agentApi.updateCallback(id, { notes: notesText });
+      setSavingNotes(true);
+      await agentApi.updateCallback(id, { notes: notesText.trim() || null });
       setEditingNotesId(null);
+      setNotesText('');
       loadCallbacks();
     } catch (err) {
       logger.logError('Error saving notes', err);
+    } finally {
+      setSavingNotes(false);
     }
   };
 
