@@ -717,6 +717,14 @@ export const adminApi = {
     return data;
   },
 
+  // Delete an agent profile and ALL associated data (admin only)
+  async deleteAgent(agentId: string) {
+    const { data, error } = await supabase
+      .rpc('admin_delete_agent', { _agent_id: agentId });
+    if (error) throw error;
+    return data;
+  },
+
   // Get agent's assigned clients count
   async getAgentClientCount(agentId: string): Promise<number> {
     const { count, error } = await supabase
