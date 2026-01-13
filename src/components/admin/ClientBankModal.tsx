@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '@/components/finom/Button';
 import { isValidIBAN, isValidBIC } from '@/lib/validators';
 import logger from '@/lib/logger';
+import '@/styles/components.css';
 
 interface ClientBankModalProps {
   isOpen: boolean;
@@ -41,16 +42,32 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (loading) return;
+    
     setError(null);
 
-    // Validate IBAN if provided
-    if (iban && !isValidIBAN(iban)) {
+    // Require IBAN and BIC
+    const cleanIban = iban.replace(/\s/g, '').toUpperCase();
+    const cleanBic = bic.replace(/\s/g, '').toUpperCase();
+
+    if (!cleanIban) {
+      setError('L\'IBAN est requis');
+      return;
+    }
+
+    if (!isValidIBAN(cleanIban)) {
       setError('Format IBAN invalide');
       return;
     }
 
-    // Validate BIC if provided
-    if (bic && !isValidBIC(bic)) {
+    if (!cleanBic) {
+      setError('Le BIC est requis');
+      return;
+    }
+
+    if (!isValidBIC(cleanBic)) {
       setError('Format BIC invalide (8 ou 11 caractères)');
       return;
     }
@@ -66,8 +83,8 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
       const { adminApi } = await import('@/services/api');
       await adminApi.updateClientBankAccount(clientId, {
         balance: numericBalance,
-        iban: iban.replace(/\s/g, '').toUpperCase(),
-        bic: bic.replace(/\s/g, '').toUpperCase()
+        iban: cleanIban,
+        bic: cleanBic
       });
       onSuccess();
       onClose();
@@ -108,7 +125,7 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
           </div>
 
           <div className="form-group">
-            <label>IBAN</label>
+            <label>IBAN *</label>
             <input
               type="text"
               value={iban}
@@ -116,12 +133,13 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
               placeholder="FR76 1234 5678 9012 3456 7890 123"
               className="form-input"
               maxLength={34}
+              required
             />
             <span className="form-hint">Format: FR76 suivi de 23 chiffres</span>
           </div>
 
           <div className="form-group">
-            <label>BIC / SWIFT</label>
+            <label>BIC / SWIFT *</label>
             <input
               type="text"
               value={bic}
@@ -129,6 +147,7 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
               placeholder="BNPAFRPP"
               className="form-input"
               maxLength={11}
+              required
             />
             <span className="form-hint">Code banque (8 ou 11 caractères)</span>
           </div>
@@ -142,100 +161,6 @@ const ClientBankModal: React.FC<ClientBankModalProps> = ({
             </Button>
           </div>
         </form>
-
-        <style>{`
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-          }
-          .modal-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            max-width: 480px;
-            width: 100%;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            animation: modalIn 0.2s ease-out;
-          }
-          @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-          }
-          .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-            position: relative;
-          }
-          .modal-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-          }
-          .modal-subtitle {
-            margin: 0.25rem 0 0;
-            color: var(--color-text-secondary);
-            font-size: 0.9rem;
-          }
-          .close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-tertiary);
-          }
-          form {
-            padding: 1.5rem;
-          }
-          .error-msg {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-          }
-          .form-group {
-            margin-bottom: 1.25rem;
-          }
-          .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-          }
-          .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-          }
-          .form-input:focus {
-            outline: none;
-            border-color: var(--color-admin);
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-          }
-          .form-hint {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--color-text-tertiary);
-            margin-top: 0.25rem;
-          }
-          .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-border);
-          }
-        `}</style>
       </div>
     </div>
   );
