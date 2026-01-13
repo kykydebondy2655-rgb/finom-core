@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Button from '@/components/finom/Button';
 import { adminApi } from '@/services/api';
+import { supabase } from '@/integrations/supabase/client';
+import { emailService } from '@/services/emailService';
+import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 
 interface LoanStatusModalProps {
@@ -11,16 +14,21 @@ interface LoanStatusModalProps {
     id: string;
     status: string | null;
     amount: number;
+    rate?: number;
+    monthly_payment?: number;
+    user_id?: string;
     user?: { first_name?: string; last_name?: string };
   } | null;
 }
 
 const STATUS_OPTIONS = [
-  { value: 'pending', label: 'En attente', color: 'var(--color-warning)' },
-  { value: 'in_review', label: 'En analyse', color: 'var(--color-info)' },
-  { value: 'approved', label: 'Approuvé', color: 'var(--color-success)' },
-  { value: 'rejected', label: 'Refusé', color: 'var(--color-danger)' },
-  { value: 'funded', label: 'Financé', color: 'var(--color-success)' },
+  { value: 'pending', label: 'En attente', color: 'var(--color-warning)', icon: '⏳' },
+  { value: 'documents_required', label: 'Documents requis', color: '#7C3AED', icon: '📋' },
+  { value: 'under_review', label: 'En analyse', color: 'var(--color-info)', icon: '🔍' },
+  { value: 'processing', label: 'En traitement', color: '#0891B2', icon: '⚙️' },
+  { value: 'approved', label: 'Approuvé', color: 'var(--color-success)', icon: '✅' },
+  { value: 'rejected', label: 'Refusé', color: 'var(--color-danger)', icon: '❌' },
+  { value: 'funded', label: 'Financé', color: 'var(--color-success)', icon: '💰' },
 ];
 
 const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
@@ -33,6 +41,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
   const [rejectionReason, setRejectionReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   React.useEffect(() => {
     if (loan) {
@@ -53,11 +62,87 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
     try {
       setLoading(true);
       setError(null);
+      
       await adminApi.updateLoanStatus(
         loan.id, 
         selectedStatus, 
         selectedStatus === 'rejected' ? rejectionReason.trim() : undefined
       );
+
+      // Get the user_id to create notification
+      const userId = loan.user_id;
+      
+      if (userId) {
+        // Create notification for client
+        const statusLabel = STATUS_OPTIONS.find(s => s.value === selectedStatus)?.label || selectedStatus;
+        let notificationMessage = `Votre dossier de prêt est maintenant: ${statusLabel}.`;
+        if (selectedStatus === 'rejected') {
+          notificationMessage = `Votre demande de prêt a été refusée. Raison: ${rejectionReason}`;
+        }
+
+        const { error: notifError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: userId,
+            type: 'loan_status',
+            category: 'loan',
+            title: `Dossier ${statusLabel.toLowerCase()}`,
+            message: notificationMessage,
+            related_entity: 'loan_applications',
+            related_id: loan.id,
+          });
+
+        if (notifError) {
+          logger.warn('Notification error', { error: notifError.message });
+        }
+
+        // Send email notification to client (non-blocking)
+        try {
+          const { data: clientProfile } = await supabase
+            .from('profiles')
+            .select('email, first_name')
+            .eq('id', userId)
+            .single();
+
+          if (clientProfile?.email) {
+            if (selectedStatus === 'approved') {
+              emailService.sendLoanApproved(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                loan.id,
+                loan.amount,
+                loan.rate || 0,
+                loan.monthly_payment || 0
+              ).catch(err => logger.logError('Email send error', err));
+            } else if (selectedStatus === 'rejected') {
+              emailService.sendLoanRejected(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                loan.id,
+                rejectionReason
+              ).catch(err => logger.logError('Email send error', err));
+            } else if (selectedStatus === 'funded') {
+              emailService.sendNotification(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                'Votre financement est débloqué ! 🎉',
+                'Les fonds de votre prêt immobilier ont été versés. Félicitations pour votre nouveau projet !'
+              ).catch(err => logger.logError('Email send error', err));
+            } else if (selectedStatus === 'documents_required') {
+              emailService.sendDocumentRequired(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                loan.id,
+                ['Veuillez consulter votre espace client pour voir les documents requis']
+              ).catch(err => logger.logError('Email send error', err));
+            }
+          }
+        } catch (emailErr) {
+          logger.logError('Failed to send status email', emailErr);
+        }
+      }
+
+      toast.success('Statut du dossier mis à jour');
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -100,6 +185,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
                   style={{ '--status-color': option.color } as React.CSSProperties}
                   onClick={() => setSelectedStatus(option.value)}
                 >
+                  <span className="status-icon">{option.icon}</span>
                   {option.label}
                 </button>
               ))}
@@ -144,7 +230,9 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
             background: white;
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
           }
           .modal-header {
             display: flex;
@@ -208,6 +296,9 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
             gap: 0.5rem;
           }
           .status-option {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
             padding: 0.625rem 1rem;
             border: 2px solid var(--color-border);
             border-radius: var(--radius-full);
@@ -223,6 +314,9 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
             background: var(--status-color);
             border-color: var(--status-color);
             color: white;
+          }
+          .status-icon {
+            font-size: 1rem;
           }
           .form-group textarea {
             width: 100%;

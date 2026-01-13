@@ -141,8 +141,17 @@ const LoanDetail: React.FC = () => {
       events.push({ date: null, label: 'Décision', icon: '📋', status: 'upcoming' });
     }
 
-    if (loan?.status === 'in_review') {
+    if (loan?.status === 'in_review' || loan?.status === 'under_review') {
       events.push({ date: null, label: 'Décision', icon: '📋', status: 'pending' });
+    }
+
+    if (loan?.status === 'documents_required') {
+      events.push({ date: null, label: 'Documents en attente', icon: '📋', status: 'pending' });
+      events.push({ date: null, label: 'Analyse', icon: '🔍', status: 'upcoming' });
+    }
+
+    if (loan?.status === 'processing') {
+      events.push({ date: null, label: 'Finalisation', icon: '⚙️', status: 'pending' });
     }
 
     if (loan?.status === 'approved') {
@@ -272,7 +281,9 @@ const LoanDetail: React.FC = () => {
                     <StatusBadge status={loan.status} />
                     <p className="status-description">
                       {loan.status === 'pending' && 'Votre demande est en attente de traitement.'}
-                      {loan.status === 'in_review' && 'Votre dossier est en cours d\'analyse par nos équipes.'}
+                      {(loan.status === 'in_review' || loan.status === 'under_review') && 'Votre dossier est en cours d\'analyse par nos équipes.'}
+                      {loan.status === 'documents_required' && 'Des documents supplémentaires sont nécessaires pour traiter votre dossier.'}
+                      {loan.status === 'processing' && 'Votre dossier est en cours de traitement final.'}
                       {loan.status === 'approved' && 'Félicitations ! Votre demande a été approuvée.'}
                       {loan.status === 'rejected' && 'Votre demande n\'a pas pu être acceptée.'}
                       {loan.status === 'funded' && 'Le financement a été effectué.'}

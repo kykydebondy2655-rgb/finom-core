@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
+import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
 
 interface DocumentStatusModalProps {
@@ -89,6 +90,39 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
 
       if (notifError) {
         logger.warn('Notification creation failed', { error: notifError.message });
+      }
+
+      // Send email notification to client for validated/rejected documents
+      try {
+        const { data: clientProfile } = await supabase
+          .from('profiles')
+          .select('email, first_name')
+          .eq('id', document.user_id)
+          .single();
+
+        if (clientProfile?.email) {
+          if (selectedStatus === 'validated') {
+            emailService.sendNotification(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              'Document validé ✅',
+              `Votre document "${document.file_name}" a été validé par nos équipes.`,
+              'Voir mes documents',
+              `${window.location.origin}/loans`
+            ).catch(err => logger.logError('Email send error', err));
+          } else if (selectedStatus === 'rejected') {
+            emailService.sendNotification(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              'Document rejeté ❌',
+              `Votre document "${document.file_name}" n'a pas pu être validé. Raison: ${rejectionReason}. Veuillez soumettre un nouveau document.`,
+              'Corriger mon document',
+              `${window.location.origin}/loans`
+            ).catch(err => logger.logError('Email send error', err));
+          }
+        }
+      } catch (emailErr) {
+        logger.logError('Failed to send document status email', emailErr);
       }
 
       toast.success('Statut du document mis à jour');
