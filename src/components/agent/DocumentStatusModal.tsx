@@ -98,7 +98,7 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
           .from('profiles')
           .select('email, first_name')
           .eq('id', document.user_id)
-          .single();
+          .maybeSingle();
 
         if (clientProfile?.email) {
           if (selectedStatus === 'validated') {

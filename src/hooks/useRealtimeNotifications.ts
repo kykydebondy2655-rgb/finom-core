@@ -5,11 +5,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import type { Notification } from '@/services/api';
+import type { Notification as AppNotification } from '@/services/api';
 import logger from '@/lib/logger';
 
 interface UseRealtimeNotificationsReturn {
-  notifications: Notification[];
+  notifications: AppNotification[];
   unreadCount: number;
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
@@ -18,7 +18,7 @@ interface UseRealtimeNotificationsReturn {
 
 export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch initial notifications
@@ -64,12 +64,12 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          const newNotification = payload.new as Notification;
+          const newNotification = payload.new as AppNotification;
           setNotifications((prev) => [newNotification, ...prev]);
           
           // Show browser notification if permission granted
-          if (Notification.permission === 'granted') {
-            new Notification(newNotification.title, {
+          if (window.Notification && window.Notification.permission === 'granted') {
+            new window.Notification(newNotification.title, {
               body: newNotification.message,
               icon: '/favicon.ico',
             });
@@ -85,7 +85,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          const updatedNotification = payload.new as Notification;
+          const updatedNotification = payload.new as AppNotification;
           setNotifications((prev) =>
             prev.map((n) => (n.id === updatedNotification.id ? updatedNotification : n))
           );

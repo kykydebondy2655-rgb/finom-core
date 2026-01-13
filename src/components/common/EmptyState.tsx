@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import Button from '@/components/finom/Button';
 
 interface EmptyStateProps {
@@ -9,15 +9,15 @@ interface EmptyStateProps {
   onAction?: () => void;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({
+const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(({
   icon = '📁',
   title,
   description,
   actionLabel,
   onAction
-}) => {
+}, ref) => {
   return (
-    <div className="empty-state">
+    <div ref={ref} className="empty-state">
       <div className="empty-icon">{icon}</div>
       <h3 className="empty-title">{title}</h3>
       {description && <p className="empty-description">{description}</p>}
@@ -28,6 +28,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       )}
     </div>
   );
-};
+});
+
+EmptyState.displayName = 'EmptyState';
 
 export default EmptyState;
