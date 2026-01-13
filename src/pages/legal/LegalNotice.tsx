@@ -21,9 +21,10 @@ const LegalNotice: React.FC = () => {
               <p><strong>Raison sociale :</strong> FINOM Payments B.V.</p>
               <p><strong>Forme juridique :</strong> Besloten Vennootschap (B.V.) — Société à responsabilité limitée néerlandaise</p>
               <p><strong>Siège social :</strong> Jachthavenweg 109H, 1081 KM Amsterdam, Pays-Bas</p>
+              <p><strong>Établissement secondaire :</strong> 9 Rue du Quatre Septembre, 75002 Paris, France</p>
               <p><strong>Numéro KVK (Chambre de Commerce) :</strong> 78680751</p>
               <p><strong>Code LEI :</strong> 7245008GWLPQCA1S1726</p>
-              <p><strong>Téléphone :</strong> +31 20 524 9111</p>
+              <p><strong>Téléphone :</strong> 01 87 68 08 90</p>
               <p><strong>Email :</strong> contact@pret-finom.co</p>
               <p><strong>Site web :</strong> pret-finom.co</p>
             </div>
@@ -46,16 +47,7 @@ const LegalNotice: React.FC = () => {
           </section>
 
           <section>
-            <h2>4. Hébergeur</h2>
-            <div className="info-block">
-              <p><strong>Nom :</strong> Cloudflare, Inc.</p>
-              <p><strong>Adresse :</strong> 101 Townsend St, San Francisco, CA 94107, États-Unis</p>
-              <p><strong>Site web :</strong> https://www.cloudflare.com</p>
-            </div>
-          </section>
-
-          <section>
-            <h2>5. Partenaires bancaires</h2>
+            <h2>4. Partenaires bancaires</h2>
             <p>FINOM travaille en partenariat avec des établissements financiers agréés :</p>
             <ul className="partner-list">
               <li><strong>Treezor</strong> — Établissement de monnaie électronique agréé par l'ACPR (France)</li>
@@ -65,30 +57,30 @@ const LegalNotice: React.FC = () => {
           </section>
 
           <section>
-            <h2>6. Propriété intellectuelle</h2>
+            <h2>5. Propriété intellectuelle</h2>
             <p>L'ensemble du contenu de ce site (textes, images, logos, graphismes, vidéos, structure, mise en page) est la propriété exclusive de FINOM Payments B.V. ou de ses partenaires.</p>
             <p>Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite, sauf autorisation écrite préalable de FINOM Payments B.V.</p>
           </section>
 
           <section>
-            <h2>7. Protection des données personnelles</h2>
+            <h2>6. Protection des données personnelles</h2>
             <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez de droits sur vos données personnelles.</p>
             <p>Pour plus d'informations, consultez notre <a href="/privacy">Politique de Confidentialité</a>.</p>
             <p><strong>Contact :</strong> contact@pret-finom.co</p>
           </section>
 
           <section>
-            <h2>8. Cookies</h2>
+            <h2>7. Cookies</h2>
             <p>Ce site utilise des cookies pour améliorer votre expérience de navigation. Pour en savoir plus sur notre utilisation des cookies, consultez notre <a href="/privacy">Politique de Confidentialité</a>.</p>
           </section>
 
           <section>
-            <h2>9. Médiation</h2>
+            <h2>8. Médiation</h2>
             <p>En cas de litige, vous pouvez contacter notre service client à contact@pret-finom.co pour rechercher une solution amiable.</p>
           </section>
 
           <section>
-            <h2>10. Droit applicable</h2>
+            <h2>9. Droit applicable</h2>
             <p>Les présentes mentions légales sont soumises au droit néerlandais, conformément au siège social de FINOM Payments B.V. Pour les consommateurs résidant en France, les dispositions impératives du droit français de la consommation demeurent applicables.</p>
           </section>
         </div>
