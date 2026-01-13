@@ -113,7 +113,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
           .from('profiles')
           .select('email, first_name')
           .eq('id', loan.user_id)
-          .single();
+          .maybeSingle();
 
         if (clientProfile?.email) {
           if (selectedStatus === 'approved') {
