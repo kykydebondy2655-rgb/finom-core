@@ -2,7 +2,7 @@
  * Hook for real-time notifications via Supabase Realtime
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import type { Notification as AppNotification } from '@/services/api';
@@ -20,6 +20,10 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Ref to track current notifications for rollback without changing callback identity
+  const notificationsRef = useRef<AppNotification[]>([]);
+  notificationsRef.current = notifications;
 
   // Fetch initial notifications
   const fetchNotifications = useCallback(async () => {
@@ -98,6 +102,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
     };
   }, [user?.id, fetchNotifications]);
 
+  // Mark single notification as read with optimistic update
   const markAsRead = useCallback(async (id: string) => {
     // Optimistic update first
     setNotifications((prev) =>
@@ -122,11 +127,12 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
     }
   }, []);
 
+  // Mark all notifications as read with optimistic update
   const markAllAsRead = useCallback(async () => {
     if (!user?.id) return;
     
-    // Store previous state for potential rollback
-    const previousNotifications = [...notifications];
+    // Store previous state for potential rollback using ref
+    const previousNotifications = [...notificationsRef.current];
     
     // Optimistic update
     setNotifications((prev) =>
@@ -148,7 +154,7 @@ export const useRealtimeNotifications = (): UseRealtimeNotificationsReturn => {
     } catch (err) {
       logger.logError('Error marking all notifications as read', err);
     }
-  }, [user?.id, notifications]);
+  }, [user?.id]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
