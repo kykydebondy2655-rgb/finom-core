@@ -709,14 +709,12 @@ export const adminApi = {
     return data as number;
   },
 
-  // Delete a client profile (admin only)
+  // Delete a client profile and ALL associated data (admin only)
   async deleteClient(clientId: string) {
-    // Note: This will cascade delete due to foreign keys
-    const { error } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', clientId);
+    const { data, error } = await supabase
+      .rpc('admin_delete_client', { _client_id: clientId });
     if (error) throw error;
+    return data;
   },
 
   // Get agent's assigned clients count

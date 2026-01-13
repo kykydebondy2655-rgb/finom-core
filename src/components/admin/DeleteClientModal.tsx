@@ -59,7 +59,7 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
           </div>
 
           <p className="danger-notice">
-            Le client et toutes ses données associées (dossiers, documents, assignations) seront supprimés définitivement.
+            Le client et toutes ses données associées (dossiers, documents, assignations, messages) seront supprimés définitivement.
           </p>
 
           {error && <div className="error-message">{error}</div>}
