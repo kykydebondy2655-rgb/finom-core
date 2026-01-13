@@ -525,7 +525,54 @@ export const agentApi = {
 
 // ============= ADMIN SERVICES =============
 export const adminApi = {
-async getAllClients() {
+  // Get all leads (new, unassigned)
+  async getNewLeads() {
+    const { data: roleData, error: roleError } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('role', 'client');
+    if (roleError) throw roleError;
+    if (!roleData || roleData.length === 0) return [];
+    
+    const userIds = roleData.map(r => r.user_id);
+    
+    // Get profiles that are leads (new status) and not assigned
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds)
+      .eq('lead_status', 'new')
+      .order('created_at', { ascending: true });
+    if (profileError) throw profileError;
+    
+    // Filter out those already assigned
+    const { data: assignments } = await supabase
+      .from('client_assignments')
+      .select('client_user_id');
+    
+    const assignedIds = new Set((assignments || []).map(a => a.client_user_id));
+    return (profiles || []).filter(p => !assignedIds.has(p.id));
+  },
+
+  // Get all assigned clients
+  async getAssignedClients() {
+    const { data: assignments, error: assignError } = await supabase
+      .from('client_assignments')
+      .select('client_user_id');
+    if (assignError) throw assignError;
+    if (!assignments || assignments.length === 0) return [];
+    
+    const clientIds = assignments.map(a => a.client_user_id);
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', clientIds)
+      .order('created_at', { ascending: false });
+    if (profileError) throw profileError;
+    return profiles || [];
+  },
+
+  async getAllClients() {
     // Get user IDs with 'client' role
     const { data: roleData, error: roleError } = await supabase
       .from('user_roles')
@@ -580,7 +627,7 @@ async getAllClients() {
     return data;
   },
 
-  // Create a new client account
+  // Create a new client account (legacy - creates auth user)
   async createClient(email: string, password: string, firstName: string, lastName: string, phone?: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -595,12 +642,91 @@ async getAllClients() {
     });
     if (error) throw error;
     
-    // Update phone if provided
-    if (phone && data.user) {
-      await supabase.from('profiles').update({ phone }).eq('id', data.user.id);
+    // Update phone and must_change_password flag
+    if (data.user) {
+      await supabase.from('profiles').update({ 
+        phone: phone || null,
+        must_change_password: true,
+        lead_status: 'new'
+      }).eq('id', data.user.id);
     }
     
     return data;
+  },
+
+  // Create a lead (profile without auth user initially)
+  async createLead(leadData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    propertyPrice?: number;
+    downPayment?: string;
+    purchaseType?: string;
+    source?: string;
+    pipelineStage?: string;
+  }) {
+    // First create auth user with temp password
+    const tempPassword = import.meta.env.VITE_DEFAULT_TEMP_PASSWORD || 'TempPass123!';
+    
+    const { data, error } = await supabase.auth.signUp({
+      email: leadData.email,
+      password: tempPassword,
+      options: {
+        data: {
+          first_name: leadData.firstName,
+          last_name: leadData.lastName,
+          role: 'client'
+        }
+      }
+    });
+    if (error) throw error;
+    
+    // Update profile with lead data
+    if (data.user) {
+      await supabase.from('profiles').update({
+        phone: leadData.phone || null,
+        property_price: leadData.propertyPrice || null,
+        down_payment: leadData.downPayment || null,
+        purchase_type: leadData.purchaseType || null,
+        lead_source: leadData.source || null,
+        pipeline_stage: leadData.pipelineStage || null,
+        lead_status: 'new',
+        must_change_password: true
+      }).eq('id', data.user.id);
+    }
+    
+    return data;
+  },
+
+  // Assign leads to an agent using the RPC function
+  async assignLeadsToAgent(agentId: string, count: number): Promise<number> {
+    const { data, error } = await supabase.rpc('assign_leads_to_agent', {
+      _agent_id: agentId,
+      _count: count
+    });
+    if (error) throw error;
+    return data as number;
+  },
+
+  // Delete a client profile (admin only)
+  async deleteClient(clientId: string) {
+    // Note: This will cascade delete due to foreign keys
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', clientId);
+    if (error) throw error;
+  },
+
+  // Get agent's assigned clients count
+  async getAgentClientCount(agentId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('client_assignments')
+      .select('*', { count: 'exact', head: true })
+      .eq('agent_user_id', agentId);
+    if (error) throw error;
+    return count || 0;
   },
 
   // Batch create assignments
