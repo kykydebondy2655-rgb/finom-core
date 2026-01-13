@@ -9,14 +9,10 @@ import Button from '../components/finom/Button';
  * Coordonnées officielles de l'établissement FINOM
  */
 const companyInfo = {
-    name: 'FINOM Payments B.V.',
+    name: 'FINOM',
     email: 'contact@pret-finom.co',
-    phone: '+31 20 524 9111',
-    address: 'Jachthavenweg 109H, 1081 KM Amsterdam, Pays-Bas',
-    responseTime: {
-        email: '24-48h',
-        phone: '< 5 min'
-    },
+    phone: '01 87 68 08 90',
+    address: '9 Rue du Quatre Septembre, 75002 Paris, France',
     supportHours: {
         weekdays: 'Lun-Ven : 9h-18h',
         weekend: 'Sam : 9h-12h',
@@ -56,25 +52,21 @@ const Contact = () => {
             <Header />
             <div className="contact-page">
                 <div className="container">
-                    <header className="contact-header">
-                        <div className="secure-badge">
+                    <header className="contact-header contact-header--compact">
+                        <div className="secure-badge secure-badge--small">
                             <span className="lock-icon">🔒</span>
-                            Connexion sécurisée HTTPS
+                            Connexion sécurisée
                         </div>
-                        <h1>Contactez nos conseillers</h1>
-                        <p className="contact-subtitle">
-                            Notre équipe bancaire est à votre écoute pour répondre à vos questions
-                            et vous accompagner dans votre projet de financement immobilier.
-                        </p>
-                        <p className="company-identifier">
-                            <strong>FINOM</strong> — Établissement bancaire spécialisé en crédit immobilier
+                        <h1 className="contact-title">Nous contacter</h1>
+                        <p className="contact-subtitle contact-subtitle--compact">
+                            Notre équipe est à votre disposition pour toute question relative à votre projet de financement.
                         </p>
                     </header>
 
                     <div className="contact-grid">
                         <div className="contact-form-section">
-                            <div className="card">
-                                <h2>Envoyez-nous un message</h2>
+                            <div className="card contact-form-card">
+                                <h3 className="contact-section-title">Envoyer un message</h3>
                                 {submitted && (
                                     <div className="success-message">
                                         ✅ Votre message a été envoyé. Un conseiller vous répondra sous 24-48h.
@@ -143,45 +135,41 @@ const Contact = () => {
                         </div>
 
                         <div className="contact-info-section">
-                            <div className="card contact-details">
-                                <h2>📞 Nos coordonnées</h2>
-                                <div className="contact-method">
-                                    <div className="method-icon">📧</div>
+                            <div className="card contact-details contact-details--compact">
+                                <h3 className="contact-section-title">Coordonnées</h3>
+                                <div className="contact-method contact-method--compact">
+                                    <div className="method-icon method-icon--small">📍</div>
                                     <div className="method-content">
-                                        <h4>Email</h4>
-                                        <p><a href={`mailto:${companyInfo.email}`}>{companyInfo.email}</a></p>
+                                        <h4 className="method-label">Adresse</h4>
+                                        <p className="method-value">9 Rue du Quatre Septembre<br />75002 Paris, France</p>
                                     </div>
                                 </div>
-                                <div className="contact-method">
-                                    <div className="method-icon">📱</div>
+                                <div className="contact-method contact-method--compact">
+                                    <div className="method-icon method-icon--small">📞</div>
                                     <div className="method-content">
-                                        <h4>Téléphone</h4>
-                                        <p><a href={`tel:${companyInfo.phone}`}>{companyInfo.phone}</a></p>
+                                        <h4 className="method-label">Téléphone</h4>
+                                        <p className="method-value"><a href="tel:0187680890">01 87 68 08 90</a></p>
                                     </div>
                                 </div>
-                                <div className="contact-method">
-                                    <div className="method-icon">📍</div>
+                                <div className="contact-method contact-method--compact">
+                                    <div className="method-icon method-icon--small">✉️</div>
                                     <div className="method-content">
-                                        <h4>Siège social</h4>
-                                        <p>{companyInfo.address}</p>
+                                        <h4 className="method-label">Email</h4>
+                                        <p className="method-value"><a href={`mailto:${companyInfo.email}`}>{companyInfo.email}</a></p>
                                     </div>
+                                </div>
+                                <div className="contact-hours">
+                                    <p className="hours-label">Horaires d'ouverture</p>
+                                    <p className="hours-value">{companyInfo.supportHours.weekdays}</p>
+                                    <p className="hours-value">{companyInfo.supportHours.weekend}</p>
                                 </div>
                             </div>
-                            <div className="card faq-suggestion">
-                                <h3>Consultez notre FAQ</h3>
-                                <p>Retrouvez les réponses aux questions les plus fréquentes sur le crédit immobilier.</p>
+                            <div className="card faq-suggestion faq-suggestion--compact">
+                                <h4 className="faq-title">Questions fréquentes</h4>
+                                <p className="faq-text">Consultez notre FAQ pour des réponses rapides.</p>
                                 <Link to="/faq">
-                                    <Button variant="secondary" className="full-width">Voir la FAQ</Button>
+                                    <Button variant="secondary" size="sm" className="full-width">Accéder à la FAQ</Button>
                                 </Link>
-                            </div>
-
-                            <div className="card security-notice">
-                                <h3>🔐 Engagement de sécurité</h3>
-                                <ul>
-                                    <li>Vos données sont protégées selon les normes bancaires</li>
-                                    <li>Connexion sécurisée HTTPS/SSL</li>
-                                    <li>Conformité RGPD et réglementations européennes</li>
-                                </ul>
                             </div>
                         </div>
                     </div>
