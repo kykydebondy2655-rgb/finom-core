@@ -922,11 +922,24 @@ export const getStatusLabel = (status: string | null): string => {
   const labels: Record<string, string> = {
     pending: 'En attente',
     in_review: 'En cours d\'analyse',
+    under_review: 'En analyse',
+    documents_required: 'Documents requis',
+    processing: 'En traitement',
     approved: 'Approuvé',
     rejected: 'Refusé',
     funded: 'Financé',
     completed: 'Terminé',
-    draft: 'Brouillon'
+    draft: 'Brouillon',
+    // Document statuses
+    received: 'Reçu',
+    validated: 'Validé',
+    // General statuses
+    active: 'Actif',
+    inactive: 'Inactif',
+    planned: 'Planifié',
+    cancelled: 'Annulé',
+    new: 'Nouveau',
+    verified: 'Vérifié',
   };
   return labels[status || ''] || status || 'Inconnu';
 };
@@ -935,11 +948,24 @@ export const getStatusColor = (status: string | null): string => {
   const colors: Record<string, string> = {
     pending: 'var(--color-warning)',
     in_review: 'var(--color-info)',
+    under_review: 'var(--color-info)',
+    documents_required: '#7C3AED',
+    processing: '#0891B2',
     approved: 'var(--color-success)',
     rejected: 'var(--color-danger)',
     funded: 'var(--color-success)',
     completed: 'var(--color-success)',
-    draft: 'var(--color-text-tertiary)'
+    draft: 'var(--color-text-tertiary)',
+    // Document statuses
+    received: 'var(--color-info)',
+    validated: 'var(--color-success)',
+    // General statuses
+    active: 'var(--color-success)',
+    inactive: 'var(--color-text-tertiary)',
+    planned: 'var(--color-info)',
+    cancelled: 'var(--color-danger)',
+    new: 'var(--color-info)',
+    verified: 'var(--color-success)',
   };
   return colors[status || ''] || 'var(--color-text-secondary)';
 };
