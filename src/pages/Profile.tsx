@@ -5,12 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
-import { toast } from 'sonner';
+import { useToast } from '@/components/finom/Toast';
 import { logger } from '@/lib/logger';
 
 const Profile = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const toast = useToast();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',

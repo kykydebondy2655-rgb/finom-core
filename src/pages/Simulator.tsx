@@ -15,7 +15,7 @@ import {
 import { loansApi } from '@/services/api';
 import { emailService } from '@/services/emailService';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 
 interface FormData {
@@ -34,6 +34,7 @@ interface FormData {
 const Simulator = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState<FormData>({
