@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/validations/authSchemas';
 import { logger } from '@/lib/logger';
 import Button from '@/components/finom/Button';
+import { emailService } from '@/services/emailService';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -48,6 +49,17 @@ const ForgotPassword = () => {
       } else {
         setSuccess(true);
         logger.info('Password reset email sent', { email: result.data.email });
+        
+        // Envoyer également notre email transactionnel personnalisé
+        const resetLink = `${window.location.origin}/reset-password`;
+        emailService.sendPasswordReset(
+          result.data.email,
+          '', // firstName non disponible ici
+          resetLink
+        ).catch(err => {
+          // Ne pas bloquer si l'email secondaire échoue
+          logger.warn('Secondary password reset email failed', { error: err });
+        });
       }
     } catch (err) {
       logger.logError('Password reset error', err);
