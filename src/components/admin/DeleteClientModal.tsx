@@ -40,14 +40,14 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Supprimer le client</h2>
+          <h2>Supprimer ce client ?</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <div className="warning-icon">⚠️</div>
           <p className="warning-text">
-            Êtes-vous sûr de vouloir supprimer définitivement ce client ?
+            Cette action est irréversible.
           </p>
           
           <div className="client-info">
@@ -59,7 +59,7 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
           </div>
 
           <p className="danger-notice">
-            Cette action est irréversible. Toutes les données associées seront supprimées.
+            Le client et toutes ses données associées (dossiers, documents, assignations) seront supprimés définitivement.
           </p>
 
           {error && <div className="error-message">{error}</div>}

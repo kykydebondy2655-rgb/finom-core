@@ -14,6 +14,7 @@ import DocumentStatusModal from '@/components/agent/DocumentStatusModal';
 import LoanStatusModal from '@/components/agent/LoanStatusModal';
 import ClientBankModal from '@/components/admin/ClientBankModal';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
+import DeleteClientModal from '@/components/admin/DeleteClientModal';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
@@ -35,6 +36,7 @@ const AgentClientDetail: React.FC = () => {
   const [showLoanStatusModal, setShowLoanStatusModal] = useState(false);
   const [showBankModal, setShowBankModal] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
   const toast = useToast();
@@ -138,6 +140,14 @@ const AgentClientDetail: React.FC = () => {
               📧 Envoyer un email
             </Button>
             <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Planifier un rappel</Button>
+            {isAdmin && (
+              <Button 
+                variant="danger" 
+                onClick={() => setShowDeleteModal(true)}
+              >
+                🗑️ Supprimer
+              </Button>
+            )}
           </div>
 
           {/* Tabs */}
@@ -405,6 +415,19 @@ const AgentClientDetail: React.FC = () => {
             onSuccess={loadClientData}
             clientId={id}
             clientName={`${client.first_name} ${client.last_name}`}
+          />
+        )}
+
+        {/* Delete Client Modal (Admin only) */}
+        {isAdmin && client && (
+          <DeleteClientModal
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onSuccess={() => {
+              toast.success('Client supprimé avec succès');
+              navigate(backPath);
+            }}
+            client={client}
           />
         )}
 
