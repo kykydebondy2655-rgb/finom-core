@@ -5,14 +5,22 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import CreateAgentModal from '@/components/admin/CreateAgentModal';
-import { adminApi, formatDate } from '@/services/api';
+import AssignLeadsModal from '@/components/admin/AssignLeadsModal';
+import { adminApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+
+interface AgentWithStats extends Profile {
+  clientCount: number;
+}
 
 const AdminAgents: React.FC = () => {
   const navigate = useNavigate();
-  const [agents, setAgents] = useState<any[]>([]);
+  const [agents, setAgents] = useState<AgentWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<Profile | null>(null);
+  const [availableLeadsCount, setAvailableLeadsCount] = useState(0);
 
   useEffect(() => {
     loadAgents();
@@ -21,13 +29,32 @@ const AdminAgents: React.FC = () => {
   const loadAgents = async () => {
     try {
       setLoading(true);
-      const data = await adminApi.getAllAgents();
-      setAgents(data || []);
+      const [agentData, leads] = await Promise.all([
+        adminApi.getAllAgents(),
+        adminApi.getNewLeads()
+      ]);
+      
+      setAvailableLeadsCount(leads?.length || 0);
+      
+      // Get client counts for each agent
+      const agentsWithStats: AgentWithStats[] = await Promise.all(
+        (agentData || []).map(async (agent) => {
+          const count = await adminApi.getAgentClientCount(agent.id);
+          return { ...agent, clientCount: count };
+        })
+      );
+      
+      setAgents(agentsWithStats);
     } catch (err) {
       logger.logError('Error loading agents', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAssignClick = (agent: Profile) => {
+    setSelectedAgent(agent);
+    setShowAssignModal(true);
   };
 
   if (loading) {
@@ -43,7 +70,7 @@ const AdminAgents: React.FC = () => {
             <div className="header-row">
               <div>
                 <h1>Gestion des agents</h1>
-                <p>{agents.length} agents actifs</p>
+                <p>{agents.length} agents actifs • {availableLeadsCount} leads disponibles</p>
               </div>
               <Button variant="primary" onClick={() => setShowCreateModal(true)}>
                 + Créer un agent
@@ -69,9 +96,20 @@ const AdminAgents: React.FC = () => {
                     <div className="agent-info">
                       <span className="agent-name">{agent.first_name} {agent.last_name}</span>
                       <span className="agent-email">{agent.email}</span>
+                      <span className="agent-stats">
+                        {agent.clientCount} client{agent.clientCount !== 1 ? 's' : ''} assigné{agent.clientCount !== 1 ? 's' : ''}
+                      </span>
                       <span className="agent-date">Depuis {formatDate(agent.created_at)}</span>
                     </div>
                     <div className="agent-actions">
+                      <Button 
+                        variant="primary" 
+                        size="sm"
+                        onClick={() => handleAssignClick(agent)}
+                        disabled={availableLeadsCount === 0}
+                      >
+                        Assigner des leads
+                      </Button>
                       <Button variant="ghost" size="sm">Voir clients</Button>
                     </div>
                   </Card>
@@ -87,6 +125,21 @@ const AdminAgents: React.FC = () => {
           onSuccess={loadAgents}
         />
 
+        {selectedAgent && (
+          <AssignLeadsModal
+            isOpen={showAssignModal}
+            onClose={() => {
+              setShowAssignModal(false);
+              setSelectedAgent(null);
+            }}
+            onSuccess={() => {
+              loadAgents();
+            }}
+            agent={selectedAgent}
+            availableLeadsCount={availableLeadsCount}
+          />
+        )}
+
         <style>{`
           .admin-agents-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
           .page-header { background: linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
@@ -100,7 +153,18 @@ const AdminAgents: React.FC = () => {
           .agent-info { margin-bottom: 1rem; }
           .agent-name { font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 0.25rem; }
           .agent-email { color: var(--color-text-secondary); font-size: 0.9rem; display: block; }
+          .agent-stats { 
+            display: inline-block; 
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+          }
           .agent-date { color: var(--color-text-tertiary); font-size: 0.8rem; display: block; margin-top: 0.5rem; }
+          .agent-actions { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
           .empty-state { text-align: center; padding: 3rem; }
           .empty-text { color: var(--color-text-tertiary); margin-bottom: 1.5rem; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }

@@ -714,39 +714,60 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
+          down_payment: string | null
           email: string | null
           first_name: string | null
           id: string
           kyc_level: number | null
           kyc_status: string | null
           last_name: string | null
+          lead_source: string | null
+          lead_status: string | null
+          must_change_password: boolean | null
           phone: string | null
+          pipeline_stage: string | null
+          property_price: number | null
+          purchase_type: string | null
           role: string | null
           updated_at: string
         }
         Insert: {
           address?: string | null
           created_at?: string
+          down_payment?: string | null
           email?: string | null
           first_name?: string | null
           id: string
           kyc_level?: number | null
           kyc_status?: string | null
           last_name?: string | null
+          lead_source?: string | null
+          lead_status?: string | null
+          must_change_password?: boolean | null
           phone?: string | null
+          pipeline_stage?: string | null
+          property_price?: number | null
+          purchase_type?: string | null
           role?: string | null
           updated_at?: string
         }
         Update: {
           address?: string | null
           created_at?: string
+          down_payment?: string | null
           email?: string | null
           first_name?: string | null
           id?: string
           kyc_level?: number | null
           kyc_status?: string | null
           last_name?: string | null
+          lead_source?: string | null
+          lead_status?: string | null
+          must_change_password?: boolean | null
           phone?: string | null
+          pipeline_stage?: string | null
+          property_price?: number | null
+          purchase_type?: string | null
           role?: string | null
           updated_at?: string
         }
@@ -963,6 +984,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_leads_to_agent: {
+        Args: { _agent_id: string; _count: number }
+        Returns: number
+      }
       get_user_role: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
