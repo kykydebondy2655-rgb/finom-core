@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import CreateAgentModal from '@/components/admin/CreateAgentModal';
 import AssignLeadsModal from '@/components/admin/AssignLeadsModal';
+import DeleteAgentModal from '@/components/admin/DeleteAgentModal';
 import { adminApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
 
@@ -19,6 +21,7 @@ const AdminAgents: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Profile | null>(null);
   const [availableLeadsCount, setAvailableLeadsCount] = useState(0);
 
@@ -55,6 +58,11 @@ const AdminAgents: React.FC = () => {
   const handleAssignClick = (agent: Profile) => {
     setSelectedAgent(agent);
     setShowAssignModal(true);
+  };
+
+  const handleDeleteClick = (agent: Profile) => {
+    setSelectedAgent(agent);
+    setShowDeleteModal(true);
   };
 
   if (loading) {
@@ -111,6 +119,14 @@ const AdminAgents: React.FC = () => {
                         Assigner des leads
                       </Button>
                       <Button variant="ghost" size="sm">Voir clients</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="delete-agent-btn"
+                        onClick={() => handleDeleteClick(agent)}
+                      >
+                        🗑️ Supprimer
+                      </Button>
                     </div>
                   </Card>
                 ))}
@@ -137,6 +153,21 @@ const AdminAgents: React.FC = () => {
             }}
             agent={selectedAgent}
             availableLeadsCount={availableLeadsCount}
+          />
+        )}
+
+        {selectedAgent && (
+          <DeleteAgentModal
+            isOpen={showDeleteModal}
+            onClose={() => {
+              setShowDeleteModal(false);
+              setSelectedAgent(null);
+            }}
+            onSuccess={() => {
+              toast.success('Agent supprimé avec succès');
+              loadAgents();
+            }}
+            agent={selectedAgent}
           />
         )}
 
@@ -169,6 +200,8 @@ const AdminAgents: React.FC = () => {
           .empty-text { color: var(--color-text-tertiary); margin-bottom: 1.5rem; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          .delete-agent-btn { color: #dc2626 !important; }
+          .delete-agent-btn:hover { background: #fef2f2 !important; }
         `}</style>
       </div>
     </PageLayout>
