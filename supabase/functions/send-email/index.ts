@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const BASE_URL = "https://pret-finom.co";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,7 +19,6 @@ const baseStyles = `
   .footer { background: #F1F5F9; padding: 30px; text-align: center; font-size: 12px; color: #64748B; line-height: 1.6; }
   .footer a { color: #FE42B4; text-decoration: underline; }
   .footer-legal { margin-top: 15px; padding-top: 15px; border-top: 1px solid #E2E8F0; font-size: 11px; color: #94A3B8; }
-  .footer { background: #F1F5F9; padding: 30px; text-align: center; font-size: 13px; color: #64748B; }
   .button { display: inline-block; background: #FE42B4; color: white !important; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; margin: 20px 0; }
   .button:hover { background: #D61F8D; }
   .info-box { background: #F8FAFC; border-radius: 12px; padding: 20px; margin: 20px 0; }
@@ -33,6 +33,23 @@ const baseStyles = `
   .status-pending { background: #FEF3C7; color: #92400E; }
   .status-approved { background: #D1FAE5; color: #065F46; }
   .status-rejected { background: #FEE2E2; color: #991B1B; }
+  .warning-box { background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 12px; padding: 16px; margin: 20px 0; }
+  .warning-box p { color: #92400E; margin: 0; font-size: 13px; }
+`;
+
+// Footer légal harmonisé pour tous les templates
+const legalFooter = `
+  <div class="footer">
+    <p><strong>FINOM Payments B.V.</strong></p>
+    <p>Siège social : Weteringschans 165C, 1017XD Amsterdam, Pays-Bas</p>
+    <p>Établissement secondaire : 75008 Paris, France</p>
+    <p><a href="${BASE_URL}">pret-finom.co</a> | <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a></p>
+    <div class="footer-legal">
+      <p>FINOM Payments B.V. est enregistrée sous le n° KVK 75aboratoire849584 auprès du registre du commerce néerlandais.</p>
+      <p>Établissement de monnaie électronique agréé par De Nederlandsche Bank (DNB).</p>
+      <p><a href="${BASE_URL}/legal">Mentions légales</a> | <a href="${BASE_URL}/privacy">Confidentialité</a> | <a href="${BASE_URL}/terms">CGU</a></p>
+    </div>
+  </div>
 `;
 
 interface TemplateData {
@@ -53,6 +70,7 @@ interface TemplateData {
   ctaUrl?: string;
   beneficiary?: string;
   reference?: string;
+  resetLink?: string;
 }
 
 const generateTemplate = (template: string, data: TemplateData): { subject: string; html: string } => {
@@ -75,17 +93,37 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 <p>✅ Simulez votre premier prêt</p>
                 <p>✅ Déposez votre demande en ligne</p>
               </div>
-              <a href="#" class="button">Accéder à mon espace</a>
+              <a href="${BASE_URL}/dashboard" class="button">Accéder à mon espace</a>
             </div>
-            <div class="footer">
-              <p><strong>FINOM SAS</strong> - Courtier en prêt immobilier</p>
-              <p>15 Avenue des Champs-Élysées, 75008 Paris</p>
-              <p><a href="https://pret-finom.co">pret-finom.co</a> | <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a></p>
-              <div class="footer-legal">
-                <p>IOBSP immatriculé ORIAS n° 12 345 678 - <a href="https://www.orias.fr">Vérifier</a></p>
-                <p>Sous contrôle ACPR - <a href="https://pret-finom.co/legal">Mentions légales</a> - <a href="https://pret-finom.co/privacy">Confidentialité</a></p>
+            ${legalFooter}
+          </div>
+        </body>
+        </html>
+      `,
+    }),
+
+    passwordReset: () => ({
+      subject: "Réinitialisation de votre mot de passe 🔐",
+      html: `
+        <!DOCTYPE html>
+        <html><head><style>${baseStyles}</style></head>
+        <body>
+          <div class="container">
+            <div class="header"><h1>FINOM</h1></div>
+            <div class="content">
+              <h2>Réinitialisation de mot de passe</h2>
+              <p>Bonjour ${data.firstName || ''},</p>
+              <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
+              <div style="text-align: center;">
+                <a href="${data.resetLink || `${BASE_URL}/reset-password`}" class="button">Réinitialiser mon mot de passe</a>
               </div>
+              <div class="warning-box">
+                <p>⚠️ Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+              </div>
+              <p style="font-size: 13px; color: #94A3B8;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>
+              <p style="font-size: 12px; word-break: break-all; color: #64748B;">${data.resetLink || `${BASE_URL}/reset-password`}</p>
             </div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -112,9 +150,9 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 <div class="info-row"><span class="label">Statut</span><span class="status-badge status-pending">En attente</span></div>
               </div>
               <p>Un conseiller vous contactera sous 24h pour finaliser votre dossier.</p>
-              <a href="#" class="button">Suivre ma demande</a>
+              <a href="${BASE_URL}/loans" class="button">Suivre ma demande</a>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -140,9 +178,9 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 <div class="info-row"><span class="label">Statut</span><span class="status-badge status-approved">Approuvé</span></div>
               </div>
               <p>Les fonds seront débloqués après signature électronique de votre contrat.</p>
-              <a href="#" class="button">Signer mon contrat</a>
+              <a href="${BASE_URL}/loans" class="button">Voir mon dossier</a>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -165,10 +203,10 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 <div class="info-row"><span class="label">Statut</span><span class="status-badge status-rejected">Non retenu</span></div>
                 ${data.reason ? `<div class="info-row"><span class="label">Motif</span><span class="value">${data.reason}</span></div>` : ''}
               </div>
-              <p>Cette décision ne préjuge en rien de l'évolution future de votre situation.</p>
-              <a href="#" class="button">Contacter un conseiller</a>
+              <p>Cette décision ne préjuge en rien de l'évolution future de votre situation. N'hésitez pas à nous recontacter.</p>
+              <a href="${BASE_URL}/contact" class="button">Contacter un conseiller</a>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -190,9 +228,9 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
               <div class="info-box">
                 ${(data.documents || []).map(doc => `<p>📎 ${doc}</p>`).join('')}
               </div>
-              <a href="#" class="button">Déposer mes documents</a>
+              <a href="${BASE_URL}/dashboard" class="button">Déposer mes documents</a>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -216,7 +254,7 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
               </div>
               <p>Merci de vous assurer d'être disponible à ce créneau.</p>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -235,9 +273,9 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
               <h2>${data.title || ''}</h2>
               <p>Bonjour ${data.firstName || ''},</p>
               <p>${data.message || ''}</p>
-              ${data.ctaText && data.ctaUrl ? `<a href="${data.ctaUrl}" class="button">${data.ctaText}</a>` : ''}
+              ${data.ctaText && data.ctaUrl ? `<a href="${data.ctaUrl.startsWith('http') ? data.ctaUrl : BASE_URL + data.ctaUrl}" class="button">${data.ctaText}</a>` : ''}
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>
@@ -261,9 +299,9 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 <div class="info-row"><span class="label">Bénéficiaire</span><span class="value">${data.beneficiary || ''}</span></div>
                 ${data.reference ? `<div class="info-row"><span class="label">Référence</span><span class="value">${data.reference}</span></div>` : ''}
               </div>
-              <a href="#" class="button">Voir mes transactions</a>
+              <a href="${BASE_URL}/banking" class="button">Voir mes transactions</a>
             </div>
-            <div class="footer"><p>FINOM - Votre partenaire financement</p></div>
+            ${legalFooter}
           </div>
         </body>
         </html>

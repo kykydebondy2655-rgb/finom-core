@@ -7,6 +7,7 @@ import logger from '@/lib/logger';
 
 export type EmailTemplate = 
   | 'welcome'
+  | 'passwordReset'
   | 'loanSubmitted'
   | 'loanApproved'
   | 'loanRejected'
@@ -177,6 +178,21 @@ export const emailService = {
       template: 'transferCompleted',
       to: email,
       data: { firstName, amount, beneficiary, reference },
+    });
+  },
+
+  /**
+   * Email de réinitialisation de mot de passe
+   */
+  async sendPasswordReset(
+    email: string,
+    firstName: string,
+    resetLink: string
+  ): Promise<EmailResponse> {
+    return this.send({
+      template: 'passwordReset',
+      to: email,
+      data: { firstName, email, resetLink },
     });
   },
 };
