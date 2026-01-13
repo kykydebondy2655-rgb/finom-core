@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
             <div className="footer-column">
               <h4>Contact</h4>
               <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a>
-              <a href="tel:+31205249111">+31 20 524 9111</a>
+              <a href="tel:+33187680890">01 87 68 08 90</a>
               <span className="secure-note">🔒 pret-finom.co</span>
             </div>
           </div>
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
         <div className="footer-legal">
           <div className="legal-info">
             <p><strong>FINOM</strong> — Établissement bancaire spécialisé en crédit immobilier</p>
-            <p>Contact : contact@pret-finom.co | +31 20 524 9111</p>
+            <p>Contact : contact@pret-finom.co | 01 87 68 08 90</p>
           </div>
           
           <div className="regulatory-info">
