@@ -44,6 +44,7 @@ const AdminLoans: React.FC = () => {
 
   const filteredLoans = loans.filter(l => {
     if (filter === 'all') return true;
+    if (filter === 'under_review') return l.status === 'in_review' || l.status === 'under_review';
     return l.status === filter;
   });
 
@@ -51,7 +52,8 @@ const AdminLoans: React.FC = () => {
     all: loans.length,
     pending: loans.filter(l => l.status === 'pending').length,
     documents_required: loans.filter(l => l.status === 'documents_required').length,
-    in_review: loans.filter(l => l.status === 'in_review').length,
+    under_review: loans.filter(l => l.status === 'in_review' || l.status === 'under_review').length,
+    processing: loans.filter(l => l.status === 'processing').length,
     approved: loans.filter(l => l.status === 'approved').length,
     funded: loans.filter(l => l.status === 'funded').length,
     rejected: loans.filter(l => l.status === 'rejected').length,
@@ -76,11 +78,12 @@ const AdminLoans: React.FC = () => {
           {/* Filters */}
           <div className="filters fade-in">
               {Object.entries(statusCounts).map(([key, count]) => {
-                const labelMap: Record<string, string> = {
+              const labelMap: Record<string, string> = {
                   all: 'Tous',
                   pending: 'En attente',
                   documents_required: 'Docs requis',
-                  in_review: 'En analyse',
+                  under_review: 'En analyse',
+                  processing: 'En traitement',
                   approved: 'Approuvé',
                   funded: 'Financé',
                   rejected: 'Refusé',
