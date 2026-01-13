@@ -860,46 +860,24 @@ export const adminApi = {
     return data;
   },
 
-  // Update or create client bank account (admin only)
+  // Update or create client bank account (admin only) - uses upsert to avoid race conditions
   async updateClientBankAccount(clientId: string, updates: { balance?: number; iban?: string; bic?: string }) {
-    // First check if account exists
-    const { data: existing } = await supabase
+    const { data, error } = await supabase
       .from('bank_accounts')
-      .select('id')
-      .eq('user_id', clientId)
-      .maybeSingle();
-
-    if (existing) {
-      // Update existing account
-      const { data, error } = await supabase
-        .from('bank_accounts')
-        .update({
-          balance: updates.balance,
-          iban: updates.iban,
-          bic: updates.bic,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', clientId)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    } else {
-      // Create new account
-      const { data, error } = await supabase
-        .from('bank_accounts')
-        .insert({
-          user_id: clientId,
-          iban: updates.iban || '',
-          bic: updates.bic || 'XXXXXXXX',
-          balance: updates.balance || 0,
-          currency: 'EUR'
-        })
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    }
+      .upsert({
+        user_id: clientId,
+        iban: updates.iban || '',
+        bic: updates.bic || 'XXXXXXXX',
+        balance: updates.balance ?? 0,
+        currency: 'EUR',
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id'
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
   }
 };
 
