@@ -12,6 +12,7 @@ export interface AuthUser {
     phone?: string;
     address?: string;
     role: 'client' | 'agent' | 'admin';
+    mustChangePassword?: boolean;
 }
 
 interface AuthContextType {
@@ -20,6 +21,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<AuthUser>;
     register: (email: string, password: string, firstName: string, lastName: string) => Promise<AuthUser>;
     logout: () => Promise<void>;
+    clearMustChangePassword: () => void;
     isAuthenticated: boolean;
 }
 
@@ -87,14 +89,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 lastName: profile?.last_name || undefined,
                 phone: profile?.phone || undefined,
                 address: profile?.address || undefined,
-                role
+                role,
+                mustChangePassword: profile?.must_change_password || false
             });
         } catch (error) {
             logger.logError('Failed to fetch user profile', error);
             setUser({
                 id: authUser.id,
                 email: authUser.email || '',
-                role: 'client'
+                role: 'client',
+                mustChangePassword: false
             });
         } finally {
             setLoading(false);
@@ -132,11 +136,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             lastName: profile?.last_name || undefined,
             phone: profile?.phone || undefined,
             address: profile?.address || undefined,
-            role
+            role,
+            mustChangePassword: profile?.must_change_password || false
         };
 
         setUser(loggedUser);
         return loggedUser;
+    };
+
+    const clearMustChangePassword = () => {
+        if (user) {
+            setUser({ ...user, mustChangePassword: false });
+        }
     };
 
     const register = async (email: string, password: string, firstName: string, lastName: string): Promise<AuthUser> => {
@@ -194,6 +205,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         register,
         logout,
+        clearMustChangePassword,
         isAuthenticated: !!user
     };
 

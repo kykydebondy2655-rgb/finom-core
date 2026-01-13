@@ -30,6 +30,7 @@ describe('useUserRoles', () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      clearMustChangePassword: vi.fn(),
       isAuthenticated: false,
     });
 
@@ -60,6 +61,7 @@ describe('useUserRoles', () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      clearMustChangePassword: vi.fn(),
       isAuthenticated: true,
     });
 
@@ -94,6 +96,7 @@ describe('useUserRoles', () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      clearMustChangePassword: vi.fn(),
       isAuthenticated: true,
     });
 
@@ -129,6 +132,7 @@ describe('useUserRoles', () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      clearMustChangePassword: vi.fn(),
       isAuthenticated: true,
     });
 
@@ -163,6 +167,7 @@ describe('useUserRoles', () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      clearMustChangePassword: vi.fn(),
       isAuthenticated: true,
     });
 
