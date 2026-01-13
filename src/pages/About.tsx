@@ -4,8 +4,8 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
 /**
- * Page À Propos - Renforce la crédibilité institutionnelle
- * Présente l'entreprise, ses valeurs et ses engagements
+ * Page À Propos - Positionnement bancaire clair
+ * FINOM est une banque qui délivre des crédits immobiliers
  */
 const About: React.FC = () => {
   return (
@@ -19,10 +19,10 @@ const About: React.FC = () => {
               <span className="lock-icon">🔒</span>
               Connexion sécurisée HTTPS
             </div>
-            <h1>À propos de FINOM</h1>
+            <h1>Votre banque pour le crédit immobilier</h1>
             <p className="about-subtitle">
-              Service de simulation de prêt immobilier, nous accompagnons les particuliers 
-              dans la réalisation de leur projet immobilier.
+              FINOM est un établissement bancaire spécialisé dans le financement immobilier. 
+              Nous accompagnons et finançons directement les projets immobiliers de nos clients.
             </p>
           </header>
 
@@ -30,44 +30,80 @@ const About: React.FC = () => {
           <section className="about-section">
             <h2>Notre mission</h2>
             <p>
-              FINOM propose un <strong>service de simulation de prêt immobilier</strong> gratuit et sans engagement.
+              Notre mission est d'accompagner nos clients dans le <strong>financement de leur projet immobilier</strong>, 
+              en leur proposant des solutions de crédit adaptées, transparentes et sécurisées.
             </p>
             <p>
-              Notre rôle est de vous accompagner dans la recherche du financement le plus adapté à votre projet immobilier.
-              Nous analysons votre situation et vous orientons vers les meilleures solutions disponibles.
+              FINOM met son expertise bancaire au service des particuliers afin de faciliter l'accès au crédit immobilier, 
+              de la simulation initiale jusqu'au déblocage des fonds.
             </p>
             <div className="info-box">
-              <strong>Important :</strong> Nous ne sommes pas une banque et ne délivrons pas de crédits directement.
-              Ce service est informatif et d'accompagnement.
+              <strong>Notre engagement :</strong> Vous offrir un accompagnement personnalisé et des conditions 
+              de financement claires, sans frais cachés ni mauvaise surprise.
+            </div>
+          </section>
+
+          {/* Expertise Section */}
+          <section className="about-section">
+            <h2>Notre expertise bancaire</h2>
+            <div className="values-grid">
+              <div className="value-item">
+                <span className="value-icon">📊</span>
+                <div>
+                  <h4>Analyse financière</h4>
+                  <p>Évaluation approfondie de votre situation financière et de votre capacité d'emprunt selon les critères bancaires en vigueur.</p>
+                </div>
+              </div>
+              <div className="value-item">
+                <span className="value-icon">💰</span>
+                <div>
+                  <h4>Structuration du crédit</h4>
+                  <p>Montage financier sur mesure : durée, taux, mensualités et garanties adaptés à votre profil et à votre projet.</p>
+                </div>
+              </div>
+              <div className="value-item">
+                <span className="value-icon">📋</span>
+                <div>
+                  <h4>Étude de solvabilité</h4>
+                  <p>Analyse rigoureuse de votre dossier pour vous proposer les meilleures conditions de financement possibles.</p>
+                </div>
+              </div>
+              <div className="value-item">
+                <span className="value-icon">🏠</span>
+                <div>
+                  <h4>Financement immobilier</h4>
+                  <p>Crédit immobilier pour l'achat de résidence principale, secondaire ou investissement locatif.</p>
+                </div>
+              </div>
             </div>
           </section>
 
           {/* Regulatory Section */}
           <section className="about-section regulatory">
-            <h2>Nos partenaires bancaires</h2>
+            <h2>Cadre réglementaire et partenaires</h2>
             <div className="credentials-grid">
               <div className="credential-card">
                 <div className="credential-icon">🏦</div>
                 <h3>Treezor</h3>
-                <p>Établissement de monnaie électronique agréé par l'ACPR (France)</p>
+                <p>Établissement de paiement agréé par l'ACPR (Banque de France)</p>
               </div>
               <div className="credential-card">
                 <div className="credential-icon">🏛️</div>
                 <h3>Solaris</h3>
-                <p>Banque agréée par la BaFin (Allemagne)</p>
+                <p>Établissement de crédit agréé par la BaFin (Allemagne)</p>
               </div>
               <div className="credential-card">
                 <div className="credential-icon">🇪🇺</div>
-                <h3>RGPD</h3>
-                <p>Conformité européenne sur la protection des données personnelles</p>
+                <h3>Conformité européenne</h3>
+                <p>Respect des directives bancaires européennes et du RGPD</p>
                 <Link to="/privacy">
-                  Voir notre politique →
+                  Politique de confidentialité →
                 </Link>
               </div>
             </div>
           </section>
 
-          {/* Values Section */}
+          {/* Engagements Section */}
           <section className="about-section">
             <h2>Nos engagements</h2>
             <div className="values-grid">
@@ -75,28 +111,28 @@ const About: React.FC = () => {
                 <span className="value-icon">🔐</span>
                 <div>
                   <h4>Sécurité des données</h4>
-                  <p>Vos informations sont chiffrées et hébergées sur des serveurs sécurisés en Europe, conformément au RGPD.</p>
-                </div>
-              </div>
-              <div className="value-item">
-                <span className="value-icon">💳</span>
-                <div>
-                  <h4>Aucune donnée bancaire demandée</h4>
-                  <p>Nous ne demandons jamais vos identifiants bancaires, numéros de carte ou codes d'accès.</p>
+                  <p>Vos informations sont chiffrées et hébergées sur des serveurs sécurisés en Europe, conformément aux standards bancaires.</p>
                 </div>
               </div>
               <div className="value-item">
                 <span className="value-icon">📝</span>
                 <div>
                   <h4>Transparence totale</h4>
-                  <p>Nos simulations sont gratuites, sans engagement, et vous êtes informé de chaque étape du processus.</p>
+                  <p>Conditions de crédit claires : taux, frais de dossier, coût total du crédit et TAEG communiqués dès la simulation.</p>
+                </div>
+              </div>
+              <div className="value-item">
+                <span className="value-icon">⚖️</span>
+                <div>
+                  <h4>Conformité réglementaire</h4>
+                  <p>Respect strict des obligations légales en matière de crédit immobilier et de protection du consommateur.</p>
                 </div>
               </div>
               <div className="value-item">
                 <span className="value-icon">👨‍💼</span>
                 <div>
                   <h4>Accompagnement personnalisé</h4>
-                  <p>Un conseiller dédié vous accompagne du premier contact jusqu'à la signature chez le notaire.</p>
+                  <p>Un conseiller dédié vous accompagne de la simulation jusqu'au déblocage des fonds chez le notaire.</p>
                 </div>
               </div>
             </div>
@@ -107,7 +143,7 @@ const About: React.FC = () => {
             <h2>Contact</h2>
             <div className="company-details">
               <div className="detail-row">
-                <span className="detail-label">Nom</span>
+                <span className="detail-label">Établissement</span>
                 <span className="detail-value">FINOM</span>
               </div>
               <div className="detail-row">
@@ -127,14 +163,14 @@ const About: React.FC = () => {
 
           {/* Contact CTA */}
           <section className="about-section cta-section">
-            <h2>Une question ?</h2>
-            <p>Notre équipe est disponible pour répondre à toutes vos interrogations.</p>
+            <h2>Besoin d'un financement ?</h2>
+            <p>Nos conseillers bancaires sont à votre disposition pour étudier votre projet.</p>
             <div className="cta-buttons">
-              <Link to="/contact" className="btn-primary">
-                Nous contacter
+              <Link to="/simulator" className="btn-primary">
+                Simuler mon crédit
               </Link>
-              <Link to="/faq" className="btn-secondary">
-                Consulter la FAQ
+              <Link to="/contact" className="btn-secondary">
+                Contacter un conseiller
               </Link>
             </div>
           </section>

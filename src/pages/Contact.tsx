@@ -5,8 +5,8 @@ import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 
 /**
- * Page Contact - Informations de contact vérifiables
- * Renforce la crédibilité anti-phishing avec des coordonnées officielles
+ * Page Contact - Positionnement bancaire
+ * Coordonnées officielles de l'établissement FINOM
  */
 const companyInfo = {
     name: 'FINOM Payments B.V.',
@@ -61,13 +61,13 @@ const Contact = () => {
                             <span className="lock-icon">🔒</span>
                             Connexion sécurisée HTTPS
                         </div>
-                        <h1>Contactez-nous</h1>
+                        <h1>Contactez nos conseillers</h1>
                         <p className="contact-subtitle">
-                            Notre équipe est à votre écoute pour répondre à toutes vos questions
-                            et vous accompagner dans votre projet immobilier.
+                            Notre équipe bancaire est à votre écoute pour répondre à vos questions
+                            et vous accompagner dans votre projet de financement immobilier.
                         </p>
                         <p className="company-identifier">
-                            <strong>FINOM Payments B.V.</strong> — Service de simulation de prêt immobilier
+                            <strong>FINOM</strong> — Établissement bancaire spécialisé en crédit immobilier
                         </p>
                     </header>
 
@@ -77,7 +77,7 @@ const Contact = () => {
                                 <h2>Envoyez-nous un message</h2>
                                 {submitted && (
                                     <div className="success-message">
-                                        ✅ Votre message a été envoyé avec succès !
+                                        ✅ Votre message a été envoyé. Un conseiller vous répondra sous 24-48h.
                                     </div>
                                 )}
                                 <form onSubmit={handleSubmit} className="contact-form">
@@ -106,7 +106,7 @@ const Contact = () => {
                                         />
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="subject">Sujet *</label>
+                                        <label htmlFor="subject">Objet de votre demande *</label>
                                         <select
                                             id="subject"
                                             name="subject"
@@ -116,14 +116,15 @@ const Contact = () => {
                                             required
                                         >
                                             <option value="">Sélectionnez un sujet</option>
-                                            <option value="simulation">Question sur une simulation</option>
-                                            <option value="dossier">Suivi de mon dossier</option>
-                                            <option value="documents">Documents et justificatifs</option>
+                                            <option value="simulation">Question sur ma simulation de crédit</option>
+                                            <option value="dossier">Suivi de ma demande de financement</option>
+                                            <option value="documents">Documents à fournir</option>
+                                            <option value="conditions">Conditions de crédit et taux</option>
                                             <option value="autre">Autre demande</option>
                                         </select>
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="message">Message *</label>
+                                        <label htmlFor="message">Votre message *</label>
                                         <textarea
                                             id="message"
                                             name="message"
@@ -161,25 +162,25 @@ const Contact = () => {
                                 <div className="contact-method">
                                     <div className="method-icon">📍</div>
                                     <div className="method-content">
-                                        <h4>Adresse</h4>
+                                        <h4>Siège social</h4>
                                         <p>{companyInfo.address}</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card faq-suggestion">
                                 <h3>Consultez notre FAQ</h3>
-                                <p>Vous trouverez peut-être une réponse immédiate.</p>
+                                <p>Retrouvez les réponses aux questions les plus fréquentes sur le crédit immobilier.</p>
                                 <Link to="/faq">
                                     <Button variant="secondary" className="full-width">Voir la FAQ</Button>
                                 </Link>
                             </div>
 
                             <div className="card security-notice">
-                                <h3>🔐 Votre sécurité</h3>
+                                <h3>🔐 Engagement de sécurité</h3>
                                 <ul>
-                                    <li>Nous ne demandons jamais vos identifiants bancaires</li>
-                                    <li>Aucun paiement requis pour la simulation</li>
-                                    <li>Vos données sont chiffrées (HTTPS/SSL)</li>
+                                    <li>Vos données sont protégées selon les normes bancaires</li>
+                                    <li>Connexion sécurisée HTTPS/SSL</li>
+                                    <li>Conformité RGPD et réglementations européennes</li>
                                 </ul>
                             </div>
                         </div>

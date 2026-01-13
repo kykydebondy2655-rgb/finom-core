@@ -17,17 +17,17 @@ const Home = () => {
                                 Connexion sécurisée HTTPS
                             </div>
                             <h1>
-                                Votre projet immobilier <br />
+                                Votre crédit immobilier <br />
                                 avec <span className="highlight">FINOM</span>
                             </h1>
                             <p className="hero-subtitle">
-                                Simulateur de prêt immobilier.
-                                Simulation gratuite, sans engagement, 100% confidentielle.
+                                FINOM vous accompagne et finance votre projet immobilier.
+                                Simulation gratuite, réponse rapide, conditions transparentes.
                             </p>
                             <div className="cta-group">
                                 <Link to="/simulator">
                                     <button className="btn-pill btn-primary cta-button-large">
-                                        Simuler mon prêt gratuitement
+                                        Simuler mon crédit immobilier
                                     </button>
                                 </Link>
                                 <Link to="/how-it-works" className="btn-secondary-link">
@@ -35,12 +35,12 @@ const Home = () => {
                                 </Link>
                             </div>
                             <div className="trust-markers">
-                                <span className="trust-item">🛡️ Données chiffrées</span>
+                                <span className="trust-item">🏦 Établissement bancaire</span>
                                 <span className="trust-item">🇪🇺 Conforme RGPD</span>
-                                <span className="trust-item">📋 Sans engagement</span>
+                                <span className="trust-item">📋 Conditions claires</span>
                             </div>
                             <p className="no-data-warning">
-                                Aucune donnée bancaire ni IBAN demandé lors de la simulation.
+                                Simulation gratuite et sans engagement. Aucun frais pour l'étude de votre dossier.
                             </p>
                         </div>
                     </div>
@@ -49,22 +49,22 @@ const Home = () => {
                 {/* Features */}
                 <section id="how-it-works" className="section-features">
                     <div className="container">
-                        <h2 className="text-center section-title">Pourquoi choisir FINOM ?</h2>
+                        <h2 className="text-center section-title">Pourquoi financer avec FINOM ?</h2>
                         <div className="bento-grid">
                             <div className="card feature-card">
                                 <div className="icon-box">📊</div>
-                                <h3>Simulation Transparente</h3>
-                                <p>Obtenez une proposition détaillée en quelques minutes. Sans engagement, sans frais cachés.</p>
+                                <h3>Crédit sur mesure</h3>
+                                <p>Nous analysons votre situation financière et vous proposons un financement adapté à votre capacité d'emprunt.</p>
                             </div>
                             <div className="card feature-card">
-                                <div className="icon-box">🔒</div>
-                                <h3>Données Sécurisées</h3>
-                                <p>Vos documents sont chiffrés et hébergés en Europe. Conformité RGPD garantie.</p>
+                                <div className="icon-box">💰</div>
+                                <h3>Taux compétitifs</h3>
+                                <p>Bénéficiez de conditions de financement attractives avec un TAEG transparent dès la simulation.</p>
                             </div>
                             <div className="card feature-card">
                                 <div className="icon-box">👨‍💼</div>
-                                <h3>Conseiller Dédié</h3>
-                                <p>Un expert vous accompagne du début à la signature chez le notaire.</p>
+                                <h3>Conseiller dédié</h3>
+                                <p>Un expert bancaire vous accompagne de l'étude de votre dossier jusqu'au déblocage des fonds.</p>
                             </div>
                         </div>
                     </div>
@@ -74,34 +74,34 @@ const Home = () => {
                 <section className="section-security">
                     <div className="container">
                         <div className="security-content">
-                            <h2>Votre sécurité, notre priorité</h2>
+                            <h2>Un établissement bancaire fiable</h2>
                             <div className="security-grid">
                                 <div className="security-item">
                                     <span className="security-icon">🔐</span>
                                     <div>
-                                        <strong>Connexion HTTPS</strong>
+                                        <strong>Sécurité bancaire</strong>
                                         <p>Toutes vos données transitent via une connexion chiffrée SSL/TLS.</p>
                                     </div>
                                 </div>
                                 <div className="security-item">
                                     <span className="security-icon">🇪🇺</span>
                                     <div>
-                                        <strong>Hébergement Européen</strong>
-                                        <p>Vos informations sont stockées sur des serveurs conformes au RGPD.</p>
+                                        <strong>Conformité européenne</strong>
+                                        <p>Respect des directives bancaires européennes et du RGPD.</p>
                                     </div>
                                 </div>
                                 <div className="security-item">
                                     <span className="security-icon">✅</span>
                                     <div>
-                                        <strong>Partenaires Agréés</strong>
+                                        <strong>Partenaires agréés</strong>
                                         <p>Nous travaillons avec Treezor (ACPR) et Solaris (BaFin).</p>
                                     </div>
                                 </div>
                                 <div className="security-item">
                                     <span className="security-icon">🏦</span>
                                     <div>
-                                        <strong>Banque 100% Sécurisée</strong>
-                                        <p>Fonds garantis et protégés par nos partenaires bancaires agréés.</p>
+                                        <strong>Financement direct</strong>
+                                        <p>FINOM délivre directement votre crédit immobilier, sans intermédiaire.</p>
                                     </div>
                                 </div>
                             </div>
