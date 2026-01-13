@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import logger from '@/lib/logger';
 
-interface ForcePasswordChangeProps {
-  userId: string;
+export interface ForcePasswordChangeProps {
   onSuccess: () => void;
 }
 
-const ForcePasswordChange: React.FC<ForcePasswordChangeProps> = ({ userId, onSuccess }) => {
+const ForcePasswordChange: React.FC<ForcePasswordChangeProps> = ({ onSuccess }) => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (!user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,15 +55,16 @@ const ForcePasswordChange: React.FC<ForcePasswordChangeProps> = ({ userId, onSuc
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ must_change_password: false })
-        .eq('id', userId);
+        .eq('id', user.id);
 
       if (profileError) throw profileError;
 
       onSuccess();
       navigate('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du changement de mot de passe';
       logger.logError('Error changing password', err);
-      setError(err.message || 'Erreur lors du changement de mot de passe');
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

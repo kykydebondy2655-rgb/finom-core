@@ -3,22 +3,24 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
+import ForcePasswordChange from '../components/auth/ForcePasswordChange';
 
 const Login = () => {
     const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
-    const { login, isAuthenticated, user } = useAuth();
+    const [showPasswordChange, setShowPasswordChange] = useState(false);
+    const { login, isAuthenticated, user, clearMustChangePassword } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
     // Get redirect destination from state or default based on role
     const from = location.state?.from?.pathname;
 
-    // Redirect if already authenticated
+    // Redirect if already authenticated and doesn't need password change
     useEffect(() => {
-        if (isAuthenticated && user) {
+        if (isAuthenticated && user && !user.mustChangePassword) {
             redirectUser(user.role);
         }
     }, [isAuthenticated, user]);
@@ -57,7 +59,13 @@ const Login = () => {
 
         try {
             const loggedUser = await login(result.data.email, result.data.password);
-            redirectUser(loggedUser.role);
+            
+            // Check if user must change password
+            if (loggedUser.mustChangePassword) {
+                setShowPasswordChange(true);
+            } else {
+                redirectUser(loggedUser.role);
+            }
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Erreur de connexion';
             setError(message);
@@ -65,6 +73,19 @@ const Login = () => {
             setLoading(false);
         }
     };
+
+    const handlePasswordChangeSuccess = () => {
+        setShowPasswordChange(false);
+        clearMustChangePassword();
+        if (user) {
+            redirectUser(user.role);
+        }
+    };
+
+    // Show password change form if required
+    if (showPasswordChange && user) {
+        return <ForcePasswordChange onSuccess={handlePasswordChangeSuccess} />;
+    }
 
     return (
         <div className="auth-page">
