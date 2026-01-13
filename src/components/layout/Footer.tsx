@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
         <div className="footer-main">
           <div className="footer-brand">
             <span className="footer-logo">FINOM</span>
-            <p className="footer-tagline">Votre partenaire financement immobilier</p>
+            <p className="footer-tagline">Votre banque pour le crédit immobilier</p>
             <div className="footer-certifications">
               <span className="certification-badge">Partenaire Treezor</span>
               <span className="certification-badge">Partenaire Solaris</span>
@@ -19,24 +19,24 @@ const Footer: React.FC = () => {
 
           <div className="footer-links-grid">
             <div className="footer-column">
-              <h4>Services</h4>
-              <Link to="/simulator">Simulateur de prêt</Link>
+              <h4>Crédit immobilier</h4>
+              <Link to="/simulator">Simuler mon crédit</Link>
               <Link to="/rates">Nos taux</Link>
               <Link to="/how-it-works">Comment ça marche</Link>
-              <Link to="/faq">FAQ</Link>
+              <Link to="/faq">Questions fréquentes</Link>
             </div>
 
             <div className="footer-column">
-              <h4>À propos</h4>
-              <Link to="/about">Qui sommes-nous</Link>
-              <Link to="/contact">Nous contacter</Link>
+              <h4>Notre établissement</h4>
+              <Link to="/about">À propos de FINOM</Link>
+              <Link to="/contact">Contacter un conseiller</Link>
             </div>
 
             <div className="footer-column">
-              <h4>Légal</h4>
+              <h4>Informations légales</h4>
               <Link to="/legal">Mentions légales</Link>
               <Link to="/privacy">Politique de confidentialité</Link>
-              <Link to="/terms">CGU</Link>
+              <Link to="/terms">Conditions générales</Link>
               <Link to="/security">Sécurité</Link>
             </div>
 
@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
 
         <div className="footer-legal">
           <div className="legal-info">
-            <p><strong>FINOM</strong> — Service de simulation de prêt immobilier</p>
+            <p><strong>FINOM</strong> — Établissement bancaire spécialisé en crédit immobilier</p>
             <p>Contact : contact@pret-finom.co | +31 20 524 9111</p>
           </div>
           
@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
               <strong>Partenaires bancaires agréés :</strong> Treezor (ACPR - France) et Solaris (BaFin - Allemagne)
             </p>
             <p>
-              Vos données sont protégées et hébergées en Europe, conformément au RGPD.
+              Vos données sont protégées et hébergées en Europe, conformément au RGPD et aux standards bancaires.
             </p>
           </div>
         </div>

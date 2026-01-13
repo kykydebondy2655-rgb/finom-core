@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 
 const Faq = () => {
@@ -9,23 +10,27 @@ const Faq = () => {
 
     const categories = [
         { id: 'all', label: 'Toutes les questions', icon: '📋' },
-        { id: 'simulation', label: 'Simulation & Taux', icon: '🧮' },
+        { id: 'credit', label: 'Crédit immobilier', icon: '🏠' },
         { id: 'dossier', label: 'Constitution du dossier', icon: '📝' },
-        { id: 'delais', label: 'Délais & Étapes', icon: '⏱️' },
+        { id: 'conditions', label: 'Conditions & Taux', icon: '💰' },
         { id: 'securite', label: 'Sécurité', icon: '🔒' }
     ];
 
     const faqData = [
         {
-            category: 'simulation',
+            category: 'credit',
             questions: [
                 {
-                    q: 'Comment fonctionne le simulateur de crédit immobilier ?',
-                    a: "Notre simulateur vous permet d'estimer votre capacité d'emprunt et vos mensualités en quelques clics."
+                    q: 'FINOM délivre-t-elle directement des crédits immobiliers ?',
+                    a: 'Oui, FINOM est un établissement bancaire qui finance directement les projets immobiliers de ses clients. Nous analysons votre dossier, étudions votre solvabilité et vous proposons une offre de crédit adaptée à votre situation.'
                 },
                 {
-                    q: 'Les taux affichés dans le simulateur sont-ils garantis ?',
-                    a: "Les taux affichés sont indicatifs et basés sur les conditions du marché."
+                    q: 'Quels types de projets immobiliers financez-vous ?',
+                    a: "Nous finançons l'acquisition de résidences principales, résidences secondaires et investissements locatifs. Nous pouvons également financer des travaux dans le cadre d'un crédit immobilier."
+                },
+                {
+                    q: 'Comment fonctionne la simulation de crédit ?',
+                    a: "Notre simulateur vous permet d'estimer votre capacité d'emprunt et vos mensualités en quelques clics. Cette simulation est gratuite, sans engagement, et vous donne une première indication sur les conditions de financement possibles."
                 }
             ]
         },
@@ -33,17 +38,29 @@ const Faq = () => {
             category: 'dossier',
             questions: [
                 {
-                    q: 'Quels documents dois-je fournir ?',
-                    a: "Pièce d'identité, justificatifs de revenus, relevés bancaires, et justificatif de domicile."
+                    q: 'Quels documents dois-je fournir pour ma demande de crédit ?',
+                    a: "Pour instruire votre dossier, nous avons besoin de : pièce d'identité en cours de validité, justificatifs de revenus (3 derniers bulletins de salaire, avis d'imposition), relevés bancaires des 3 derniers mois, et justificatif de domicile. Des documents complémentaires peuvent être demandés selon votre situation."
+                },
+                {
+                    q: 'Comment est analysée ma demande de financement ?',
+                    a: "Nos analystes bancaires étudient votre situation financière globale : revenus, charges, taux d'endettement actuel, apport personnel, et stabilité professionnelle. Cette analyse nous permet de vous proposer les meilleures conditions de financement adaptées à votre profil."
                 }
             ]
         },
         {
-            category: 'delais',
+            category: 'conditions',
             questions: [
                 {
-                    q: 'Combien de temps pour obtenir une réponse ?',
-                    a: "Pour un dossier complet, comptez en moyenne 5 à 7 jours ouvrés pour une réponse de principe."
+                    q: 'Les taux affichés sont-ils garantis ?',
+                    a: "Les taux affichés dans le simulateur sont indicatifs et basés sur les conditions actuelles du marché. Le taux définitif de votre crédit sera déterminé après l'étude complète de votre dossier et dépend de votre profil emprunteur."
+                },
+                {
+                    q: 'Quels sont les frais liés à mon crédit immobilier ?',
+                    a: "Les frais comprennent généralement : les frais de dossier, l'assurance emprunteur, et les frais de garantie. Le coût total du crédit (TAEG) vous est communiqué de manière transparente avant toute signature."
+                },
+                {
+                    q: "Qu'est-ce que le TAEG ?",
+                    a: "Le Taux Annuel Effectif Global (TAEG) représente le coût total de votre crédit exprimé en pourcentage annuel. Il inclut le taux d'intérêt, les frais de dossier, l'assurance et tous les frais obligatoires. C'est l'indicateur légal pour comparer les offres de crédit."
                 }
             ]
         },
@@ -51,8 +68,12 @@ const Faq = () => {
             category: 'securite',
             questions: [
                 {
-                    q: 'Mes données sont-elles sécurisées ?',
-                    a: 'Toutes vos données sont chiffrées et hébergées sur des serveurs sécurisés en France.'
+                    q: 'Mes données personnelles sont-elles sécurisées ?',
+                    a: 'Toutes vos données sont chiffrées et hébergées sur des serveurs sécurisés en Europe, conformément aux standards bancaires et au RGPD. Nous appliquons les plus hauts niveaux de sécurité pour protéger vos informations.'
+                },
+                {
+                    q: 'FINOM est-elle une banque régulée ?',
+                    a: "FINOM opère en partenariat avec des établissements bancaires agréés par les autorités de régulation européennes : Treezor (agrément ACPR en France) et Solaris (agrément BaFin en Allemagne). Nous respectons l'ensemble des obligations réglementaires applicables au crédit immobilier."
                 }
             ]
         }
@@ -68,9 +89,9 @@ const Faq = () => {
             <div className="faq-page">
                 <div className="container">
                     <header className="faq-header">
-                        <h1>❓ Foire aux Questions</h1>
+                        <h1>Questions fréquentes</h1>
                         <p className="faq-subtitle">
-                            Trouvez rapidement des réponses à vos questions sur le crédit immobilier.
+                            Retrouvez les réponses à vos questions sur le crédit immobilier et nos services bancaires.
                         </p>
                     </header>
 
@@ -119,14 +140,14 @@ const Faq = () => {
                             </div>
 
                             <div className="faq-cta">
-                                <h3>Vous n'avez pas trouvé votre réponse ?</h3>
-                                <p>Notre équipe est à votre disposition pour répondre à toutes vos questions.</p>
+                                <h3>Vous avez d'autres questions ?</h3>
+                                <p>Nos conseillers bancaires sont à votre disposition pour vous accompagner dans votre projet.</p>
                                 <div className="cta-buttons">
                                     <Link to="/contact">
-                                        <Button variant="primary">Nous contacter</Button>
+                                        <Button variant="primary">Contacter un conseiller</Button>
                                     </Link>
                                     <Link to="/simulator">
-                                        <Button variant="secondary">Faire une simulation</Button>
+                                        <Button variant="secondary">Simuler mon crédit</Button>
                                     </Link>
                                 </div>
                             </div>
@@ -135,6 +156,7 @@ const Faq = () => {
                 </div>
 
             </div>
+            <Footer />
         </>
     );
 };

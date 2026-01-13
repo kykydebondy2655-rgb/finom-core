@@ -62,7 +62,7 @@ const Register = () => {
                 navigate('/dashboard', { replace: true });
             }
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : 'Erreur lors de l\'inscription';
+            const message = err instanceof Error ? err.message : "Erreur lors de l'inscription";
             setError(message);
         } finally {
             setLoading(false);
@@ -78,8 +78,8 @@ const Register = () => {
         <div className="auth-page">
             <div className="auth-container">
                 <div className="auth-card">
-                    <h1 className="auth-title">Créer un compte</h1>
-                    <p className="auth-subtitle">Rejoignez FINOM dès aujourd'hui</p>
+                    <h1 className="auth-title">Créer mon espace client</h1>
+                    <p className="auth-subtitle">Accédez à votre espace personnel pour suivre votre demande de crédit</p>
 
                     {error && <div className="error-message">{error}</div>}
 
@@ -158,7 +158,7 @@ const Register = () => {
                         </div>
 
                         <Button type="submit" isLoading={loading} variant="primary" className="full-width">
-                            {loading ? 'Inscription...' : 'Créer mon compte'}
+                            {loading ? 'Création...' : 'Créer mon espace client'}
                         </Button>
 
                     </form>
