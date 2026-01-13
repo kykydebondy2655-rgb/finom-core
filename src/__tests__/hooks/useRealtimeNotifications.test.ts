@@ -72,8 +72,8 @@ describe('useRealtimeNotifications', () => {
     };
 
     const mockNotifications = [
-      { id: '1', title: 'Test', message: 'Hello', read: false, category: 'loan', created_at: new Date().toISOString() },
-      { id: '2', title: 'Test 2', message: 'World', read: true, category: 'document', created_at: new Date().toISOString() },
+      { id: '1', title: 'Test', message: 'Hello', read: false, category: 'loan', created_at: new Date().toISOString(), user_id: 'test-user-id', type: 'info' },
+      { id: '2', title: 'Test 2', message: 'World', read: true, category: 'document', created_at: new Date().toISOString(), user_id: 'test-user-id', type: 'info' },
     ];
 
     vi.mocked(useAuth).mockReturnValue({
@@ -86,14 +86,15 @@ describe('useRealtimeNotifications', () => {
       isAuthenticated: true,
     });
 
+    const mockLimit = vi.fn().mockResolvedValue({
+      data: mockNotifications,
+      error: null,
+    });
+
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({
-        data: mockNotifications,
-        error: null,
-      }),
+      order: vi.fn().mockReturnValue({ limit: mockLimit }),
     } as any);
 
     const { result } = renderHook(() => useRealtimeNotifications());
@@ -130,14 +131,15 @@ describe('useRealtimeNotifications', () => {
       isAuthenticated: true,
     });
 
+    const mockLimit = vi.fn().mockResolvedValue({
+      data: mockNotifications,
+      error: null,
+    });
+
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({
-        data: mockNotifications,
-        error: null,
-      }),
+      order: vi.fn().mockReturnValue({ limit: mockLimit }),
     } as any);
 
     const { result } = renderHook(() => useRealtimeNotifications());
@@ -166,11 +168,12 @@ describe('useRealtimeNotifications', () => {
       isAuthenticated: true,
     });
 
+    const mockLimit = vi.fn().mockRejectedValue(new Error('Database error'));
+
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockRejectedValue(new Error('Database error')),
+      order: vi.fn().mockReturnValue({ limit: mockLimit }),
     } as any);
 
     const { result } = renderHook(() => useRealtimeNotifications());
@@ -200,11 +203,12 @@ describe('useRealtimeNotifications', () => {
       isAuthenticated: true,
     });
 
+    const mockLimit = vi.fn().mockResolvedValue({ data: [], error: null });
+
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+      order: vi.fn().mockReturnValue({ limit: mockLimit }),
     } as any);
 
     renderHook(() => useRealtimeNotifications());
@@ -240,11 +244,12 @@ describe('useRealtimeNotifications', () => {
 
     vi.mocked(supabase.channel).mockReturnValue(mockChannel as any);
 
+    const mockLimit = vi.fn().mockResolvedValue({ data: [], error: null });
+
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+      order: vi.fn().mockReturnValue({ limit: mockLimit }),
     } as any);
 
     const { unmount } = renderHook(() => useRealtimeNotifications());
@@ -280,14 +285,15 @@ describe('useRealtimeNotifications', () => {
     });
 
     // Setup initial fetch
+    const mockLimit = vi.fn().mockResolvedValue({
+      data: mockNotifications,
+      error: null,
+    });
+
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue({
-        data: mockNotifications,
-        error: null,
-      }),
+      order: vi.fn().mockReturnValue({ limit: mockLimit }),
       update: vi.fn().mockReturnThis(),
     } as any);
 
@@ -300,9 +306,10 @@ describe('useRealtimeNotifications', () => {
     expect(result.current.unreadCount).toBe(1);
 
     // Setup mark as read
+    const mockEq = vi.fn().mockResolvedValue({ error: null });
     vi.mocked(supabase.from).mockReturnValue({
-      update: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({ error: null }),
+      update: vi.fn().mockReturnValue({ eq: mockEq }),
+      eq: mockEq,
     } as any);
 
     await act(async () => {
