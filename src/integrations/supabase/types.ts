@@ -483,6 +483,36 @@ export type Database = {
           },
         ]
       }
+      lead_assignments_log: {
+        Row: {
+          action: string
+          created_at: string
+          from_agent_id: string | null
+          id: string
+          lead_id: string
+          performed_by_admin_id: string
+          to_agent_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          from_agent_id?: string | null
+          id?: string
+          lead_id: string
+          performed_by_admin_id: string
+          to_agent_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          from_agent_id?: string | null
+          id?: string
+          lead_id?: string
+          performed_by_admin_id?: string
+          to_agent_id?: string | null
+        }
+        Relationships: []
+      }
       loan_applications: {
         Row: {
           agency_fees: number | null
@@ -1035,6 +1065,19 @@ export type Database = {
         Args: { _agent_id: string; _count: number }
         Returns: number
       }
+      get_agent_assigned_leads: {
+        Args: { _agent_id: string }
+        Returns: {
+          assigned_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          lead_status: string
+          phone: string
+          pipeline_stage: string
+        }[]
+      }
       get_user_role: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -1042,6 +1085,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      reassign_leads: {
+        Args: {
+          _admin_id: string
+          _from_agent_id: string
+          _lead_ids: string[]
+          _to_agent_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {

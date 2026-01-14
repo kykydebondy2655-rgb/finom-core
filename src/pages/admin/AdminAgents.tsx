@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import CreateAgentModal from '@/components/admin/CreateAgentModal';
 import AssignLeadsModal from '@/components/admin/AssignLeadsModal';
 import DeleteAgentModal from '@/components/admin/DeleteAgentModal';
+import ManageLeadsModal from '@/components/admin/ManageLeadsModal';
 import { useToast } from '@/components/finom/Toast';
 import { adminApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
@@ -23,6 +24,7 @@ const AdminAgents: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showManageLeadsModal, setShowManageLeadsModal] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Profile | null>(null);
   const [availableLeadsCount, setAvailableLeadsCount] = useState(0);
 
@@ -64,6 +66,11 @@ const AdminAgents: React.FC = () => {
   const handleDeleteClick = (agent: Profile) => {
     setSelectedAgent(agent);
     setShowDeleteModal(true);
+  };
+
+  const handleManageLeadsClick = (agent: Profile) => {
+    setSelectedAgent(agent);
+    setShowManageLeadsModal(true);
   };
 
   if (loading) {
@@ -112,6 +119,14 @@ const AdminAgents: React.FC = () => {
                     </div>
                     <div className="agent-actions">
                       <Button 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => handleManageLeadsClick(agent)}
+                        disabled={agent.clientCount === 0}
+                      >
+                        Gérer leads ({agent.clientCount})
+                      </Button>
+                      <Button 
                         variant="primary" 
                         size="sm"
                         onClick={() => handleAssignClick(agent)}
@@ -154,6 +169,19 @@ const AdminAgents: React.FC = () => {
             }}
             agent={selectedAgent}
             availableLeadsCount={availableLeadsCount}
+          />
+        )}
+
+        {selectedAgent && (
+          <ManageLeadsModal
+            isOpen={showManageLeadsModal}
+            onClose={() => {
+              setShowManageLeadsModal(false);
+              setSelectedAgent(null);
+            }}
+            onSuccess={loadAgents}
+            agent={selectedAgent}
+            allAgents={agents}
           />
         )}
 
