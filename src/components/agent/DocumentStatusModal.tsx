@@ -102,22 +102,17 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
 
         if (clientProfile?.email) {
           if (selectedStatus === 'validated') {
-            emailService.sendNotification(
+            emailService.sendDocumentValidated(
               clientProfile.email,
               clientProfile.first_name || 'Client',
-              'Document validé ✅',
-              `Votre document "${document.file_name}" a été validé par nos équipes.`,
-              'Voir mes documents',
-              `${window.location.origin}/loans`
+              document.file_name
             ).catch(err => logger.logError('Email send error', err));
           } else if (selectedStatus === 'rejected') {
-            emailService.sendNotification(
+            emailService.sendDocumentRejected(
               clientProfile.email,
               clientProfile.first_name || 'Client',
-              'Document rejeté ❌',
-              `Votre document "${document.file_name}" n'a pas pu être validé. Raison: ${rejectionReason}. Veuillez soumettre un nouveau document.`,
-              'Corriger mon document',
-              `${window.location.origin}/loans`
+              document.file_name,
+              rejectionReason
             ).catch(err => logger.logError('Email send error', err));
           }
         }
