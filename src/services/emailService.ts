@@ -12,6 +12,8 @@ export type EmailTemplate =
   | 'loanApproved'
   | 'loanRejected'
   | 'documentRequired'
+  | 'documentValidated'
+  | 'documentRejected'
   | 'callbackReminder'
   | 'notification'
   | 'transferCompleted';
@@ -193,6 +195,39 @@ export const emailService = {
       template: 'passwordReset',
       to: email,
       data: { firstName, email, resetLink },
+    });
+  },
+
+  /**
+   * Email de document validé
+   */
+  async sendDocumentValidated(
+    email: string,
+    firstName: string,
+    documentName: string,
+    loanId?: string
+  ): Promise<EmailResponse> {
+    return this.send({
+      template: 'documentValidated',
+      to: email,
+      data: { firstName, documentName, loanId },
+    });
+  },
+
+  /**
+   * Email de document rejeté
+   */
+  async sendDocumentRejected(
+    email: string,
+    firstName: string,
+    documentName: string,
+    rejectionReason?: string,
+    loanId?: string
+  ): Promise<EmailResponse> {
+    return this.send({
+      template: 'documentRejected',
+      to: email,
+      data: { firstName, documentName, rejectionReason, loanId },
     });
   },
 };
