@@ -8,9 +8,10 @@ import { storageService } from '@/services/storageService';
 import { documentsApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 
-interface DocumentUploadProps {
+export interface DocumentUploadProps {
   loanId?: string;
   category?: string;
+  documentOwner?: 'primary' | 'co_borrower';
   onUploadComplete?: (doc: { path: string; url?: string }) => void;
   onError?: (error: string) => void;
   accept?: string;
@@ -20,6 +21,7 @@ interface DocumentUploadProps {
 const DocumentUpload: React.FC<DocumentUploadProps> = ({
   loanId,
   category,
+  documentOwner = 'primary',
   onUploadComplete,
   onError,
   accept = '.pdf,.jpg,.jpeg,.png,.webp',
@@ -106,7 +108,8 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
           file_type: file.type,
           category: category || 'other',
           status: 'pending',
-        });
+          document_owner: documentOwner,
+        } as any);
       }
 
       setProgress(100);
