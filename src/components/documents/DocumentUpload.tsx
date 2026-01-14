@@ -8,6 +8,31 @@ import { storageService } from '@/services/storageService';
 import { documentsApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 
+// Document types for the checklist matching
+const DOCUMENT_TYPES = [
+  { id: 'id_card', label: 'Pièce d\'identité' },
+  { id: 'proof_of_address', label: 'Justificatif de domicile' },
+  { id: 'tax_notice', label: 'Avis d\'imposition' },
+  { id: 'payslips', label: 'Bulletins de salaire' },
+  { id: 'employment_contract', label: 'Contrat de travail' },
+  { id: 'bank_statements', label: 'Relevés bancaires' },
+  { id: 'existing_loans', label: 'Tableau d\'amortissement' },
+  { id: 'compromise', label: 'Compromis de vente' },
+  { id: 'property_diagnostics', label: 'Diagnostics immobiliers' },
+  { id: 'primary_residence_proof', label: 'Justificatif résidence principale' },
+  { id: 'rental_estimation', label: 'Estimation locative' },
+  { id: 'existing_rentals', label: 'Baux existants' },
+  { id: 'land_compromise', label: 'Compromis terrain' },
+  { id: 'building_permit', label: 'Permis de construire' },
+  { id: 'construction_contract', label: 'Contrat de construction' },
+  { id: 'construction_plans', label: 'Plans de la maison' },
+  { id: 'insurance_dommage', label: 'Assurance dommages-ouvrage' },
+  { id: 'property_title', label: 'Titre de propriété' },
+  { id: 'renovation_quotes', label: 'Devis travaux' },
+  { id: 'renovation_plans', label: 'Plans / descriptif travaux' },
+  { id: 'other', label: 'Autre document' },
+];
+
 export interface DocumentUploadProps {
   loanId?: string;
   category?: string;
@@ -16,6 +41,7 @@ export interface DocumentUploadProps {
   onError?: (error: string) => void;
   accept?: string;
   maxSize?: number; // in MB
+  showTypeSelector?: boolean;
 }
 
 const DocumentUpload: React.FC<DocumentUploadProps> = ({
@@ -26,11 +52,13 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
   onError,
   accept = '.pdf,.jpg,.jpeg,.png,.webp',
   maxSize = 10,
+  showTypeSelector = true,
 }) => {
   const { user } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [selectedType, setSelectedType] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -74,11 +102,20 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
       return;
     }
 
+    // Require document type selection when selector is shown
+    if (showTypeSelector && !selectedType) {
+      onError?.('Veuillez sélectionner le type de document');
+      return;
+    }
+
     const validationError = validateFile(file);
     if (validationError) {
       onError?.(validationError);
       return;
     }
+
+    // Use selected type or fallback to category prop
+    const documentCategory = showTypeSelector ? selectedType : (category || 'other');
 
     try {
       setUploading(true);
@@ -89,7 +126,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
         user.id,
         file,
         loanId,
-        category
+        documentCategory
       );
 
       setProgress(60);
@@ -106,7 +143,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
           file_name: file.name,
           file_path: result.path,
           file_type: file.type,
-          category: category || 'other',
+          category: documentCategory,
           status: 'pending',
           document_owner: documentOwner,
         } as any);
@@ -123,6 +160,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
       setTimeout(() => {
         setProgress(0);
         setUploading(false);
+        setSelectedType('');
       }, 1000);
     } catch (err) {
       // Retry logic for network errors
@@ -145,7 +183,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
       uploadFile(files[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loanId, category, uploading]);
+  }, [user, loanId, category, uploading, selectedType]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Prevent multiple uploads while one is in progress
@@ -163,12 +201,30 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
   return (
     <div className="document-upload">
+      {/* Document Type Selector */}
+      {showTypeSelector && (
+        <div className="type-selector">
+          <label className="type-label">Type de document *</label>
+          <select 
+            value={selectedType} 
+            onChange={(e) => setSelectedType(e.target.value)}
+            className="type-select"
+            disabled={uploading}
+          >
+            <option value="">-- Sélectionnez le type --</option>
+            {DOCUMENT_TYPES.map(type => (
+              <option key={type.id} value={type.id}>{type.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div
-        className={`upload-zone ${isDragging ? 'dragging' : ''} ${uploading ? 'uploading' : ''}`}
+        className={`upload-zone ${isDragging ? 'dragging' : ''} ${uploading ? 'uploading' : ''} ${showTypeSelector && !selectedType ? 'disabled' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => !uploading && fileInputRef.current?.click()}
+        onClick={() => !uploading && (showTypeSelector ? selectedType : true) && fileInputRef.current?.click()}
       >
         <input
           ref={fileInputRef}
@@ -192,9 +248,15 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
           <>
             <div className="upload-icon">📄</div>
             <p className="upload-text">
-              Glissez-déposez un fichier ici
-              <br />
-              <span>ou cliquez pour sélectionner</span>
+              {showTypeSelector && !selectedType ? (
+                <>Sélectionnez d'abord le type de document</>
+              ) : (
+                <>
+                  Glissez-déposez un fichier ici
+                  <br />
+                  <span>ou cliquez pour sélectionner</span>
+                </>
+              )}
             </p>
             <p className="upload-hint">
               PDF, JPG, PNG • Max {maxSize} Mo
@@ -208,6 +270,39 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
           width: 100%;
         }
 
+        .type-selector {
+          margin-bottom: 1rem;
+        }
+
+        .type-label {
+          display: block;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: var(--color-text);
+          font-size: 0.9rem;
+        }
+
+        .type-select {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          font-size: 0.95rem;
+          background: white;
+          cursor: pointer;
+          transition: border-color 0.2s;
+        }
+
+        .type-select:focus {
+          outline: none;
+          border-color: var(--color-primary);
+        }
+
+        .type-select:disabled {
+          background: #f5f5f5;
+          cursor: not-allowed;
+        }
+
         .upload-zone {
           border: 2px dashed var(--color-border);
           border-radius: var(--radius-lg);
@@ -218,7 +313,12 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
           background: #fafafa;
         }
 
-        .upload-zone:hover {
+        .upload-zone.disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .upload-zone:not(.disabled):hover {
           border-color: var(--color-primary);
           background: rgba(254, 66, 180, 0.03);
         }
