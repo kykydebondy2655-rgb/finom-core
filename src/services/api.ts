@@ -610,51 +610,64 @@ export const adminApi = {
     return profiles || [];
   },
 
-  // Create a new agent account
+  // Create a new agent account via Edge Function (preserves admin session)
   async createAgent(email: string, password: string, firstName: string, lastName: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          role: 'agent'
-        }
-      }
-    });
-    if (error) throw error;
-    return data;
-  },
-
-  // Create a new client account (legacy - creates auth user)
-  async createClient(email: string, password: string, firstName: string, lastName: string, phone?: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          role: 'client'
-        }
-      }
-    });
-    if (error) throw error;
-    
-    // Update phone and must_change_password flag
-    if (data.user) {
-      await supabase.from('profiles').update({ 
-        phone: phone || null,
-        must_change_password: true,
-        lead_status: 'new'
-      }).eq('id', data.user.id);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      throw new Error('Session admin requise');
     }
-    
-    return data;
+
+    const response = await supabase.functions.invoke('create-user', {
+      body: {
+        email,
+        password,
+        firstName,
+        lastName,
+        role: 'agent'
+      }
+    });
+
+    if (response.error) {
+      throw new Error(response.error.message || 'Erreur lors de la création');
+    }
+
+    if (response.data?.error) {
+      throw new Error(response.data.error);
+    }
+
+    return response.data;
   },
 
-  // Create a lead (profile without auth user initially)
+  // Create a new client account via Edge Function (preserves admin session)
+  async createClient(email: string, password: string, firstName: string, lastName: string, phone?: string) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      throw new Error('Session admin requise');
+    }
+
+    const response = await supabase.functions.invoke('create-user', {
+      body: {
+        email,
+        password,
+        firstName,
+        lastName,
+        role: 'client',
+        phone
+      }
+    });
+
+    if (response.error) {
+      throw new Error(response.error.message || 'Erreur lors de la création');
+    }
+
+    if (response.data?.error) {
+      throw new Error(response.data.error);
+    }
+
+    return response.data;
+  },
+
+  // Create a lead via Edge Function (preserves admin session)
   async createLead(leadData: {
     email: string;
     firstName: string;
@@ -666,37 +679,39 @@ export const adminApi = {
     source?: string;
     pipelineStage?: string;
   }) {
-    // First create auth user with temp password
-    const tempPassword = import.meta.env.VITE_DEFAULT_TEMP_PASSWORD || 'TempPass123!';
-    
-    const { data, error } = await supabase.auth.signUp({
-      email: leadData.email,
-      password: tempPassword,
-      options: {
-        data: {
-          first_name: leadData.firstName,
-          last_name: leadData.lastName,
-          role: 'client'
-        }
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      throw new Error('Session admin requise');
+    }
+
+    // Use default temp password from secrets
+    const tempPassword = 'TempPass123!';
+
+    const response = await supabase.functions.invoke('create-user', {
+      body: {
+        email: leadData.email,
+        password: tempPassword,
+        firstName: leadData.firstName,
+        lastName: leadData.lastName,
+        role: 'client',
+        phone: leadData.phone,
+        propertyPrice: leadData.propertyPrice,
+        downPayment: leadData.downPayment,
+        purchaseType: leadData.purchaseType,
+        leadSource: leadData.source,
+        pipelineStage: leadData.pipelineStage
       }
     });
-    if (error) throw error;
-    
-    // Update profile with lead data
-    if (data.user) {
-      await supabase.from('profiles').update({
-        phone: leadData.phone || null,
-        property_price: leadData.propertyPrice || null,
-        down_payment: leadData.downPayment || null,
-        purchase_type: leadData.purchaseType || null,
-        lead_source: leadData.source || null,
-        pipeline_stage: leadData.pipelineStage || null,
-        lead_status: 'new',
-        must_change_password: true
-      }).eq('id', data.user.id);
+
+    if (response.error) {
+      throw new Error(response.error.message || 'Erreur lors de la création');
     }
-    
-    return data;
+
+    if (response.data?.error) {
+      throw new Error(response.data.error);
+    }
+
+    return response.data;
   },
 
   // Assign leads to an agent using the RPC function
