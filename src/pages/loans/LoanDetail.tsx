@@ -197,7 +197,10 @@ const LoanDetail: React.FC = () => {
               <div className="header-info">
                 <span className="loan-ref">Dossier #{loan.id.slice(0, 8)}</span>
                 <h1>{formatCurrency(loan.amount)}</h1>
-                <p>{loan.duration} ans • {loan.rate}%</p>
+                <p>
+                  {loan.duration} ans • {loan.rate}%
+                  {loan.has_coborrower && <span className="coborrower-indicator">👥 Co-emprunteur</span>}
+                </p>
               </div>
               <StatusBadge status={loan.status} />
             </div>
@@ -562,6 +565,17 @@ const LoanDetail: React.FC = () => {
           .page-header p {
             opacity: 0.9;
             margin: 0;
+          }
+
+          .coborrower-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            margin-left: 0.75rem;
+            font-size: 0.85rem;
           }
 
           .container {

@@ -104,6 +104,10 @@ const AdminDashboard: React.FC = () => {
                 <span className="action-icon">🔗</span>
                 <span className="action-label">Assignations</span>
               </Card>
+              <Card className="action-card" padding="lg" onClick={() => navigate('/admin/leads')}>
+                <span className="action-icon">📋</span>
+                <span className="action-label">Gérer les leads</span>
+              </Card>
               <Card className="action-card" padding="lg" onClick={() => navigate('/admin/login-history')}>
                 <span className="action-icon">🔐</span>
                 <span className="action-label">Historique connexions</span>
