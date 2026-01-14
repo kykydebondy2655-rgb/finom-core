@@ -363,6 +363,7 @@ export type Database = {
         Row: {
           category: string | null
           direction: string | null
+          document_owner: string | null
           expires_at: string | null
           file_name: string
           file_path: string
@@ -381,6 +382,7 @@ export type Database = {
         Insert: {
           category?: string | null
           direction?: string | null
+          document_owner?: string | null
           expires_at?: string | null
           file_name: string
           file_path: string
@@ -399,6 +401,7 @@ export type Database = {
         Update: {
           category?: string | null
           direction?: string | null
+          document_owner?: string | null
           expires_at?: string | null
           file_name?: string
           file_path?: string
@@ -518,11 +521,13 @@ export type Database = {
           agency_fees: number | null
           amount: number
           assurance_status: string | null
+          coborrower_data: Json | null
           created_at: string
           debt_ratio_est: number | null
           down_payment: number | null
           duration: number
           fees_used: number | null
+          has_coborrower: boolean | null
           id: string
           insurance_cost: number | null
           insurance_rate_used: number | null
@@ -556,11 +561,13 @@ export type Database = {
           agency_fees?: number | null
           amount: number
           assurance_status?: string | null
+          coborrower_data?: Json | null
           created_at?: string
           debt_ratio_est?: number | null
           down_payment?: number | null
           duration: number
           fees_used?: number | null
+          has_coborrower?: boolean | null
           id?: string
           insurance_cost?: number | null
           insurance_rate_used?: number | null
@@ -594,11 +601,13 @@ export type Database = {
           agency_fees?: number | null
           amount?: number
           assurance_status?: string | null
+          coborrower_data?: Json | null
           created_at?: string
           debt_ratio_est?: number | null
           down_payment?: number | null
           duration?: number
           fees_used?: number | null
+          has_coborrower?: boolean | null
           id?: string
           insurance_cost?: number | null
           insurance_rate_used?: number | null
@@ -788,6 +797,8 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          city: string | null
+          country: string | null
           created_at: string
           down_payment: string | null
           email: string | null
@@ -801,6 +812,7 @@ export type Database = {
           must_change_password: boolean | null
           phone: string | null
           pipeline_stage: string | null
+          postal_code: string | null
           property_price: number | null
           purchase_type: string | null
           role: string | null
@@ -808,6 +820,8 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           down_payment?: string | null
           email?: string | null
@@ -821,6 +835,7 @@ export type Database = {
           must_change_password?: boolean | null
           phone?: string | null
           pipeline_stage?: string | null
+          postal_code?: string | null
           property_price?: number | null
           purchase_type?: string | null
           role?: string | null
@@ -828,6 +843,8 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           down_payment?: string | null
           email?: string | null
@@ -841,6 +858,7 @@ export type Database = {
           must_change_password?: boolean | null
           phone?: string | null
           pipeline_stage?: string | null
+          postal_code?: string | null
           property_price?: number | null
           purchase_type?: string | null
           role?: string | null
@@ -1064,6 +1082,10 @@ export type Database = {
       assign_leads_to_agent: {
         Args: { _agent_id: string; _count: number }
         Returns: number
+      }
+      batch_assign_leads: {
+        Args: { _admin_id: string; _agent_id: string; _lead_ids: string[] }
+        Returns: Json
       }
       get_agent_assigned_leads: {
         Args: { _agent_id: string }
