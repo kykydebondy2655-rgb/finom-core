@@ -71,6 +71,8 @@ interface TemplateData {
   beneficiary?: string;
   reference?: string;
   resetLink?: string;
+  documentName?: string;
+  rejectionReason?: string;
 }
 
 const generateTemplate = (template: string, data: TemplateData): { subject: string; html: string } => {
@@ -300,6 +302,65 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 ${data.reference ? `<div class="info-row"><span class="label">Référence</span><span class="value">${data.reference}</span></div>` : ''}
               </div>
               <a href="${BASE_URL}/banking" class="button">Voir mes transactions</a>
+            </div>
+            ${legalFooter}
+          </div>
+        </body>
+        </html>
+      `,
+    }),
+
+    documentValidated: () => ({
+      subject: "Document validé ✅",
+      html: `
+        <!DOCTYPE html>
+        <html><head><style>${baseStyles}</style></head>
+        <body>
+          <div class="container">
+            <div class="header"><h1>FINOM</h1></div>
+            <div class="content">
+              <h2>Document validé</h2>
+              <p>Bonjour ${data.firstName || ''},</p>
+              <p>Nous avons le plaisir de vous confirmer que votre document a été <span class="highlight">validé</span> par notre équipe.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="label">Document</span><span class="value">${data.documentName || 'Document'}</span></div>
+                ${data.loanId ? `<div class="info-row"><span class="label">Dossier</span><span class="value">#${(data.loanId || '').slice(0, 8).toUpperCase()}</span></div>` : ''}
+                <div class="info-row"><span class="label">Statut</span><span class="status-badge status-approved">Validé</span></div>
+              </div>
+              <p>Votre dossier progresse ! Nous vous tiendrons informé des prochaines étapes.</p>
+              <a href="${BASE_URL}/dashboard" class="button">Voir mon dossier</a>
+            </div>
+            ${legalFooter}
+          </div>
+        </body>
+        </html>
+      `,
+    }),
+
+    documentRejected: () => ({
+      subject: "Document à corriger ⚠️",
+      html: `
+        <!DOCTYPE html>
+        <html><head><style>${baseStyles}</style></head>
+        <body>
+          <div class="container">
+            <div class="header"><h1>FINOM</h1></div>
+            <div class="content">
+              <h2>Document non conforme</h2>
+              <p>Bonjour ${data.firstName || ''},</p>
+              <p>Nous avons analysé votre document et celui-ci ne peut malheureusement pas être accepté en l'état.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="label">Document</span><span class="value">${data.documentName || 'Document'}</span></div>
+                ${data.loanId ? `<div class="info-row"><span class="label">Dossier</span><span class="value">#${(data.loanId || '').slice(0, 8).toUpperCase()}</span></div>` : ''}
+                <div class="info-row"><span class="label">Statut</span><span class="status-badge status-rejected">À corriger</span></div>
+              </div>
+              ${data.rejectionReason ? `
+              <div class="warning-box">
+                <p><strong>Motif :</strong> ${data.rejectionReason}</p>
+              </div>
+              ` : ''}
+              <p>Merci de soumettre à nouveau ce document en tenant compte des indications ci-dessus.</p>
+              <a href="${BASE_URL}/dashboard" class="button">Déposer un nouveau document</a>
             </div>
             ${legalFooter}
           </div>
