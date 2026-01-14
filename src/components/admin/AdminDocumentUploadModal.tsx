@@ -161,7 +161,7 @@ const AdminDocumentUploadModal: React.FC<AdminDocumentUploadModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>📤 Envoyer un document au client</DialogTitle>
           <DialogDescription>
