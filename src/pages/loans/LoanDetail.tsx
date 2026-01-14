@@ -347,11 +347,64 @@ const LoanDetail: React.FC = () => {
                   readOnly={!isAgent && !isAdmin}
                 />
 
+                {/* Co-borrower Info Card */}
+                {loan.has_coborrower && (loan as any).coborrower_data && (
+                  <Card className="coborrower-card" padding="lg">
+                    <h3>👥 Informations Co-emprunteur</h3>
+                    <div className="coborrower-info">
+                      {(() => {
+                        const coData = (loan as any).coborrower_data as Record<string, unknown>;
+                        return (
+                          <div className="summary-rows">
+                            {coData.firstName && (
+                              <div className="summary-row">
+                                <span>Prénom</span>
+                                <strong>{String(coData.firstName)}</strong>
+                              </div>
+                            )}
+                            {coData.lastName && (
+                              <div className="summary-row">
+                                <span>Nom</span>
+                                <strong>{String(coData.lastName)}</strong>
+                              </div>
+                            )}
+                            {coData.email && (
+                              <div className="summary-row">
+                                <span>Email</span>
+                                <strong>{String(coData.email)}</strong>
+                              </div>
+                            )}
+                            {coData.phone && (
+                              <div className="summary-row">
+                                <span>Téléphone</span>
+                                <strong>{String(coData.phone)}</strong>
+                              </div>
+                            )}
+                            {coData.income && (
+                              <div className="summary-row">
+                                <span>Revenus nets mensuels</span>
+                                <strong>{formatCurrency(Number(coData.income))}</strong>
+                              </div>
+                            )}
+                            {coData.employmentStatus && (
+                              <div className="summary-row">
+                                <span>Situation professionnelle</span>
+                                <strong>{String(coData.employmentStatus)}</strong>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </Card>
+                )}
+
                 {/* Document Checklist based on project type */}
                 {(loan as any).project_type && (
                   <DocumentChecklist
                     projectType={(loan as any).project_type as ProjectType}
                     uploadedDocuments={documents}
+                    hasCoborrower={loan.has_coborrower || false}
                     onUploadClick={() => setActiveTab('documents')}
                   />
                 )}

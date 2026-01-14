@@ -1,38 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from '@/components/finom/Card';
-import { getDocumentChecklist, DOCUMENT_CATEGORIES, calculateDocumentProgress, type ProjectType } from '@/lib/documentChecklist';
+import { getDocumentChecklist, DOCUMENT_CATEGORIES, calculateDocumentProgress, type ProjectType, type DocumentRequirement } from '@/lib/documentChecklist';
 import type { Document } from '@/services/api';
 
 interface DocumentChecklistProps {
   projectType: ProjectType;
   uploadedDocuments: Document[];
+  hasCoborrower?: boolean;
   onUploadClick?: (documentId: string) => void;
 }
+
+// Documents that need to be provided by co-borrower as well
+const COBORROWER_REQUIRED_DOCS = ['id_card', 'proof_of_address', 'tax_notice', 'payslips', 'employment_contract', 'bank_statements'];
 
 const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
   projectType,
   uploadedDocuments,
+  hasCoborrower = false,
   onUploadClick,
 }) => {
+  const [activeOwner, setActiveOwner] = useState<'primary' | 'co_borrower'>('primary');
+  
   const checklist = getDocumentChecklist(projectType);
-  const progress = calculateDocumentProgress(checklist, uploadedDocuments);
+  
+  // Filter documents by owner
+  const primaryDocs = uploadedDocuments.filter(d => !d.document_owner || d.document_owner === 'primary');
+  const coborrowerDocs = uploadedDocuments.filter(d => d.document_owner === 'co_borrower');
+  
+  // For co-borrower, only show personal documents (identity, income, etc.)
+  const coborrowerChecklist = checklist.filter(doc => COBORROWER_REQUIRED_DOCS.includes(doc.id));
+  
+  const currentChecklist = activeOwner === 'primary' ? checklist : coborrowerChecklist;
+  const currentDocs = activeOwner === 'primary' ? primaryDocs : coborrowerDocs;
+  
+  const progress = calculateDocumentProgress(currentChecklist, currentDocs);
+  const primaryProgress = calculateDocumentProgress(checklist, primaryDocs);
+  const coborrowerProgress = calculateDocumentProgress(coborrowerChecklist, coborrowerDocs);
   
   // Group documents by category
-  const groupedDocs = checklist.reduce((acc, doc) => {
+  const groupedDocs = currentChecklist.reduce((acc, doc) => {
     if (!acc[doc.category]) acc[doc.category] = [];
     acc[doc.category].push(doc);
     return acc;
-  }, {} as Record<string, typeof checklist>);
-
-  const isDocumentUploaded = (docId: string, category: string): boolean => {
-    return uploadedDocuments.some(uploaded => 
-      uploaded.category?.toLowerCase().includes(docId.toLowerCase()) ||
-      uploaded.category?.toLowerCase().includes(category.toLowerCase())
-    );
-  };
+  }, {} as Record<string, DocumentRequirement[]>);
 
   const getDocumentStatus = (docId: string, category: string): 'uploaded' | 'pending' | 'validated' | 'rejected' => {
-    const uploaded = uploadedDocuments.find(d => 
+    const uploaded = currentDocs.find(d => 
       d.category?.toLowerCase().includes(docId.toLowerCase()) ||
       d.category?.toLowerCase().includes(category.toLowerCase())
     );
@@ -46,18 +59,53 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
     <Card className="document-checklist" padding="lg">
       <div className="checklist-header">
         <h3>📋 Documents requis</h3>
-        <div className="progress-info">
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${progress.percentage}%` }}
-            />
+        {!hasCoborrower && (
+          <div className="progress-info">
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${progress.percentage}%` }}
+              />
+            </div>
+            <span className="progress-text">
+              {progress.completed}/{progress.total} documents ({progress.percentage}%)
+            </span>
           </div>
-          <span className="progress-text">
-            {progress.completed}/{progress.total} documents ({progress.percentage}%)
-          </span>
-        </div>
+        )}
       </div>
+
+      {/* Owner tabs when has coborrower */}
+      {hasCoborrower && (
+        <div className="owner-tabs-container">
+          <div className="owner-tabs">
+            <button 
+              className={`owner-tab ${activeOwner === 'primary' ? 'active' : ''}`}
+              onClick={() => setActiveOwner('primary')}
+            >
+              👤 Emprunteur principal
+              <span className="tab-progress">{primaryProgress.completed}/{primaryProgress.total}</span>
+            </button>
+            <button 
+              className={`owner-tab ${activeOwner === 'co_borrower' ? 'active' : ''}`}
+              onClick={() => setActiveOwner('co_borrower')}
+            >
+              👥 Co-emprunteur
+              <span className="tab-progress">{coborrowerProgress.completed}/{coborrowerProgress.total}</span>
+            </button>
+          </div>
+          <div className="progress-info">
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${progress.percentage}%` }}
+              />
+            </div>
+            <span className="progress-text">
+              {progress.completed}/{progress.total} ({progress.percentage}%)
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="categories-list">
         {Object.entries(groupedDocs).map(([categoryKey, docs]) => {
@@ -106,12 +154,58 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
 
       <style>{`
         .document-checklist { margin-bottom: 1.5rem; }
-        .checklist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .checklist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
         .checklist-header h3 { margin: 0; font-size: 1.25rem; }
-        .progress-info { display: flex; align-items: center; gap: 1rem; }
-        .progress-bar { width: 120px; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+        .progress-info { display: flex; align-items: center; gap: 0.75rem; }
+        .progress-bar { width: 100px; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #059669); transition: width 0.3s; }
-        .progress-text { font-size: 0.85rem; color: #6b7280; font-weight: 500; }
+        .progress-text { font-size: 0.85rem; color: #6b7280; font-weight: 500; white-space: nowrap; }
+        
+        .owner-tabs-container { 
+          display: flex; 
+          justify-content: space-between; 
+          align-items: center; 
+          margin-bottom: 1.25rem;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+        .owner-tabs { 
+          display: flex; 
+          gap: 0.5rem;
+          border-bottom: 2px solid #e5e7eb;
+          padding-bottom: 0;
+        }
+        .owner-tab { 
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.6rem 1rem; 
+          border: none; 
+          background: transparent; 
+          cursor: pointer; 
+          font-size: 0.9rem; 
+          font-weight: 500;
+          color: #6b7280;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -2px;
+          transition: all 0.2s;
+        }
+        .owner-tab:hover { color: #374151; }
+        .owner-tab.active { 
+          color: var(--color-primary); 
+          border-bottom-color: var(--color-primary); 
+        }
+        .tab-progress {
+          font-size: 0.75rem;
+          background: #f3f4f6;
+          padding: 0.15rem 0.4rem;
+          border-radius: 4px;
+          color: #6b7280;
+        }
+        .owner-tab.active .tab-progress {
+          background: var(--color-primary);
+          color: white;
+        }
         
         .category-section { margin-bottom: 1.5rem; }
         .category-section:last-child { margin-bottom: 0; }
@@ -153,6 +247,11 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
           transition: background 0.2s;
         }
         .upload-btn:hover { opacity: 0.9; }
+        
+        @media (max-width: 640px) {
+          .owner-tabs-container { flex-direction: column; align-items: stretch; }
+          .owner-tabs { overflow-x: auto; }
+        }
       `}</style>
     </Card>
   );
