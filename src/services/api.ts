@@ -525,22 +525,35 @@ export const agentApi = {
 
 // ============= ADMIN SERVICES =============
 export const adminApi = {
-  // Get all leads (new, unassigned)
+  // Get all leads (new, unassigned) - excludes admins and agents
   async getNewLeads() {
-    const { data: roleData, error: roleError } = await supabase
+    // Get users who ONLY have the 'client' role (exclude admins and agents)
+    const { data: clientRoles, error: clientError } = await supabase
       .from('user_roles')
       .select('user_id')
       .eq('role', 'client');
-    if (roleError) throw roleError;
-    if (!roleData || roleData.length === 0) return [];
+    if (clientError) throw clientError;
+    if (!clientRoles || clientRoles.length === 0) return [];
     
-    const userIds = roleData.map(r => r.user_id);
+    // Get users who have admin or agent roles
+    const { data: excludedRoles, error: excludeError } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .in('role', ['admin', 'agent']);
+    if (excludeError) throw excludeError;
+    
+    const excludedIds = new Set((excludedRoles || []).map(r => r.user_id));
+    const pureClientIds = clientRoles
+      .map(r => r.user_id)
+      .filter(id => !excludedIds.has(id));
+    
+    if (pureClientIds.length === 0) return [];
     
     // Get profiles that are leads (new status) and not assigned
     const { data: profiles, error: profileError } = await supabase
       .from('profiles')
       .select('*')
-      .in('id', userIds)
+      .in('id', pureClientIds)
       .eq('lead_status', 'new')
       .order('created_at', { ascending: true });
     if (profileError) throw profileError;
@@ -554,7 +567,7 @@ export const adminApi = {
     return (profiles || []).filter(p => !assignedIds.has(p.id));
   },
 
-  // Get all assigned clients
+  // Get all assigned clients - excludes admins and agents
   async getAssignedClients() {
     const { data: assignments, error: assignError } = await supabase
       .from('client_assignments')
@@ -562,7 +575,20 @@ export const adminApi = {
     if (assignError) throw assignError;
     if (!assignments || assignments.length === 0) return [];
     
-    const clientIds = assignments.map(a => a.client_user_id);
+    // Get users who have admin or agent roles to exclude them
+    const { data: excludedRoles, error: excludeError } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .in('role', ['admin', 'agent']);
+    if (excludeError) throw excludeError;
+    
+    const excludedIds = new Set((excludedRoles || []).map(r => r.user_id));
+    const clientIds = assignments
+      .map(a => a.client_user_id)
+      .filter(id => !excludedIds.has(id));
+    
+    if (clientIds.length === 0) return [];
+    
     const { data: profiles, error: profileError } = await supabase
       .from('profiles')
       .select('*')
