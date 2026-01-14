@@ -113,6 +113,7 @@ const AdminLoans: React.FC = () => {
                       <th>Montant</th>
                       <th>Durée</th>
                       <th>Taux</th>
+                      <th>Co-empr.</th>
                       <th>Statut</th>
                       <th>Date</th>
                       <th></th>
@@ -131,6 +132,13 @@ const AdminLoans: React.FC = () => {
                         <td className="amount">{formatCurrency(loan.amount)}</td>
                         <td>{loan.duration} ans</td>
                         <td>{loan.rate}%</td>
+                        <td>
+                          {loan.has_coborrower ? (
+                            <span className="coborrower-badge" title="Dossier avec co-emprunteur">👥</span>
+                          ) : (
+                            <span className="no-coborrower">—</span>
+                          )}
+                        </td>
                         <td><StatusBadge status={loan.status} size="sm" /></td>
                         <td className="date">{formatDate(loan.created_at)}</td>
                         <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
@@ -182,6 +190,8 @@ const AdminLoans: React.FC = () => {
           .amount { font-weight: 600; }
           .date { color: var(--color-text-tertiary); font-size: 0.9rem; }
           .actions-cell { display: flex; gap: 0.5rem; }
+          .coborrower-badge { font-size: 1.1rem; cursor: help; }
+          .no-coborrower { color: var(--color-text-tertiary); }
           .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 3rem; }
           .fade-in { animation: fadeIn 0.4s ease-out forwards; }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

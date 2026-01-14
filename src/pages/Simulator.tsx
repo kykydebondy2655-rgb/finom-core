@@ -17,6 +17,7 @@ import { emailService } from '@/services/emailService';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
+import CoborrowerSection from '@/components/loans/CoborrowerSection';
 
 interface FormData {
   propertyPrice: number;
@@ -36,6 +37,18 @@ const Simulator = () => {
   const { user, isAuthenticated } = useAuth();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const [hasCoborrower, setHasCoborrower] = useState(false);
+  const [coborrowerData, setCoborrowerData] = useState({
+    firstName: '',
+    lastName: '',
+    dateOfBirth: '',
+    phone: '',
+    email: '',
+    profession: '',
+    employmentType: '',
+    monthlyIncome: 0,
+    monthlyCharges: 0
+  });
   
   const [formData, setFormData] = useState<FormData>({
     propertyPrice: 250000,
@@ -117,7 +130,7 @@ const Simulator = () => {
     try {
       setLoading(true);
 
-      const loanData = {
+      const loanData: Record<string, any> = {
         user_id: user.id,
         amount: result.loanAmount,
         duration: formData.durationYears,
@@ -140,10 +153,12 @@ const Simulator = () => {
         fees_used: result.bankFees,
         project_type: formData.projectType,
         status: 'pending',
-        is_draft: false
+        is_draft: false,
+        has_coborrower: hasCoborrower,
+        coborrower_data: hasCoborrower ? coborrowerData : null
       };
 
-      const newLoan = await loansApi.create(loanData);
+      const newLoan = await loansApi.create(loanData as any);
 
       // Send confirmation email (non-blocking)
       if (user.email) {
@@ -339,6 +354,14 @@ const Simulator = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Co-borrower Section */}
+              <CoborrowerSection
+                enabled={hasCoborrower}
+                onToggle={setHasCoborrower}
+                data={coborrowerData}
+                onChange={setCoborrowerData}
+              />
             </Card>
 
             {/* Results Cards */}
