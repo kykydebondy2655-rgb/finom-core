@@ -11,7 +11,7 @@ interface AssignLeadsModalProps {
   availableLeadsCount: number;
 }
 
-const ASSIGNMENT_OPTIONS = [5, 10, 15, 20];
+const ASSIGNMENT_OPTIONS = [1, 2, 5, 10, 15, 20];
 
 const AssignLeadsModal: React.FC<AssignLeadsModalProps> = ({
   isOpen,
