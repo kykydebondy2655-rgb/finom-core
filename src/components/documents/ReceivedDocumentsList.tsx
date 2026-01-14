@@ -73,13 +73,14 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
       
       let query = supabase
         .from('documents')
-        .select('id, file_name, file_path, category, motif, uploaded_at, status')
+        .select('id, file_name, file_path, category, motif, uploaded_at, status, loan_id')
         .eq('user_id', user.id)
         .eq('direction', 'incoming')
         .order('uploaded_at', { ascending: false });
 
+      // Show documents for this specific loan OR general documents (no loan_id)
       if (loanId) {
-        query = query.eq('loan_id', loanId);
+        query = query.or(`loan_id.eq.${loanId},loan_id.is.null`);
       }
 
       const { data, error } = await query;
