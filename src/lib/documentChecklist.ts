@@ -28,7 +28,6 @@ const BASE_DOCUMENTS: DocumentRequirement[] = [
   { id: 'payslips', name: 'Bulletins de salaire', description: '3 derniers bulletins de salaire', required: true, category: 'revenus' },
   { id: 'employment_contract', name: 'Contrat de travail', description: 'Ou attestation employeur', required: true, category: 'revenus' },
   { id: 'bank_statements', name: 'Relevés bancaires', description: '3 derniers mois de relevés de compte', required: true, category: 'bancaire' },
-  { id: 'existing_loans', name: 'Tableau d\'amortissement', description: 'Crédits en cours le cas échéant', required: false, category: 'bancaire' },
 ];
 
 // Additional documents per project type
