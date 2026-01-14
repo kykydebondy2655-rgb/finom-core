@@ -9,6 +9,7 @@ import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
 import type { LoanApplication, Document, Message, Profile } from '@/services/api';
 import DocumentUpload from '@/components/documents/DocumentUpload';
+import CoborrowerDocumentUpload from '@/components/documents/CoborrowerDocumentUpload';
 import DocumentChecklist from '@/components/loans/DocumentChecklist';
 import NotaryPanel from '@/components/loans/NotaryPanel';
 import SequestrePanel from '@/components/loans/SequestrePanel';
@@ -32,6 +33,7 @@ const LoanDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline'>('overview');
+  const [activeDocOwner, setActiveDocOwner] = useState<'all' | 'primary' | 'co_borrower'>('all');
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(false);
@@ -386,9 +388,9 @@ const LoanDetail: React.FC = () => {
 
                 {showUploadSection && (
                   <div className="upload-section">
-                    <DocumentUpload
+                    <CoborrowerDocumentUpload
                       loanId={id}
-                      category="loan_document"
+                      hasCoborrower={loan?.has_coborrower || false}
                       onUploadComplete={() => {
                         toast.success('Document ajouté avec succès');
                         setShowUploadSection(false);
@@ -396,6 +398,30 @@ const LoanDetail: React.FC = () => {
                       }}
                       onError={(err) => toast.error(err)}
                     />
+                  </div>
+                )}
+
+                {/* Document filter tabs when has coborrower */}
+                {loan?.has_coborrower && documents.length > 0 && (
+                  <div className="doc-owner-tabs">
+                    <button 
+                      className={`doc-owner-tab ${activeDocOwner === 'all' ? 'active' : ''}`}
+                      onClick={() => setActiveDocOwner('all')}
+                    >
+                      Tous ({documents.length})
+                    </button>
+                    <button 
+                      className={`doc-owner-tab ${activeDocOwner === 'primary' ? 'active' : ''}`}
+                      onClick={() => setActiveDocOwner('primary')}
+                    >
+                      👤 Emprunteur ({documents.filter(d => !d.document_owner || d.document_owner === 'primary').length})
+                    </button>
+                    <button 
+                      className={`doc-owner-tab ${activeDocOwner === 'co_borrower' ? 'active' : ''}`}
+                      onClick={() => setActiveDocOwner('co_borrower')}
+                    >
+                      👥 Co-emprunteur ({documents.filter(d => d.document_owner === 'co_borrower').length})
+                    </button>
                   </div>
                 )}
 
@@ -409,18 +435,29 @@ const LoanDetail: React.FC = () => {
                   </div>
                 ) : documents.length > 0 && (
                   <div className="documents-list">
-                    {documents.map(doc => (
-                      <div key={doc.id} className="document-item outgoing">
-                        <div className="doc-icon">📄</div>
-                        <div className="doc-info">
-                          <span className="doc-name">{doc.file_name}</span>
-                          <span className="doc-meta">
-                            {doc.category} • {formatDate(doc.uploaded_at)}
-                          </span>
+                    {documents
+                      .filter(doc => {
+                        if (activeDocOwner === 'all') return true;
+                        if (activeDocOwner === 'primary') return !doc.document_owner || doc.document_owner === 'primary';
+                        return doc.document_owner === activeDocOwner;
+                      })
+                      .map(doc => (
+                        <div key={doc.id} className={`document-item outgoing ${doc.document_owner === 'co_borrower' ? 'coborrower-doc' : ''}`}>
+                          <div className="doc-icon">📄</div>
+                          <div className="doc-info">
+                            <span className="doc-name">{doc.file_name}</span>
+                            <span className="doc-meta">
+                              {doc.category} • {formatDate(doc.uploaded_at)}
+                              {loan?.has_coborrower && (
+                                <span className="doc-owner-badge">
+                                  {doc.document_owner === 'co_borrower' ? ' • 👥 Co-emprunteur' : ' • 👤 Emprunteur'}
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                          <StatusBadge status={doc.status} size="sm" />
                         </div>
-                        <StatusBadge status={doc.status} size="sm" />
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </Card>
@@ -771,6 +808,43 @@ const LoanDetail: React.FC = () => {
           .doc-meta {
             font-size: 0.8rem;
             color: var(--color-text-tertiary);
+          }
+
+          .doc-owner-badge {
+            color: var(--color-primary);
+          }
+
+          .doc-owner-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--color-border);
+          }
+
+          .doc-owner-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+
+          .doc-owner-tab:hover {
+            background: var(--color-surface-hover);
+          }
+
+          .doc-owner-tab.active {
+            background: var(--color-primary);
+            color: white;
+          }
+
+          .document-item.coborrower-doc {
+            border-left: 3px solid var(--color-primary);
           }
 
           .messages-list {
