@@ -3,7 +3,7 @@
  * Allows clients to download these documents
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import StatusBadge from '@/components/common/StatusBadge';
@@ -49,10 +49,10 @@ const CATEGORY_ICONS: Record<string, string> = {
   autre: '📄',
 };
 
-const ReceivedDocumentsList: React.FC<ReceivedDocumentsListProps> = ({ 
+const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListProps>(({ 
   loanId,
   showTitle = true 
-}) => {
+}, ref) => {
   const { user } = useAuth();
   const toast = useToast();
   const [documents, setDocuments] = useState<ReceivedDocument[]>([]);
@@ -193,7 +193,9 @@ const ReceivedDocumentsList: React.FC<ReceivedDocumentsListProps> = ({
       <style>{styles}</style>
     </Card>
   );
-};
+});
+
+ReceivedDocumentsList.displayName = 'ReceivedDocumentsList';
 
 const styles = `
   .received-docs-card {

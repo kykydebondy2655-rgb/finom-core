@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -6,11 +6,11 @@ interface LoadingSpinnerProps {
   fullPage?: boolean;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
+const LoadingSpinner = forwardRef<HTMLDivElement, LoadingSpinnerProps>(({ 
   size = 'md', 
   message,
   fullPage = false 
-}) => {
+}, ref) => {
   const sizeMap = {
     sm: 24,
     md: 40,
@@ -36,13 +36,15 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   if (fullPage) {
     return (
-      <div className="spinner-fullpage">
+      <div ref={ref} className="spinner-fullpage">
         {content}
       </div>
     );
   }
 
-  return content;
-};
+  return <div ref={ref}>{content}</div>;
+});
+
+LoadingSpinner.displayName = 'LoadingSpinner';
 
 export default LoadingSpinner;
