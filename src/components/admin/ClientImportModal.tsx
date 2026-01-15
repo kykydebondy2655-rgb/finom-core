@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, Upload, AlertCircle, CheckCircle, Download } from 'lucide-react';
 import { adminApi } from '../../services/api';
 
 interface ClientImportModalProps {
@@ -288,6 +288,41 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
               Téléchargez un fichier CSV avec les colonnes: <strong>email, prénom, nom</strong><br />
               Colonnes optionnelles: téléphone, prix du bien, apport, type d'achat, source, pipeline
             </p>
+            
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bae6fd',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <span style={{ fontSize: '13px', color: '#0369a1' }}>
+                📄 Besoin d'un modèle ? Téléchargez notre fichier exemple
+              </span>
+              <a
+                href="/templates/leads-template.csv"
+                download="leads-template.csv"
+                style={{
+                  backgroundColor: '#0ea5e9',
+                  color: 'white',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Download size={14} />
+                Télécharger le modèle
+              </a>
+            </div>
+            
             <div style={{
               border: '2px dashed #cbd5e1',
               borderRadius: '8px',
