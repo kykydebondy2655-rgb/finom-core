@@ -373,9 +373,9 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
         backgroundColor: 'white',
         borderRadius: '12px',
         padding: '24px',
-        maxWidth: '700px',
+        maxWidth: '1100px',
         width: '95%',
-        maxHeight: '80vh',
+        maxHeight: '90vh',
         overflow: 'auto'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -545,45 +545,46 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
               </div>
             )}
             
-            <div style={{ maxHeight: '250px', overflow: 'auto', marginBottom: '16px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <div style={{ maxHeight: '400px', overflow: 'auto', marginBottom: '16px', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', minWidth: '900px' }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#f8fafc' }}>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Ligne</th>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Email</th>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Nom</th>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Téléphone</th>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Prix bien</th>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Apport</th>
+                  <tr style={{ backgroundColor: '#f8fafc', position: 'sticky', top: 0 }}>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, whiteSpace: 'nowrap' }}>#</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '180px' }}>Email</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '120px' }}>Prénom</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '120px' }}>Nom</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '120px' }}>Téléphone</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'right', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '100px' }}>Prix bien</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'right', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '100px' }}>Apport</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '100px' }}>Type</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '80px' }}>Source</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {parsedLeads.slice(0, 10).map((lead, idx) => (
-                    <tr key={idx} style={{ backgroundColor: lead.warnings.length > 0 ? '#fffbeb' : 'transparent' }}>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', color: '#64748b' }}>
+                  {parsedLeads.map((lead, idx) => (
+                    <tr key={idx} style={{ backgroundColor: lead.warnings.length > 0 ? '#fffbeb' : idx % 2 === 0 ? '#fff' : '#f8fafc' }}>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', color: '#64748b', whiteSpace: 'nowrap' }}>
                         {lead.lineNumber}
                         {lead.warnings.length > 0 && (
                           <span title={lead.warnings.map(w => `${w.field}: ${w.message}`).join('\n')} style={{ marginLeft: '4px', color: '#d97706' }}>⚠</span>
                         )}
                       </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.email}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.firstName} {lead.lastName}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.phone || '-'}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', wordBreak: 'break-all' }}>{lead.email}</td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.firstName}</td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.lastName}</td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{lead.phone || '-'}</td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', whiteSpace: 'nowrap' }}>
                         {lead.propertyPrice ? `${lead.propertyPrice.toLocaleString('fr-FR')} €` : '-'}
                       </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', whiteSpace: 'nowrap' }}>
                         {lead.downPayment ? `${parseFloat(lead.downPayment).toLocaleString('fr-FR')} €` : '-'}
                       </td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.purchaseType || '-'}</td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.source || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {parsedLeads.length > 10 && (
-                <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
-                  ... et {parsedLeads.length - 10} autres leads
-                </p>
-              )}
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
               <button
