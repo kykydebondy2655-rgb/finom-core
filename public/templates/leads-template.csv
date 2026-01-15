@@ -1,0 +1,4 @@
+email;prenom;nom;telephone;prix_bien;apport;type_achat;source;pipeline
+jean.dupont@email.com;Jean;Dupont;0612345678;250000;50000;Acquérir un bien;Site web;Résidence Principale
+marie.martin@email.com;Marie;Martin;0698765432;180000;30000;Acquérir un bien;Recommandation;Bien ancien
+pierre.durand@email.com;Pierre;Durand;0654321098;320000;80000;Investissement;Publicité;Résidence Principale
