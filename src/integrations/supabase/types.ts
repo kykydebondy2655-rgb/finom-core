@@ -794,6 +794,75 @@ export type Database = {
           },
         ]
       }
+      pending_imports: {
+        Row: {
+          admin_id: string
+          created_at: string
+          data: Json
+          file_name: string
+          id: string
+          import_type: string
+          invalid_rows: number
+          processed_at: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          total_rows: number
+          valid_rows: number
+          validation_errors: Json | null
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          data?: Json
+          file_name: string
+          id?: string
+          import_type?: string
+          invalid_rows?: number
+          processed_at?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_rows?: number
+          valid_rows?: number
+          validation_errors?: Json | null
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          data?: Json
+          file_name?: string
+          id?: string
+          import_type?: string
+          invalid_rows?: number
+          processed_at?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_rows?: number
+          valid_rows?: number
+          validation_errors?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_imports_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_imports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -1108,6 +1177,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_pending_import: { Args: { _import_id: string }; Returns: Json }
       reassign_leads: {
         Args: {
           _admin_id: string

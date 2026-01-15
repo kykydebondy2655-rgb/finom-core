@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, AlertCircle, CheckCircle, Download } from 'lucide-react';
-import { adminApi } from '../../services/api';
+import { adminApi, importsApi } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 interface ClientImportModalProps {
   isOpen: boolean;
@@ -126,12 +127,15 @@ interface ParsedLeadWithWarnings extends ParsedLead {
 }
 
 export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, onClose, onSuccess }) => {
+  const { user } = useAuth();
   const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload');
   const [parsedLeads, setParsedLeads] = useState<ParsedLeadWithWarnings[]>([]);
   const [validationWarnings, setValidationWarnings] = useState<ValidationWarning[]>([]);
   const [skippedLines, setSkippedLines] = useState<{ line: number; reason: string }[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [fileName, setFileName] = useState<string>('');
+  const [importMode, setImportMode] = useState<'direct' | 'pending'>('pending');
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[] }>({ success: 0, failed: 0, errors: [] });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +146,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
       setError('Veuillez sélectionner un fichier CSV');
       return;
     }
+
+    setFileName(file.name);
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -323,24 +329,58 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
   const handleImport = async () => {
     setImporting(true);
     setError(null);
-    const importResults = { success: 0, failed: 0, errors: [] as string[] };
     
-    for (const lead of parsedLeads) {
+    if (importMode === 'pending' && user?.id) {
+      // Create pending import for validation
       try {
-        await adminApi.createLead(lead);
-        importResults.success++;
+        const leadsData = parsedLeads.map(lead => ({
+          email: lead.email,
+          firstName: lead.firstName,
+          lastName: lead.lastName,
+          phone: lead.phone,
+          propertyPrice: lead.propertyPrice,
+          downPayment: lead.downPayment,
+          purchaseType: lead.purchaseType,
+          source: lead.source,
+          pipelineStage: lead.pipelineStage
+        }));
+        
+        await importsApi.createPendingImport({
+          adminId: user.id,
+          fileName: fileName || 'import.csv',
+          totalRows: parsedLeads.length + skippedLines.length,
+          validRows: parsedLeads.length,
+          invalidRows: skippedLines.length,
+          data: leadsData,
+          validationErrors: validationWarnings
+        });
+        
+        setResults({ success: parsedLeads.length, failed: 0, errors: [] });
+        setStep('result');
+        onSuccess();
       } catch (err: any) {
-        importResults.failed++;
-        const errorMsg = err.message || 'Erreur inconnue';
-        importResults.errors.push(`${lead.email}: ${errorMsg}`);
-        console.error(`Failed to import lead ${lead.email}:`, err);
+        setError('Erreur lors de la création de l\'import: ' + (err.message || 'Erreur inconnue'));
       }
-    }
+    } else {
+      // Direct import
+      const importResults = { success: 0, failed: 0, errors: [] as string[] };
+      
+      for (const lead of parsedLeads) {
+        try {
+          await adminApi.createLead(lead);
+          importResults.success++;
+        } catch (err: any) {
+          importResults.failed++;
+          importResults.errors.push(`${lead.email}: ${err.message || 'Erreur'}`);
+        }
+      }
 
-    setResults(importResults);
-    setStep('result');
+      setResults(importResults);
+      setStep('result');
+      if (importResults.success > 0) onSuccess();
+    }
+    
     setImporting(false);
-    if (importResults.success > 0) onSuccess();
   };
 
   const resetModal = () => {
@@ -349,6 +389,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
     setValidationWarnings([]);
     setSkippedLines([]);
     setError(null);
+    setFileName('');
+    setImportMode('pending');
     setResults({ success: 0, failed: 0, errors: [] });
   };
 

@@ -45,6 +45,7 @@ import AdminAgents from './pages/admin/AdminAgents';
 import AdminAssignments from './pages/admin/AdminAssignments';
 import AdminLoginHistory from './pages/admin/AdminLoginHistory';
 import AdminLeads from './pages/admin/AdminLeads';
+import AdminImports from './pages/admin/AdminImports';
 
 import CookieBanner from './components/common/CookieBanner';
 
@@ -224,6 +225,14 @@ function App() {
                                     element={
                                         <ProtectedRoute allowedRoles={['admin']}>
                                             <AdminLeads />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/imports" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminImports />
                                         </ProtectedRoute>
                                     } 
                                 />
