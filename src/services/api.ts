@@ -1010,3 +1010,124 @@ export const getStatusColor = (status: string | null): string => {
   };
   return colors[status || ''] || 'var(--color-text-secondary)';
 };
+
+// ============= PENDING IMPORTS =============
+export interface PendingImport {
+  id: string;
+  admin_id: string;
+  import_type: string;
+  file_name: string;
+  total_rows: number;
+  valid_rows: number;
+  invalid_rows: number;
+  data: any[];
+  validation_errors: any[];
+  status: 'pending' | 'approved' | 'rejected' | 'processed';
+  rejection_reason?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  created_at: string;
+  processed_at?: string;
+}
+
+export const importsApi = {
+  // Create a new pending import
+  async createPendingImport(data: {
+    adminId: string;
+    fileName: string;
+    totalRows: number;
+    validRows: number;
+    invalidRows: number;
+    data: any[];
+    validationErrors: any[];
+  }) {
+    const { data: result, error } = await supabase
+      .from('pending_imports')
+      .insert({
+        admin_id: data.adminId,
+        file_name: data.fileName,
+        total_rows: data.totalRows,
+        valid_rows: data.validRows,
+        invalid_rows: data.invalidRows,
+        data: data.data,
+        validation_errors: data.validationErrors,
+        status: 'pending'
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return result;
+  },
+
+  // Get all pending imports
+  async getPendingImports() {
+    const { data, error } = await supabase
+      .from('pending_imports')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data as PendingImport[];
+  },
+
+  // Get a single pending import
+  async getPendingImportById(id: string) {
+    const { data, error } = await supabase
+      .from('pending_imports')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    return data as PendingImport;
+  },
+
+  // Approve an import
+  async approveImport(id: string, reviewerId: string) {
+    const { data, error } = await supabase
+      .from('pending_imports')
+      .update({
+        status: 'approved',
+        reviewed_by: reviewerId,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // Reject an import
+  async rejectImport(id: string, reviewerId: string, reason: string) {
+    const { data, error } = await supabase
+      .from('pending_imports')
+      .update({
+        status: 'rejected',
+        reviewed_by: reviewerId,
+        reviewed_at: new Date().toISOString(),
+        rejection_reason: reason
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // Process an approved import (call the RPC function)
+  async processImport(id: string) {
+    const { data, error } = await supabase.rpc('process_pending_import', {
+      _import_id: id
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  // Delete a pending import
+  async deletePendingImport(id: string) {
+    const { error } = await supabase
+      .from('pending_imports')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  }
+};
