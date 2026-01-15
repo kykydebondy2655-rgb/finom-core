@@ -79,9 +79,57 @@ const formatDownPayment = (value: string | undefined): string | undefined => {
   return numericValue !== undefined ? numericValue.toString() : undefined;
 };
 
+// Validation functions
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const isValidPhone = (phone: string): { valid: boolean; formatted: string | undefined } => {
+  if (!phone) return { valid: true, formatted: undefined };
+  
+  // Remove all non-digit characters except +
+  const cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // French phone formats: 0612345678, +33612345678, 0033612345678
+  if (/^0[1-9]\d{8}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  if (/^\+33[1-9]\d{8}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  if (/^0033[1-9]\d{8}$/.test(cleaned)) {
+    return { valid: true, formatted: '+33' + cleaned.slice(4) };
+  }
+  // International format (at least 8 digits with +)
+  if (/^\+\d{8,15}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  // Just digits, at least 8
+  if (/^\d{8,15}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  
+  return { valid: false, formatted: undefined };
+};
+
+interface ValidationWarning {
+  line: number;
+  field: string;
+  value: string;
+  message: string;
+}
+
+interface ParsedLeadWithWarnings extends ParsedLead {
+  lineNumber: number;
+  warnings: ValidationWarning[];
+}
+
 export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload');
-  const [parsedLeads, setParsedLeads] = useState<ParsedLead[]>([]);
+  const [parsedLeads, setParsedLeads] = useState<ParsedLeadWithWarnings[]>([]);
+  const [validationWarnings, setValidationWarnings] = useState<ValidationWarning[]>([]);
+  const [skippedLines, setSkippedLines] = useState<{ line: number; reason: string }[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[] }>({ success: 0, failed: 0, errors: [] });
@@ -139,12 +187,14 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           return;
         }
 
-        const leads: ParsedLead[] = [];
-        const parseErrors: string[] = [];
+        const leads: ParsedLeadWithWarnings[] = [];
+        const skipped: { line: number; reason: string }[] = [];
+        const allWarnings: ValidationWarning[] = [];
         
         for (let i = 1; i < lines.length; i++) {
           try {
             const values = parseCSVLine(lines[i]);
+            const lineWarnings: ValidationWarning[] = [];
             
             // Clean values - remove surrounding quotes
             const cleanValue = (idx: number): string => {
@@ -152,46 +202,114 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
               return values[idx].replace(/^"|"$/g, '').trim();
             };
             
-            const email = cleanValue(emailIdx);
+            const rawEmail = cleanValue(emailIdx);
+            const email = rawEmail.toLowerCase();
             
-            // Skip empty lines or lines without email
-            if (!email || !email.includes('@')) {
-              if (email) {
-                parseErrors.push(`Ligne ${i + 1}: email invalide "${email}"`);
-              }
+            // Skip empty lines
+            if (!rawEmail) {
               continue;
             }
             
-            const lead: ParsedLead = {
-              email: email.toLowerCase(),
-              firstName: cleanValue(firstNameIdx),
-              lastName: cleanValue(lastNameIdx),
-              phone: phoneIdx !== -1 ? cleanValue(phoneIdx) || undefined : undefined,
-              propertyPrice: propertyPriceIdx !== -1 ? parseNumericValue(cleanValue(propertyPriceIdx)) : undefined,
-              downPayment: downPaymentIdx !== -1 ? formatDownPayment(cleanValue(downPaymentIdx)) : undefined,
+            // Validate email
+            if (!isValidEmail(email)) {
+              skipped.push({ line: i + 1, reason: `Email invalide: "${rawEmail}"` });
+              continue;
+            }
+            
+            // Validate and format phone
+            const rawPhone = phoneIdx !== -1 ? cleanValue(phoneIdx) : '';
+            const phoneValidation = isValidPhone(rawPhone);
+            
+            if (rawPhone && !phoneValidation.valid) {
+              lineWarnings.push({
+                line: i + 1,
+                field: 'Téléphone',
+                value: rawPhone,
+                message: 'Format de téléphone non reconnu'
+              });
+            }
+            
+            // Validate required fields
+            const firstName = cleanValue(firstNameIdx);
+            const lastName = cleanValue(lastNameIdx);
+            
+            if (!firstName) {
+              lineWarnings.push({
+                line: i + 1,
+                field: 'Prénom',
+                value: '',
+                message: 'Prénom manquant'
+              });
+            }
+            
+            if (!lastName) {
+              lineWarnings.push({
+                line: i + 1,
+                field: 'Nom',
+                value: '',
+                message: 'Nom manquant'
+              });
+            }
+            
+            // Parse numeric values with validation
+            const rawPropertyPrice = propertyPriceIdx !== -1 ? cleanValue(propertyPriceIdx) : '';
+            const propertyPrice = parseNumericValue(rawPropertyPrice);
+            
+            if (rawPropertyPrice && propertyPrice === undefined) {
+              lineWarnings.push({
+                line: i + 1,
+                field: 'Prix du bien',
+                value: rawPropertyPrice,
+                message: 'Format numérique invalide'
+              });
+            }
+            
+            const rawDownPayment = downPaymentIdx !== -1 ? cleanValue(downPaymentIdx) : '';
+            const downPayment = formatDownPayment(rawDownPayment);
+            
+            if (rawDownPayment && downPayment === undefined) {
+              lineWarnings.push({
+                line: i + 1,
+                field: 'Apport',
+                value: rawDownPayment,
+                message: 'Format numérique invalide'
+              });
+            }
+            
+            const lead: ParsedLeadWithWarnings = {
+              email,
+              firstName: firstName || 'Non renseigné',
+              lastName: lastName || 'Non renseigné',
+              phone: phoneValidation.formatted,
+              propertyPrice,
+              downPayment,
               purchaseType: purchaseTypeIdx !== -1 ? cleanValue(purchaseTypeIdx) || undefined : undefined,
               source: sourceIdx !== -1 ? cleanValue(sourceIdx) || undefined : undefined,
-              pipelineStage: pipelineIdx !== -1 ? cleanValue(pipelineIdx) || undefined : undefined
+              pipelineStage: pipelineIdx !== -1 ? cleanValue(pipelineIdx) || undefined : undefined,
+              lineNumber: i + 1,
+              warnings: lineWarnings
             };
             
             leads.push(lead);
+            allWarnings.push(...lineWarnings);
           } catch (lineErr) {
-            parseErrors.push(`Ligne ${i + 1}: erreur de parsing`);
+            skipped.push({ line: i + 1, reason: 'Erreur de parsing de la ligne' });
             console.error(`Error parsing line ${i + 1}:`, lineErr);
           }
         }
 
         if (leads.length === 0) {
-          setError('Aucun lead valide trouvé. ' + (parseErrors.length > 0 ? 'Erreurs: ' + parseErrors.slice(0, 3).join('; ') : ''));
+          const reasons = skipped.slice(0, 5).map(s => `Ligne ${s.line}: ${s.reason}`).join('; ');
+          setError('Aucun lead valide trouvé. ' + (reasons || 'Vérifiez le format du fichier.'));
           return;
         }
 
         console.log(`Successfully parsed ${leads.length} leads from ${lines.length - 1} data lines`);
-        if (parseErrors.length > 0) {
-          console.warn('Parse warnings:', parseErrors);
-        }
+        console.log(`Skipped ${skipped.length} lines, ${allWarnings.length} warnings`);
 
         setParsedLeads(leads);
+        setValidationWarnings(allWarnings);
+        setSkippedLines(skipped);
         setError(null);
         setStep('preview');
       } catch (err) {
@@ -228,6 +346,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
   const resetModal = () => {
     setStep('upload');
     setParsedLeads([]);
+    setValidationWarnings([]);
+    setSkippedLines([]);
     setError(null);
     setResults({ success: 0, failed: 0, errors: [] });
   };
@@ -364,21 +484,91 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             <p style={{ color: '#64748b', marginBottom: '16px', fontSize: '14px' }}>
               <strong>{parsedLeads.length}</strong> leads prêts à être importés
             </p>
-            <div style={{ maxHeight: '300px', overflow: 'auto', marginBottom: '16px' }}>
+            
+            {/* Skipped lines warning */}
+            {skippedLines.length > 0 && (
+              <div style={{
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                padding: '12px',
+                marginBottom: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <AlertCircle size={16} color="#dc2626" />
+                  <strong style={{ fontSize: '13px', color: '#dc2626' }}>
+                    {skippedLines.length} ligne(s) ignorée(s)
+                  </strong>
+                </div>
+                <div style={{ maxHeight: '80px', overflow: 'auto' }}>
+                  {skippedLines.slice(0, 5).map((skip, idx) => (
+                    <p key={idx} style={{ fontSize: '12px', color: '#b91c1c', marginBottom: '2px' }}>
+                      • Ligne {skip.line}: {skip.reason}
+                    </p>
+                  ))}
+                  {skippedLines.length > 5 && (
+                    <p style={{ fontSize: '12px', color: '#b91c1c', fontStyle: 'italic' }}>
+                      ... et {skippedLines.length - 5} autres
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Validation warnings */}
+            {validationWarnings.length > 0 && (
+              <div style={{
+                backgroundColor: '#fffbeb',
+                border: '1px solid #fde68a',
+                borderRadius: '8px',
+                padding: '12px',
+                marginBottom: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <AlertCircle size={16} color="#d97706" />
+                  <strong style={{ fontSize: '13px', color: '#d97706' }}>
+                    {validationWarnings.length} avertissement(s)
+                  </strong>
+                </div>
+                <div style={{ maxHeight: '80px', overflow: 'auto' }}>
+                  {validationWarnings.slice(0, 5).map((warn, idx) => (
+                    <p key={idx} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>
+                      • Ligne {warn.line} - {warn.field}: {warn.message} {warn.value && `("${warn.value}")`}
+                    </p>
+                  ))}
+                  {validationWarnings.length > 5 && (
+                    <p style={{ fontSize: '12px', color: '#b45309', fontStyle: 'italic' }}>
+                      ... et {validationWarnings.length - 5} autres
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            <div style={{ maxHeight: '250px', overflow: 'auto', marginBottom: '16px' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc' }}>
+                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Ligne</th>
                     <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Email</th>
                     <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Nom</th>
+                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Téléphone</th>
                     <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Prix bien</th>
                     <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Apport</th>
                   </tr>
                 </thead>
                 <tbody>
                   {parsedLeads.slice(0, 10).map((lead, idx) => (
-                    <tr key={idx}>
+                    <tr key={idx} style={{ backgroundColor: lead.warnings.length > 0 ? '#fffbeb' : 'transparent' }}>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', color: '#64748b' }}>
+                        {lead.lineNumber}
+                        {lead.warnings.length > 0 && (
+                          <span title={lead.warnings.map(w => `${w.field}: ${w.message}`).join('\n')} style={{ marginLeft: '4px', color: '#d97706' }}>⚠</span>
+                        )}
+                      </td>
                       <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.email}</td>
                       <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.firstName} {lead.lastName}</td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.phone || '-'}</td>
                       <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
                         {lead.propertyPrice ? `${lead.propertyPrice.toLocaleString('fr-FR')} €` : '-'}
                       </td>
