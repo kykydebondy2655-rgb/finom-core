@@ -5,7 +5,7 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
-import ClientImportModal from '@/components/admin/ClientImportModal';
+import { ClientImportModal } from '@/components/admin/ClientImportModal';
 import DeleteClientModal from '@/components/admin/DeleteClientModal';
 import { adminApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
