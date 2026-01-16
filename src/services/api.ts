@@ -730,7 +730,10 @@ export const adminApi = {
     });
 
     if (response.error) {
-      throw new Error(response.error.message || 'Erreur lors de la création');
+      // Supabase invoke errors can be generic ("non-2xx"), so try to surface the response body.
+      const details = (response.error as any)?.context?.body;
+      const message = response.error.message || 'Erreur lors de la création';
+      throw new Error(details ? `${message} - ${details}` : message);
     }
 
     if (response.data?.error) {
