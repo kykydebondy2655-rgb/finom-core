@@ -1040,11 +1040,13 @@ export const importsApi = {
     invalidRows: number;
     data: any[];
     validationErrors: any[];
+    importType?: string;
   }) {
     const { data: result, error } = await supabase
       .from('pending_imports')
       .insert({
         admin_id: data.adminId,
+        import_type: data.importType || 'leads',
         file_name: data.fileName,
         total_rows: data.totalRows,
         valid_rows: data.validRows,
