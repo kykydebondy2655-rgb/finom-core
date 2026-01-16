@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Upload, AlertCircle, CheckCircle, Download } from 'lucide-react';
 import { adminApi, importsApi } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -127,6 +128,7 @@ interface ParsedLeadWithWarnings extends ParsedLead {
 }
 
 export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, onClose, onSuccess }) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload');
   const [parsedLeads, setParsedLeads] = useState<ParsedLeadWithWarnings[]>([]);
@@ -329,9 +331,9 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
   const handleImport = async () => {
     setImporting(true);
     setError(null);
-    
+
     if (importMode === 'pending' && user?.id) {
-      // Create pending import for validation
+      // Create pending import for validation (leads will appear in Clients only after approval + processing)
       try {
         const leadsData = parsedLeads.map(lead => ({
           email: lead.email,
@@ -342,9 +344,9 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           downPayment: lead.downPayment,
           purchaseType: lead.purchaseType,
           source: lead.source,
-          pipelineStage: lead.pipelineStage
+          pipelineStage: lead.pipelineStage,
         }));
-        
+
         await importsApi.createPendingImport({
           adminId: user.id,
           fileName: fileName || 'import.csv',
@@ -352,19 +354,22 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           validRows: parsedLeads.length,
           invalidRows: skippedLines.length,
           data: leadsData,
-          validationErrors: validationWarnings
+          validationErrors: validationWarnings,
         });
-        
-        setResults({ success: parsedLeads.length, failed: 0, errors: [] });
-        setStep('result');
-        onSuccess();
+
+        // Close modal and redirect to the imports review screen
+        handleClose();
+        navigate('/admin/imports');
+        return;
       } catch (err: any) {
-        setError('Erreur lors de la création de l\'import: ' + (err.message || 'Erreur inconnue'));
+        setError("Erreur lors de la création de l'import: " + (err.message || 'Erreur inconnue'));
+      } finally {
+        setImporting(false);
       }
     } else {
       // Direct import
       const importResults = { success: 0, failed: 0, errors: [] as string[] };
-      
+
       for (const lead of parsedLeads) {
         try {
           await adminApi.createLead(lead);
@@ -378,9 +383,9 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
       setResults(importResults);
       setStep('result');
       if (importResults.success > 0) onSuccess();
+
+      setImporting(false);
     }
-    
-    setImporting(false);
   };
 
   const resetModal = () => {
@@ -655,9 +660,13 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                   fontSize: '14px',
                   fontWeight: 500
                 }}
-              >
-                {importing ? 'Import en cours...' : `Importer ${parsedLeads.length} leads`}
-              </button>
+                  >
+                    {importing
+                      ? 'Import en cours...'
+                      : importMode === 'pending'
+                        ? `Envoyer ${parsedLeads.length} leads pour validation`
+                        : `Importer ${parsedLeads.length} leads`}
+                  </button>
             </div>
           </div>
         )}
