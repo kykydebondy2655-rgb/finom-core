@@ -137,7 +137,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
   const [error, setError] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [fileName, setFileName] = useState<string>('');
-  const [importMode, setImportMode] = useState<'direct' | 'pending'>('pending');
+  const [importMode, setImportMode] = useState<'direct' | 'pending'>('direct');
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[] }>({ success: 0, failed: 0, errors: [] });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -395,7 +395,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
     setSkippedLines([]);
     setError(null);
     setFileName('');
-    setImportMode('pending');
+    setImportMode('direct');
     setResults({ success: 0, failed: 0, errors: [] });
   };
 
