@@ -139,15 +139,74 @@ serve(async (req: Request): Promise<Response> => {
 
     if (createError) {
       console.error("User creation error:", createError);
-      
-      // Handle duplicate email
-      if (createError.message?.includes("already been registered") || createError.message?.includes("already exists")) {
+
+      // If the email already exists, treat this as an "upsert" for lead imports:
+      // - fetch existing user by email
+      // - update their profile lead fields
+      // - ensure client role exists
+      if (createError.code === "email_exists" || createError.message?.includes("already been registered") || createError.message?.includes("already exists")) {
+        const normalizedEmail = email.toLowerCase().trim();
+
+        // auth-js v2 admin API doesn't support getUserByEmail, so we look up the existing profile by email
+        const { data: existingProfile, error: profileLookupError } = await adminClient
+          .from("profiles")
+          .select("id")
+          .eq("email", normalizedEmail)
+          .maybeSingle();
+
+        if (profileLookupError || !existingProfile?.id) {
+          console.error("Could not fetch existing profile by email:", profileLookupError);
+          return new Response(
+            JSON.stringify({ error: "Cet email est déjà utilisé" }),
+            { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const existingUserId = existingProfile.id;
+        console.log("Email already exists, updating existing user:", existingUserId);
+
+        // Update profile with lead data (same as for a newly created user)
+        const profileUpdate: Record<string, unknown> = {
+          must_change_password: true,
+        };
+
+        if (role === "client") {
+          profileUpdate.lead_status = "new";
+          if (phone) profileUpdate.phone = phone;
+          if (propertyPrice) profileUpdate.property_price = propertyPrice;
+          if (downPayment) profileUpdate.down_payment = downPayment;
+          if (purchaseType) profileUpdate.purchase_type = purchaseType;
+          if (leadSource) profileUpdate.lead_source = leadSource;
+          if (pipelineStage) profileUpdate.pipeline_stage = pipelineStage;
+        }
+
+        const { error: profileError } = await adminClient
+          .from("profiles")
+          .update(profileUpdate)
+          .eq("id", existingUserId);
+
+        if (profileError) {
+          console.error("Profile update error (existing user):", profileError);
+        }
+
+        const { error: roleInsertError } = await adminClient
+          .from("user_roles")
+          .insert({ user_id: existingUserId, role });
+
+        if (roleInsertError && !roleInsertError.message?.includes("duplicate")) {
+          console.error("Role insert error (existing user):", roleInsertError);
+        }
+
         return new Response(
-          JSON.stringify({ error: "Cet email est déjà utilisé" }),
-          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            success: true,
+            userId: existingUserId,
+            message: "Client existant mis à jour",
+          }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      
+
       return new Response(
         JSON.stringify({ error: createError.message || "Erreur lors de la création de l'utilisateur" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
