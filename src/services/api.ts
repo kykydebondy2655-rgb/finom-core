@@ -730,10 +730,20 @@ export const adminApi = {
     });
 
     if (response.error) {
-      // Supabase invoke errors can be generic ("non-2xx"), so try to surface the response body.
-      const details = (response.error as any)?.context?.body;
+      // Supabase invoke errors can be generic ("non-2xx"). In browsers, the body can be a ReadableStream.
       const message = response.error.message || 'Erreur lors de la création';
-      throw new Error(details ? `${message} - ${details}` : message);
+      const body = (response.error as any)?.context?.body;
+
+      let detailsText = '';
+      if (body) {
+        try {
+          detailsText = typeof body === 'string' ? body : await new Response(body).text();
+        } catch {
+          detailsText = '';
+        }
+      }
+
+      throw new Error(detailsText ? `${message} - ${detailsText}` : message);
     }
 
     if (response.data?.error) {

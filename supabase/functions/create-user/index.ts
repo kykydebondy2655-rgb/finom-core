@@ -140,34 +140,67 @@ serve(async (req: Request): Promise<Response> => {
     if (createError) {
       console.error("User creation error:", createError);
 
-      // If the email already exists, treat this as an "upsert" for lead imports:
-      // - fetch existing user by email
-      // - update their profile lead fields
-      // - ensure client role exists
-      if (createError.code === "email_exists" || createError.message?.includes("already been registered") || createError.message?.includes("already exists")) {
+      // If the email already exists, treat this as an "upsert" for lead imports.
+      // Important: in this project, some users may exist in auth but NOT have a row in `profiles`.
+      // In that case we must:
+      // - find the existing auth user by email
+      // - upsert a profile row using the auth user id
+      // - ensure the role exists
+      if (
+        createError.code === "email_exists" ||
+        createError.message?.includes("already been registered") ||
+        createError.message?.includes("already exists")
+      ) {
         const normalizedEmail = email.toLowerCase().trim();
 
-        // auth-js v2 admin API doesn't support getUserByEmail, so we look up the existing profile by email
-        const { data: existingProfile, error: profileLookupError } = await adminClient
-          .from("profiles")
-          .select("id")
-          .eq("email", normalizedEmail)
-          .maybeSingle();
+        // Find auth user id by email by paging through users.
+        // (auth-js v2 does not provide getUserByEmail)
+        let existingUserId: string | null = null;
+        let page = 1;
+        const perPage = 1000;
 
-        if (profileLookupError || !existingProfile?.id) {
-          console.error("Could not fetch existing profile by email:", profileLookupError);
+        while (!existingUserId) {
+          const { data: usersData, error: listError } = await adminClient.auth.admin.listUsers({
+            page,
+            perPage,
+          });
+
+          if (listError) {
+            console.error("Could not list users:", listError);
+            break;
+          }
+
+          const users = usersData?.users ?? [];
+          const match = users.find((u) => (u.email ?? "").toLowerCase().trim() === normalizedEmail);
+          if (match?.id) {
+            existingUserId = match.id;
+            break;
+          }
+
+          if (users.length < perPage) break; // no more pages
+          page += 1;
+        }
+
+        // Fallback: if we can't find the auth user id, we can't safely upsert a profile.
+        if (!existingUserId) {
+          console.error("Could not find existing auth user for email:", normalizedEmail);
           return new Response(
             JSON.stringify({ error: "Cet email est déjà utilisé" }),
             { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
-        const existingUserId = existingProfile.id;
-        console.log("Email already exists, updating existing user:", existingUserId);
+        console.log("Email already exists, upserting profile for existing user:", existingUserId);
 
-        // Update profile with lead data (same as for a newly created user)
+        // Build profile update payload
         const profileUpdate: Record<string, unknown> = {
+          id: existingUserId,
+          email: normalizedEmail,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          role,
           must_change_password: true,
+          updated_at: new Date().toISOString(),
         };
 
         if (role === "client") {
@@ -180,21 +213,30 @@ serve(async (req: Request): Promise<Response> => {
           if (pipelineStage) profileUpdate.pipeline_stage = pipelineStage;
         }
 
-        const { error: profileError } = await adminClient
+        const { error: upsertError } = await adminClient
           .from("profiles")
-          .update(profileUpdate)
-          .eq("id", existingUserId);
+          .upsert(profileUpdate, { onConflict: "id" });
 
-        if (profileError) {
-          console.error("Profile update error (existing user):", profileError);
+        if (upsertError) {
+          console.error("Profile upsert error (existing user):", upsertError);
+          return new Response(
+            JSON.stringify({ error: "Impossible de mettre à jour le profil" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
         }
 
+        // Ensure role exists (ignore duplicates)
         const { error: roleInsertError } = await adminClient
           .from("user_roles")
           .insert({ user_id: existingUserId, role });
 
-        if (roleInsertError && !roleInsertError.message?.includes("duplicate")) {
-          console.error("Role insert error (existing user):", roleInsertError);
+        if (roleInsertError) {
+          // If duplicates are allowed it's fine; otherwise ignore duplicate constraint errors
+          const msg = (roleInsertError as any)?.message ?? "";
+          const code = (roleInsertError as any)?.code;
+          if (code !== "23505" && !msg.toLowerCase().includes("duplicate")) {
+            console.error("Role insert error (existing user):", roleInsertError);
+          }
         }
 
         return new Response(
