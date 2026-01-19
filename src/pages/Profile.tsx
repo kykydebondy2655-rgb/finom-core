@@ -8,6 +8,8 @@ import Button from '../components/finom/Button';
 import { useToast } from '@/components/finom/Toast';
 import { logger } from '@/lib/logger';
 import { isStrongPassword } from '@/lib/validators';
+import { useExportProfile } from '@/hooks/useExportProfile';
+import { User, Lock, BarChart3, Download, LogOut } from 'lucide-react';
 
 const Profile = () => {
     const { user, logout } = useAuth();
@@ -32,6 +34,7 @@ const Profile = () => {
     const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
     const [kycStatus, setKycStatus] = useState<string>('pending');
     const [saved, setSaved] = useState(false);
+    const { exportData, exporting } = useExportProfile(user?.id);
 
     useEffect(() => {
         if (user) {
@@ -177,6 +180,15 @@ const Profile = () => {
         navigate('/');
     };
 
+    const handleExport = async () => {
+        try {
+            await exportData();
+            toast.success('Vos données ont été exportées avec succès');
+        } catch {
+            toast.error('Erreur lors de l\'export des données');
+        }
+    };
+
     if (!user) {
         return (
             <PageLayout>
@@ -200,7 +212,7 @@ const Profile = () => {
             <div className="profile-page">
                 <div className="container">
                     <header className="profile-header">
-                        <h1>👤 Mon Profil</h1>
+                        <h1><User size={28} style={{ marginRight: '12px', display: 'inline', verticalAlign: 'middle' }} />Mon Profil</h1>
                         <p>Gérez vos informations personnelles et vos préférences de sécurité.</p>
                     </header>
 
@@ -327,7 +339,8 @@ const Profile = () => {
 
                         {/* Security Card */}
                         <Card className="profile-card security-card" padding="xl">
-                            <h2>🔒 Sécurité</h2>
+                            <h2><Lock size={20} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Sécurité</h2>
+                            <p className="security-subtitle">Modifiez votre mot de passe</p>
                             <p className="security-subtitle">Modifiez votre mot de passe</p>
 
                             <form onSubmit={handlePasswordSubmit}>
@@ -401,7 +414,7 @@ const Profile = () => {
                             </Card>
 
                             <Card padding="lg">
-                                <h3>📊 Statut KYC</h3>
+                                <h3><BarChart3 size={18} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Statut KYC</h3>
                                 <div className="kyc-status">
                                     <span className={`kyc-badge ${kycStatus === 'validated' ? 'validated' : kycStatus === 'rejected' ? 'rejected' : 'pending'}`}>
                                         {kycStatus === 'validated' ? 'Validé' : kycStatus === 'rejected' ? 'Refusé' : 'En attente'}
@@ -416,7 +429,26 @@ const Profile = () => {
                                 </div>
                             </Card>
 
+                            <Card padding="lg">
+                                <h3><Download size={18} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Mes données (RGPD)</h3>
+                                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+                                    Téléchargez l'ensemble de vos données personnelles au format JSON.
+                                </p>
+                                <Button 
+                                    onClick={handleExport} 
+                                    variant="secondary" 
+                                    size="sm"
+                                    isLoading={exporting}
+                                    disabled={exporting}
+                                    className="full-width"
+                                >
+                                    <Download size={16} style={{ marginRight: '6px' }} />
+                                    Exporter mes données
+                                </Button>
+                            </Card>
+
                             <Button onClick={handleLogout} variant="danger" className="full-width">
+                                <LogOut size={18} style={{ marginRight: '8px' }} />
                                 Se déconnecter
                             </Button>
                         </div>
