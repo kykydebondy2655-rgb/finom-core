@@ -46,11 +46,13 @@ import AdminAssignments from './pages/admin/AdminAssignments';
 import AdminLoginHistory from './pages/admin/AdminLoginHistory';
 import AdminLeads from './pages/admin/AdminLeads';
 import AdminImports from './pages/admin/AdminImports';
+import AdminSettings from './pages/admin/AdminSettings';
 
 import CookieBanner from './components/common/CookieBanner';
 
 import './styles/finom.css';
 import './styles/components.css';
+import './styles/admin-settings.css';
 
 function App() {
     return (
@@ -233,6 +235,14 @@ function App() {
                                     element={
                                         <ProtectedRoute allowedRoles={['admin']}>
                                             <AdminImports />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/settings" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminSettings />
                                         </ProtectedRoute>
                                     } 
                                 />

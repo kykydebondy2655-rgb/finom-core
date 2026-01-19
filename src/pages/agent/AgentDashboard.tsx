@@ -10,6 +10,7 @@ import CallModal from '@/components/agent/CallModal';
 import { agentApi, formatDateTime } from '@/services/api';
 import type { ClientAssignment, Callback, Profile } from '@/services/api';
 import { logger } from '@/lib/logger';
+import { Users, Phone, ClipboardList, Calendar } from 'lucide-react';
 
 // Extended types for joined data
 interface ClientAssignmentWithProfile extends ClientAssignment {
@@ -74,17 +75,17 @@ const AgentDashboard: React.FC = () => {
           {/* Stats Cards */}
           <div className="stats-grid fade-in">
             <Card className="stat-card" padding="lg">
-              <span className="stat-icon">👥</span>
+              <span className="stat-icon"><Users size={24} /></span>
               <span className="stat-value">{clients.length}</span>
               <span className="stat-label">Clients assignés</span>
             </Card>
             <Card className="stat-card" padding="lg">
-              <span className="stat-icon">📞</span>
+              <span className="stat-icon"><Phone size={24} /></span>
               <span className="stat-value">{todayCallbacks.length}</span>
               <span className="stat-label">Rappels aujourd'hui</span>
             </Card>
             <Card className="stat-card" padding="lg">
-              <span className="stat-icon">📋</span>
+              <span className="stat-icon"><Calendar size={24} /></span>
               <span className="stat-value">{callbacks.filter(c => c.status === 'planned').length}</span>
               <span className="stat-label">Rappels en attente</span>
             </Card>
@@ -93,17 +94,19 @@ const AgentDashboard: React.FC = () => {
           {/* Quick Actions */}
           <div className="quick-actions fade-in">
             <Button variant="primary" onClick={() => navigate('/agent/clients')}>
-              👥 Voir mes clients
+              <Users size={18} style={{ marginRight: '8px' }} />
+              Voir mes clients
             </Button>
             <Button variant="secondary" onClick={() => navigate('/agent/callbacks')}>
-              📞 Gérer les rappels
+              <Phone size={18} style={{ marginRight: '8px' }} />
+              Gérer les rappels
             </Button>
           </div>
 
           {/* Today's Callbacks */}
           <Card className="callbacks-card fade-in" padding="lg">
             <div className="card-header">
-              <h3>📞 Rappels du jour</h3>
+              <h3><Phone size={20} style={{ marginRight: '8px', display: 'inline' }} />Rappels du jour</h3>
               <Button variant="ghost" size="sm" onClick={() => navigate('/agent/callbacks')}>
                 Voir tout →
               </Button>
@@ -141,7 +144,7 @@ const AgentDashboard: React.FC = () => {
           {/* Recent Clients */}
           <Card className="clients-card fade-in" padding="lg">
             <div className="card-header">
-              <h3>👥 Derniers clients</h3>
+              <h3><Users size={20} style={{ marginRight: '8px', display: 'inline' }} />Derniers clients</h3>
               <Button variant="ghost" size="sm" onClick={() => navigate('/agent/clients')}>
                 Voir tout →
               </Button>
