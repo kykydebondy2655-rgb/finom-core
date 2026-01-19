@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, AuthUser } from '@/context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
@@ -31,6 +32,26 @@ interface FormData {
   profileLabel: string;
   projectType: string;
 }
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+};
+
+const staggerContainer = {
+  initial: {},
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const scaleIn = {
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+};
 
 const Simulator = () => {
   const navigate = useNavigate();
@@ -220,281 +241,420 @@ const Simulator = () => {
     <>
       <Header />
       <div className="simulator-page">
-        <section className="hero-simulator fade-in">
+        <motion.section 
+          className="hero-simulator"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="container">
-            <div className="hero-content">
-              <span className="badge-hero">SIMULATEUR DE PRÊT</span>
-              <h1>Simulez votre projet immobilier</h1>
-              <p>Proposition immédiate & dossier 100% en ligne.</p>
-            </div>
+            <motion.div 
+              className="hero-content"
+              initial="initial"
+              animate="animate"
+              variants={staggerContainer}
+            >
+              <motion.span 
+                className="badge-hero"
+                variants={fadeInUp}
+                transition={{ duration: 0.4 }}
+              >
+                SIMULATEUR DE PRÊT
+              </motion.span>
+              <motion.h1
+                variants={fadeInUp}
+                transition={{ duration: 0.4 }}
+              >
+                Simulez votre projet immobilier
+              </motion.h1>
+              <motion.p
+                variants={fadeInUp}
+                transition={{ duration: 0.4 }}
+              >
+                Proposition immédiate & dossier 100% en ligne.
+              </motion.p>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         <div className="container main-content">
           <div className="simulator-layout">
             {/* Form Card */}
-            <Card className="form-card fade-in" padding="xl">
-              <h2>📝 Votre projet</h2>
-              
-              <div className="form-section">
-                <div className="form-group">
-                  <label>Type de projet</label>
-                  <select
-                    value={formData.projectType}
-                    onChange={(e) => updateField('projectType', e.target.value)}
-                    className="select-input"
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="form-card" padding="xl">
+                <motion.h2
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  📝 Votre projet
+                </motion.h2>
+                
+                <motion.div 
+                  className="form-section"
+                  initial="initial"
+                  animate="animate"
+                  variants={staggerContainer}
+                >
+                  <motion.div className="form-group" variants={fadeInUp}>
+                    <label>Type de projet</label>
+                    <select
+                      value={formData.projectType}
+                      onChange={(e) => updateField('projectType', e.target.value)}
+                      className="select-input"
+                    >
+                      <option value="achat_residence_principale">Achat résidence principale</option>
+                      <option value="achat_residence_secondaire">Achat résidence secondaire</option>
+                      <option value="investissement_locatif">Investissement locatif</option>
+                      <option value="construction">Construction</option>
+                      <option value="renovation">Rénovation</option>
+                    </select>
+                  </motion.div>
+
+                  <motion.div className="form-group" variants={fadeInUp}>
+                    <label>Prix du bien immobilier</label>
+                    <input
+                      type="number"
+                      value={formData.propertyPrice}
+                      onChange={(e) => updateField('propertyPrice', Math.max(0, Number(e.target.value) || 0))}
+                      min={0}
+                      step={5000}
+                      className="number-input"
+                    />
+                    <span className="input-suffix">€</span>
+                  </motion.div>
+
+                  <motion.div className="form-row" variants={fadeInUp}>
+                    <div className="form-group half">
+                      <label>Frais de notaire</label>
+                      <input
+                        type="number"
+                        value={formData.notaryFees}
+                        onChange={(e) => updateField('notaryFees', Math.max(0, Number(e.target.value) || 0))}
+                        min={0}
+                        step={500}
+                        className="number-input"
+                      />
+                      <span className="input-suffix">€</span>
+                    </div>
+
+                    <div className="form-group half">
+                      <label>Frais d'agence</label>
+                      <input
+                        type="number"
+                        value={formData.agencyFees}
+                        onChange={(e) => updateField('agencyFees', Math.max(0, Number(e.target.value) || 0))}
+                        min={0}
+                        step={500}
+                        className="number-input"
+                      />
+                      <span className="input-suffix">€</span>
+                    </div>
+                  </motion.div>
+
+                  <motion.div className="form-group" variants={fadeInUp}>
+                    <label>Travaux (optionnel)</label>
+                    <input
+                      type="number"
+                      value={formData.worksAmount}
+                      onChange={(e) => updateField('worksAmount', Math.max(0, Number(e.target.value) || 0))}
+                      min={0}
+                      step={1000}
+                      className="number-input"
+                    />
+                    <span className="input-suffix">€</span>
+                  </motion.div>
+                </motion.div>
+
+                <motion.h2
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  💰 Votre financement
+                </motion.h2>
+
+                <motion.div 
+                  className="form-section"
+                  initial="initial"
+                  animate="animate"
+                  variants={staggerContainer}
+                >
+                  <motion.div className="form-group" variants={fadeInUp}>
+                    <label>Apport personnel</label>
+                    <input
+                      type="number"
+                      value={formData.downPayment}
+                      onChange={(e) => updateField('downPayment', Math.max(0, Number(e.target.value) || 0))}
+                      min={0}
+                      step={1000}
+                      className="number-input"
+                    />
+                    <span className="input-suffix">€</span>
+                    <div className="input-hint">{getContributionPercent()}% du projet total</div>
+                  </motion.div>
+
+                  <motion.div className="form-group" variants={fadeInUp}>
+                    <label>Durée du prêt</label>
+                    <input
+                      type="range"
+                      min={5}
+                      max={30}
+                      step={1}
+                      value={formData.durationYears}
+                      onChange={(e) => updateField('durationYears', Number(e.target.value))}
+                      className="range-input"
+                    />
+                    <div className="value-display">{formData.durationYears} ans</div>
+                  </motion.div>
+
+                  <motion.div 
+                    className="rate-display"
+                    variants={fadeInUp}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <option value="achat_residence_principale">Achat résidence principale</option>
-                    <option value="achat_residence_secondaire">Achat résidence secondaire</option>
-                    <option value="investissement_locatif">Investissement locatif</option>
-                    <option value="construction">Construction</option>
-                    <option value="renovation">Rénovation</option>
-                  </select>
-                </div>
+                    <div className="rate-info">
+                      <span className="rate-label">Taux estimé</span>
+                      <span className="rate-value">{formData.rate.toFixed(2)}%</span>
+                    </div>
+                    <span className="profile-badge">{formData.profileLabel}</span>
+                  </motion.div>
 
-                <div className="form-group">
-                  <label>Prix du bien immobilier</label>
-                  <input
-                    type="number"
-                    value={formData.propertyPrice}
-                    onChange={(e) => updateField('propertyPrice', Math.max(0, Number(e.target.value) || 0))}
-                    min={0}
-                    step={5000}
-                    className="number-input"
-                  />
-                  <span className="input-suffix">€</span>
-                </div>
+                  <motion.div 
+                    className="insurance-notice"
+                    variants={fadeInUp}
+                  >
+                    <span className="insurance-icon">🛡️</span>
+                    <div className="insurance-text">
+                      <strong>Assurance emprunteur incluse</strong>
+                      <span>Taux fixe : {INSURANCE_RATE}% par an (obligatoire)</span>
+                    </div>
+                  </motion.div>
+                </motion.div>
 
-                <div className="form-row">
-                  <div className="form-group half">
-                    <label>Frais de notaire</label>
-                    <input
-                      type="number"
-                      value={formData.notaryFees}
-                      onChange={(e) => updateField('notaryFees', Math.max(0, Number(e.target.value) || 0))}
-                      min={0}
-                      step={500}
-                      className="number-input"
-                    />
-                    <span className="input-suffix">€</span>
-                  </div>
-
-                  <div className="form-group half">
-                    <label>Frais d'agence</label>
-                    <input
-                      type="number"
-                      value={formData.agencyFees}
-                      onChange={(e) => updateField('agencyFees', Math.max(0, Number(e.target.value) || 0))}
-                      min={0}
-                      step={500}
-                      className="number-input"
-                    />
-                    <span className="input-suffix">€</span>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>Travaux (optionnel)</label>
-                  <input
-                    type="number"
-                    value={formData.worksAmount}
-                    onChange={(e) => updateField('worksAmount', Math.max(0, Number(e.target.value) || 0))}
-                    min={0}
-                    step={1000}
-                    className="number-input"
-                  />
-                  <span className="input-suffix">€</span>
-                </div>
-              </div>
-
-              <h2>💰 Votre financement</h2>
-
-              <div className="form-section">
-                <div className="form-group">
-                  <label>Apport personnel</label>
-                  <input
-                    type="number"
-                    value={formData.downPayment}
-                    onChange={(e) => updateField('downPayment', Math.max(0, Number(e.target.value) || 0))}
-                    min={0}
-                    step={1000}
-                    className="number-input"
-                  />
-                  <span className="input-suffix">€</span>
-                  <div className="input-hint">{getContributionPercent()}% du projet total</div>
-                </div>
-
-                <div className="form-group">
-                  <label>Durée du prêt</label>
-                  <input
-                    type="range"
-                    min={5}
-                    max={30}
-                    step={1}
-                    value={formData.durationYears}
-                    onChange={(e) => updateField('durationYears', Number(e.target.value))}
-                    className="range-input"
-                  />
-                  <div className="value-display">{formData.durationYears} ans</div>
-                </div>
-
-                <div className="rate-display">
-                  <div className="rate-info">
-                    <span className="rate-label">Taux estimé</span>
-                    <span className="rate-value">{formData.rate.toFixed(2)}%</span>
-                  </div>
-                  <span className="profile-badge">{formData.profileLabel}</span>
-                </div>
-
-                <div className="insurance-notice">
-                  <span className="insurance-icon">🛡️</span>
-                  <div className="insurance-text">
-                    <strong>Assurance emprunteur incluse</strong>
-                    <span>Taux fixe : {INSURANCE_RATE}% par an (obligatoire)</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Co-borrower Section */}
-              <CoborrowerSection
-                enabled={hasCoborrower}
-                onToggle={setHasCoborrower}
-                data={coborrowerData}
-                onChange={setCoborrowerData}
-              />
-            </Card>
+                {/* Co-borrower Section */}
+                <CoborrowerSection
+                  enabled={hasCoborrower}
+                  onToggle={setHasCoborrower}
+                  data={coborrowerData}
+                  onChange={setCoborrowerData}
+                />
+              </Card>
+            </motion.div>
 
             {/* Results Cards */}
-            {result && result.isValid && (
-              <div className="results-wrapper fade-in">
-                {/* Main Result Card */}
-                <Card className="result-card main-result" padding="xl">
-                  <div className="result-header">Mensualité totale</div>
-                  <div className="result-amount">
-                    {safeFormat(result.monthlyTotal)} €
-                    <span className="per-month">/mois</span>
-                  </div>
-                  <div className="monthly-breakdown">
-                    <div className="breakdown-item">
-                      <span>Crédit</span>
-                      <span>{safeFormat(result.monthlyCredit)} €</span>
-                    </div>
-                    <div className="breakdown-item insurance">
-                      <span>🛡️ Assurance</span>
-                      <span>{safeFormat(result.monthlyInsurance)} €</span>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Project Summary Card */}
-                <Card className="result-card" padding="lg">
-                  <h3>📊 Récapitulatif du projet</h3>
-                  <div className="summary-rows">
-                    <div className="summary-row">
-                      <span>Prix du bien</span>
-                      <span>{safeFormat(formData.propertyPrice)} €</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Frais de notaire</span>
-                      <span>{safeFormat(formData.notaryFees)} €</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Frais d'agence</span>
-                      <span>{safeFormat(formData.agencyFees)} €</span>
-                    </div>
-                    {formData.worksAmount > 0 && (
-                      <div className="summary-row">
-                        <span>Travaux</span>
-                        <span>{safeFormat(formData.worksAmount)} €</span>
-                      </div>
-                    )}
-                    <div className="summary-row highlight">
-                      <span>Coût total du projet</span>
-                      <span>
-                        {safeFormat(
-                          formData.propertyPrice + formData.notaryFees + 
-                          formData.agencyFees + formData.worksAmount
-                        )} €
-                      </span>
-                    </div>
-                    <div className="summary-row apport">
-                      <span>− Apport personnel</span>
-                      <span>{safeFormat(formData.downPayment)} €</span>
-                    </div>
-                    <div className="summary-row total">
-                      <span>= Capital emprunté</span>
-                      <span>{safeFormat(result.loanAmount)} €</span>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Cost Breakdown Card */}
-                <Card className="result-card" padding="lg">
-                  <h3>💶 Coût du crédit</h3>
-                  <div className="summary-rows">
-                    <div className="summary-row">
-                      <span>Durée</span>
-                      <span>{formData.durationYears} ans ({result.durationMonths} mois)</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Taux du crédit</span>
-                      <span>{formData.rate.toFixed(2)}%</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Coût total des intérêts</span>
-                      <span>{safeFormat(result.totalInterest)} €</span>
-                    </div>
-                    <div className="summary-row insurance-row">
-                      <span>🛡️ Coût total assurance</span>
-                      <span>{safeFormat(result.totalInsurance)} €</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Frais de dossier & garantie</span>
-                      <span>{safeFormat(result.bankFees)} €</span>
-                    </div>
-                    <div className="summary-row total">
-                      <span>Coût global du crédit</span>
-                      <span>{safeFormat(result.totalCost)} €</span>
-                    </div>
-                    <div className="summary-row taeg">
-                      <span>TAEG estimé</span>
-                      <span>{result.taegEstimate.toFixed(2)}%</span>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* CTA Buttons */}
-                <div className="cta-buttons">
-                <Button 
-                    onClick={handleCreateLoan} 
-                    variant="primary" 
-                    size="lg"
-                    disabled={loading || !result?.isValid}
+            <AnimatePresence mode="wait">
+              {result && result.isValid && (
+                <motion.div 
+                  className="results-wrapper"
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 30 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  {/* Main Result Card */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.4 }}
                   >
-                    {loading ? '⏳ Création en cours...' : '📋 Faire une demande de prêt'}
-                  </Button>
-                  <Button onClick={() => navigate('/how-it-works')} variant="ghost" size="md">
-                    Comment ça marche ?
-                  </Button>
-                </div>
-              </div>
-            )}
+                    <Card className="result-card main-result" padding="xl">
+                      <motion.div 
+                        className="result-header"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        Mensualité totale
+                      </motion.div>
+                      <motion.div 
+                        className="result-amount"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
+                      >
+                        {safeFormat(result.monthlyTotal)} €
+                        <span className="per-month">/mois</span>
+                      </motion.div>
+                      <motion.div 
+                        className="monthly-breakdown"
+                        initial="initial"
+                        animate="animate"
+                        variants={staggerContainer}
+                      >
+                        <motion.div className="breakdown-item" variants={fadeInUp}>
+                          <span>Crédit</span>
+                          <span>{safeFormat(result.monthlyCredit)} €</span>
+                        </motion.div>
+                        <motion.div className="breakdown-item insurance" variants={fadeInUp}>
+                          <span>🛡️ Assurance</span>
+                          <span>{safeFormat(result.monthlyInsurance)} €</span>
+                        </motion.div>
+                      </motion.div>
+                    </Card>
+                  </motion.div>
+
+                  {/* Project Summary Card */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.5 }}
+                  >
+                    <Card className="result-card" padding="lg">
+                      <h3>📊 Récapitulatif du projet</h3>
+                      <motion.div 
+                        className="summary-rows"
+                        initial="initial"
+                        animate="animate"
+                        variants={staggerContainer}
+                      >
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Prix du bien</span>
+                          <span>{safeFormat(formData.propertyPrice)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Frais de notaire</span>
+                          <span>{safeFormat(formData.notaryFees)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Frais d'agence</span>
+                          <span>{safeFormat(formData.agencyFees)} €</span>
+                        </motion.div>
+                        {formData.worksAmount > 0 && (
+                          <motion.div className="summary-row" variants={fadeInUp}>
+                            <span>Travaux</span>
+                            <span>{safeFormat(formData.worksAmount)} €</span>
+                          </motion.div>
+                        )}
+                        <motion.div className="summary-row highlight" variants={fadeInUp}>
+                          <span>Coût total du projet</span>
+                          <span>
+                            {safeFormat(
+                              formData.propertyPrice + formData.notaryFees + 
+                              formData.agencyFees + formData.worksAmount
+                            )} €
+                          </span>
+                        </motion.div>
+                        <motion.div className="summary-row apport" variants={fadeInUp}>
+                          <span>− Apport personnel</span>
+                          <span>{safeFormat(formData.downPayment)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row total" variants={fadeInUp}>
+                          <span>= Capital emprunté</span>
+                          <span>{safeFormat(result.loanAmount)} €</span>
+                        </motion.div>
+                      </motion.div>
+                    </Card>
+                  </motion.div>
+
+                  {/* Cost Breakdown Card */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.6 }}
+                  >
+                    <Card className="result-card" padding="lg">
+                      <h3>💶 Coût du crédit</h3>
+                      <motion.div 
+                        className="summary-rows"
+                        initial="initial"
+                        animate="animate"
+                        variants={staggerContainer}
+                      >
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Durée</span>
+                          <span>{formData.durationYears} ans ({result.durationMonths} mois)</span>
+                        </motion.div>
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Taux du crédit</span>
+                          <span>{formData.rate.toFixed(2)}%</span>
+                        </motion.div>
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Coût total des intérêts</span>
+                          <span>{safeFormat(result.totalInterest)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row insurance-row" variants={fadeInUp}>
+                          <span>🛡️ Coût total assurance</span>
+                          <span>{safeFormat(result.totalInsurance)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row" variants={fadeInUp}>
+                          <span>Frais de dossier & garantie</span>
+                          <span>{safeFormat(result.bankFees)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row total" variants={fadeInUp}>
+                          <span>Coût global du crédit</span>
+                          <span>{safeFormat(result.totalCost)} €</span>
+                        </motion.div>
+                        <motion.div className="summary-row taeg" variants={fadeInUp}>
+                          <span>TAEG estimé</span>
+                          <span>{result.taegEstimate.toFixed(2)}%</span>
+                        </motion.div>
+                      </motion.div>
+                    </Card>
+                  </motion.div>
+
+                  {/* CTA Buttons */}
+                  <motion.div 
+                    className="cta-buttons"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Button 
+                        onClick={handleCreateLoan} 
+                        variant="primary" 
+                        size="lg"
+                        disabled={loading || !result?.isValid}
+                      >
+                        {loading ? '⏳ Création en cours...' : '📋 Faire une demande de prêt'}
+                      </Button>
+                    </motion.div>
+                    <Button onClick={() => navigate('/how-it-works')} variant="ghost" size="md">
+                      Comment ça marche ?
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Invalid simulation message */}
-            {result && !result.isValid && (
-              <div className="results-wrapper fade-in">
-                <Card className="result-card error-card" padding="xl">
-                  <div className="error-icon">⚠️</div>
-                  <h3>Simulation impossible</h3>
-                  <p>Veuillez vérifier vos paramètres :</p>
-                  <ul>
-                    <li>Le capital emprunté doit être positif</li>
-                    <li>La durée doit être entre 5 et 30 ans</li>
-                    <li>L'apport ne peut pas dépasser le coût total du projet</li>
-                  </ul>
-                </Card>
-              </div>
-            )}
+            <AnimatePresence>
+              {result && !result.isValid && (
+                <motion.div 
+                  className="results-wrapper"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Card className="result-card error-card" padding="xl">
+                    <motion.div 
+                      className="error-icon"
+                      animate={{ rotate: [0, -10, 10, -10, 0] }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      ⚠️
+                    </motion.div>
+                    <h3>Simulation impossible</h3>
+                    <p>Veuillez vérifier vos paramètres :</p>
+                    <ul>
+                      <li>Le capital emprunté doit être positif</li>
+                      <li>La durée doit être entre 5 et 30 ans</li>
+                      <li>L'apport ne peut pas dépasser le coût total du projet</li>
+                    </ul>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

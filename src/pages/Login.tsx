@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 import ForcePasswordChange from '../components/auth/ForcePasswordChange';
+
+const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+};
+
+const staggerContainer = {
+    initial: {},
+    animate: {
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.05,
+        },
+    },
+};
 
 const Login = () => {
     const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
@@ -84,82 +100,179 @@ const Login = () => {
 
     return (
         <div className="auth-page-finom">
-            <div className="auth-container-finom fade-in">
+            <motion.div 
+                className="auth-container-finom"
+                initial="initial"
+                animate="animate"
+                variants={staggerContainer}
+            >
                 {/* Logo */}
-                <div className="auth-logo">
-                    <span className="logo-text">FINOM</span>
-                </div>
+                <motion.div 
+                    className="auth-logo"
+                    variants={fadeInUp}
+                    transition={{ duration: 0.5 }}
+                >
+                    <motion.span 
+                        className="logo-text"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
+                    >
+                        FINOM
+                    </motion.span>
+                </motion.div>
 
-                <div className="auth-card-finom">
-                    <div className="auth-header-finom">
+                <motion.div 
+                    className="auth-card-finom"
+                    variants={fadeInUp}
+                    transition={{ duration: 0.5 }}
+                >
+                    <motion.div 
+                        className="auth-header-finom"
+                        variants={fadeInUp}
+                        transition={{ duration: 0.4 }}
+                    >
                         <h1>Connexion</h1>
                         <p>Accédez à votre espace personnel</p>
-                    </div>
+                    </motion.div>
 
-                    {error && (
-                        <div className="auth-error-finom fade-in">
-                            <span className="error-icon">⚠️</span>
-                            {error}
-                        </div>
-                    )}
+                    <AnimatePresence mode="wait">
+                        {error && (
+                            <motion.div 
+                                className="auth-error-finom"
+                                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <span className="error-icon">⚠️</span>
+                                {error}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                    <form onSubmit={handleSubmit} autoComplete="off" className="auth-form-finom">
-                        <div className="form-group-finom">
+                    <motion.form 
+                        onSubmit={handleSubmit} 
+                        autoComplete="off" 
+                        className="auth-form-finom"
+                        variants={staggerContainer}
+                    >
+                        <motion.div 
+                            className="form-group-finom"
+                            variants={fadeInUp}
+                            transition={{ duration: 0.4 }}
+                        >
                             <label>Email</label>
-                            <input
+                            <motion.input
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 className={`input-finom ${fieldErrors.email ? 'input-error' : ''}`}
                                 autoComplete="off"
                                 placeholder="votre@email.com"
+                                whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(254, 66, 180, 0.15)' }}
+                                transition={{ duration: 0.2 }}
                             />
-                            {fieldErrors.email && (
-                                <span className="field-error-finom">{fieldErrors.email}</span>
-                            )}
-                        </div>
+                            <AnimatePresence>
+                                {fieldErrors.email && (
+                                    <motion.span 
+                                        className="field-error-finom"
+                                        initial={{ opacity: 0, y: -5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -5 }}
+                                    >
+                                        {fieldErrors.email}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
 
-                        <div className="form-group-finom">
+                        <motion.div 
+                            className="form-group-finom"
+                            variants={fadeInUp}
+                            transition={{ duration: 0.4 }}
+                        >
                             <label>Mot de passe</label>
-                            <input
+                            <motion.input
                                 type="password"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 className={`input-finom ${fieldErrors.password ? 'input-error' : ''}`}
                                 autoComplete="new-password"
                                 placeholder="••••••••"
+                                whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(254, 66, 180, 0.15)' }}
+                                transition={{ duration: 0.2 }}
                             />
-                            {fieldErrors.password && (
-                                <span className="field-error-finom">{fieldErrors.password}</span>
-                            )}
-                        </div>
+                            <AnimatePresence>
+                                {fieldErrors.password && (
+                                    <motion.span 
+                                        className="field-error-finom"
+                                        initial={{ opacity: 0, y: -5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -5 }}
+                                    >
+                                        {fieldErrors.password}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
 
-                        <div className="forgot-link-finom">
+                        <motion.div 
+                            className="forgot-link-finom"
+                            variants={fadeInUp}
+                            transition={{ duration: 0.4 }}
+                        >
                             <Link to="/forgot-password">Mot de passe oublié ?</Link>
-                        </div>
+                        </motion.div>
 
-                        <Button type="submit" isLoading={loading} variant="primary" className="btn-full-width">
-                            {loading ? 'Connexion...' : 'Se connecter'}
-                        </Button>
-                    </form>
+                        <motion.div
+                            variants={fadeInUp}
+                            transition={{ duration: 0.4 }}
+                        >
+                            <Button type="submit" isLoading={loading} variant="primary" className="btn-full-width">
+                                {loading ? 'Connexion...' : 'Se connecter'}
+                            </Button>
+                        </motion.div>
+                    </motion.form>
 
-                    <div className="auth-divider-finom">
+                    <motion.div 
+                        className="auth-divider-finom"
+                        variants={fadeInUp}
+                        transition={{ duration: 0.4 }}
+                    >
                         <span>ou</span>
-                    </div>
+                    </motion.div>
 
-                    <p className="auth-footer-finom">
+                    <motion.p 
+                        className="auth-footer-finom"
+                        variants={fadeInUp}
+                        transition={{ duration: 0.4 }}
+                    >
                         Pas encore de compte ?{' '}
                         <Link to="/register" state={{ from: location.state?.from }} className="link-accent">
                             Créer un compte
                         </Link>
-                    </p>
-                </div>
+                    </motion.p>
+                </motion.div>
 
-                <div className="auth-trust-finom">
-                    <span className="trust-item">🔒 Connexion sécurisée</span>
-                    <span className="trust-item">🛡️ Données chiffrées</span>
-                </div>
-            </div>
+                <motion.div 
+                    className="auth-trust-finom"
+                    variants={fadeInUp}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                    <motion.span 
+                        className="trust-item"
+                        whileHover={{ scale: 1.05 }}
+                    >
+                        🔒 Connexion sécurisée
+                    </motion.span>
+                    <motion.span 
+                        className="trust-item"
+                        whileHover={{ scale: 1.05 }}
+                    >
+                        🛡️ Données chiffrées
+                    </motion.span>
+                </motion.div>
+            </motion.div>
         </div>
     );
 };
