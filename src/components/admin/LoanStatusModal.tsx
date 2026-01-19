@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { emailService } from '@/services/emailService';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
+import '@/styles/components.css';
 
 interface LoanStatusModalProps {
   isOpen: boolean;
@@ -169,7 +170,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content loan-status-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>📋 Modifier le statut</h2>
           <button className="close-btn" onClick={onClose}>×</button>
@@ -224,126 +225,6 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
             </Button>
           </div>
         </form>
-
-        <style>{`
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-          }
-          .modal-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 520px;
-            max-height: 90vh;
-            overflow-y: auto;
-          }
-          .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .modal-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-          }
-          .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-tertiary);
-          }
-          .loan-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            padding: 1.25rem 1.5rem;
-            background: #f8fafc;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .loan-ref {
-            font-family: monospace;
-            color: var(--color-admin);
-            font-weight: 600;
-          }
-          .loan-client {
-            font-weight: 600;
-            font-size: 1.1rem;
-          }
-          .loan-amount {
-            color: var(--color-text-secondary);
-          }
-          form {
-            padding: 1.5rem;
-          }
-          .error-message {
-            background: #fee;
-            color: var(--color-danger);
-            padding: 0.75rem;
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-          }
-          .form-group {
-            margin-bottom: 1.25rem;
-          }
-          .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-          }
-          .status-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-          }
-          .status-option {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.625rem 1rem;
-            border: 2px solid var(--color-border);
-            border-radius: var(--radius-full);
-            background: white;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-          }
-          .status-option:hover {
-            border-color: var(--status-color);
-          }
-          .status-option.selected {
-            background: var(--status-color);
-            border-color: var(--status-color);
-            color: white;
-          }
-          .status-icon {
-            font-size: 1rem;
-          }
-          .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            resize: vertical;
-          }
-          .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-border);
-          }
-        `}</style>
       </div>
     </div>
   );

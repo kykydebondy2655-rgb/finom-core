@@ -3,6 +3,7 @@ import Button from '@/components/finom/Button';
 import { adminApi } from '@/services/api';
 import { notifyAgentAssignment } from '@/hooks/useAgentAssignmentNotification';
 import logger from '@/lib/logger';
+import '@/styles/components.css';
 
 interface AssignmentModalProps {
   isOpen: boolean;
@@ -109,7 +110,7 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content assignment-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>➕ Nouvelle assignation</h2>
           <button className="close-btn" onClick={onClose}>×</button>
@@ -170,86 +171,6 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
             </div>
           </form>
         )}
-
-        <style>{`
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-          }
-          .modal-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 450px;
-          }
-          .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .modal-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-          }
-          .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-tertiary);
-          }
-          form {
-            padding: 1.5rem;
-          }
-          .loading-state {
-            padding: 3rem;
-            text-align: center;
-            color: var(--color-text-tertiary);
-          }
-          .error-message {
-            background: #fee;
-            color: var(--color-danger);
-            padding: 0.75rem;
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-          }
-          .form-group {
-            margin-bottom: 1.25rem;
-          }
-          .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-          }
-          .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-          }
-          .input-hint {
-            font-size: 0.85rem;
-            color: var(--color-text-tertiary);
-            margin-top: 0.25rem;
-            display: block;
-          }
-          .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-border);
-          }
-        `}</style>
       </div>
     </div>
   );
