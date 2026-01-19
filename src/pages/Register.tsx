@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { registerSchema, RegisterFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
+import AnimatedBackground from '../components/common/AnimatedBackground';
 import { AlertTriangle, Lock, Check } from 'lucide-react';
 
 const Register = () => {
@@ -82,6 +83,7 @@ const Register = () => {
 
     return (
         <div className="auth-page-finom">
+            <AnimatedBackground variant="auth" />
             <motion.div 
                 className="auth-container-finom auth-container-wide"
                 initial="initial"

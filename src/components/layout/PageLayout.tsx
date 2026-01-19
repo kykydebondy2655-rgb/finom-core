@@ -9,6 +9,7 @@ interface PageLayoutProps {
   className?: string;
   animate?: boolean;
   showAnimatedBackground?: boolean;
+  backgroundVariant?: 'default' | 'auth';
 }
 
 const pageVariants = {
@@ -37,12 +38,13 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
   showHeader = true,
   className = '',
   animate = true,
-  showAnimatedBackground = true
+  showAnimatedBackground = true,
+  backgroundVariant = 'default'
 }, ref) => {
   if (!animate) {
     return (
       <div ref={ref} className={`page-layout ${className}`}>
-        {showAnimatedBackground && <AnimatedBackground />}
+        {showAnimatedBackground && <AnimatedBackground variant={backgroundVariant} />}
         {showHeader && <Header />}
         <main className="page-content">
           {children}
@@ -53,7 +55,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
 
   return (
     <div ref={ref} className={`page-layout ${className}`}>
-      {showAnimatedBackground && <AnimatedBackground />}
+      {showAnimatedBackground && <AnimatedBackground variant={backgroundVariant} />}
       {showHeader && <Header />}
       <motion.main 
         className="page-content"

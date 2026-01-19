@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 import ForcePasswordChange from '../components/auth/ForcePasswordChange';
+import AnimatedBackground from '../components/common/AnimatedBackground';
 import { AlertTriangle, Lock, ShieldCheck } from 'lucide-react';
 
 const Login = () => {
@@ -91,6 +92,7 @@ const Login = () => {
 
     return (
         <div className="auth-page-finom">
+            <AnimatedBackground variant="auth" />
             <motion.div 
                 className="auth-container-finom"
                 initial="initial"
