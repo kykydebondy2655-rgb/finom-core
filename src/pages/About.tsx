@@ -3,6 +3,21 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import aboutTeamImage from '@/assets/about-team.jpg';
+import { 
+  Lightbulb, 
+  BarChart3, 
+  Wallet, 
+  FileCheck, 
+  Home, 
+  Building2, 
+  Landmark, 
+  Globe,
+  ShieldCheck,
+  FileText,
+  Scale,
+  UserCheck,
+  Lock
+} from 'lucide-react';
 
 const About: React.FC = () => {
   return (
@@ -40,7 +55,7 @@ const About: React.FC = () => {
                 de la simulation initiale jusqu'au déblocage des fonds.
               </p>
               <div className="highlight-box">
-                <span className="highlight-icon">💡</span>
+                <span className="highlight-icon"><Lightbulb size={24} strokeWidth={1.5} /></span>
                 <div>
                   <strong>Notre engagement</strong>
                   <p>Vous offrir un accompagnement personnalisé et des conditions de financement claires, sans frais cachés.</p>
@@ -56,13 +71,13 @@ const About: React.FC = () => {
             <h2 className="section-title">Notre expertise bancaire</h2>
             <div className="expertise-grid">
               {[
-                { icon: '📊', title: 'Analyse financière', desc: "Évaluation approfondie de votre situation financière et de votre capacité d'emprunt." },
-                { icon: '💰', title: 'Structuration du crédit', desc: "Montage financier sur mesure : durée, taux, mensualités adaptés à votre profil." },
-                { icon: '📋', title: 'Étude de solvabilité', desc: "Analyse rigoureuse pour vous proposer les meilleures conditions de financement." },
-                { icon: '🏠', title: 'Financement immobilier', desc: "Crédit pour résidence principale, secondaire ou investissement locatif." }
+                { Icon: BarChart3, title: 'Analyse financière', desc: "Évaluation approfondie de votre situation financière et de votre capacité d'emprunt." },
+                { Icon: Wallet, title: 'Structuration du crédit', desc: "Montage financier sur mesure : durée, taux, mensualités adaptés à votre profil." },
+                { Icon: FileCheck, title: 'Étude de solvabilité', desc: "Analyse rigoureuse pour vous proposer les meilleures conditions de financement." },
+                { Icon: Home, title: 'Financement immobilier', desc: "Crédit pour résidence principale, secondaire ou investissement locatif." }
               ].map((item, idx) => (
                 <div key={idx} className="expertise-card fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                  <span className="expertise-icon">{item.icon}</span>
+                  <span className="expertise-icon"><item.Icon size={28} strokeWidth={1.5} /></span>
                   <h3>{item.title}</h3>
                   <p>{item.desc}</p>
                 </div>
@@ -77,17 +92,17 @@ const About: React.FC = () => {
             <h2 className="section-title">Cadre réglementaire</h2>
             <div className="partners-grid">
               <div className="partner-card fade-in">
-                <span className="partner-icon">🏦</span>
+                <span className="partner-icon"><Building2 size={28} strokeWidth={1.5} /></span>
                 <h3>Treezor</h3>
                 <p>Établissement de paiement agréé par l'ACPR (Banque de France)</p>
               </div>
               <div className="partner-card fade-in" style={{ animationDelay: '100ms' }}>
-                <span className="partner-icon">🏛️</span>
+                <span className="partner-icon"><Landmark size={28} strokeWidth={1.5} /></span>
                 <h3>Solaris</h3>
                 <p>Établissement de crédit agréé par la BaFin (Allemagne)</p>
               </div>
               <div className="partner-card fade-in" style={{ animationDelay: '200ms' }}>
-                <span className="partner-icon">🇪🇺</span>
+                <span className="partner-icon"><Globe size={28} strokeWidth={1.5} /></span>
                 <h3>Conformité européenne</h3>
                 <p>Respect des directives bancaires et du RGPD</p>
               </div>
@@ -101,13 +116,13 @@ const About: React.FC = () => {
             <h2 className="section-title">Nos engagements</h2>
             <div className="values-grid">
               {[
-                { icon: '🔐', title: 'Sécurité', desc: 'Données chiffrées et hébergées sur serveurs sécurisés en Europe.' },
-                { icon: '📝', title: 'Transparence', desc: 'Conditions claires : taux, frais et TAEG communiqués dès la simulation.' },
-                { icon: '⚖️', title: 'Conformité', desc: 'Respect strict des obligations légales en matière de crédit.' },
-                { icon: '👨‍💼', title: 'Accompagnement', desc: 'Un conseiller dédié de la simulation au déblocage des fonds.' }
+                { Icon: ShieldCheck, title: 'Sécurité', desc: 'Données chiffrées et hébergées sur serveurs sécurisés en Europe.' },
+                { Icon: FileText, title: 'Transparence', desc: 'Conditions claires : taux, frais et TAEG communiqués dès la simulation.' },
+                { Icon: Scale, title: 'Conformité', desc: 'Respect strict des obligations légales en matière de crédit.' },
+                { Icon: UserCheck, title: 'Accompagnement', desc: 'Un conseiller dédié de la simulation au déblocage des fonds.' }
               ].map((item, idx) => (
                 <div key={idx} className="value-card fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                  <span className="value-icon">{item.icon}</span>
+                  <span className="value-icon"><item.Icon size={24} strokeWidth={1.5} /></span>
                   <h4>{item.title}</h4>
                   <p>{item.desc}</p>
                 </div>
@@ -132,7 +147,7 @@ const About: React.FC = () => {
 
         {/* Domain Banner */}
         <div className="domain-banner-finom">
-          <span className="domain-lock">🔒</span>
+          <span className="domain-lock"><Lock size={14} /></span>
           Vous êtes sur <strong>pret-finom.co</strong> — Site officiel FINOM
         </div>
       </div>
