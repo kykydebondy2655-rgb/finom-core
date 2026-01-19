@@ -302,6 +302,7 @@ const AdminLeads: React.FC = () => {
                         <th>Nom</th>
                         <th>Email</th>
                         <th>Téléphone</th>
+                        <th>Apport</th>
                         <th>Statut</th>
                         <th>Étape</th>
                         <th>Assigné à</th>
@@ -328,6 +329,7 @@ const AdminLeads: React.FC = () => {
                           </td>
                           <td>{lead.email || '-'}</td>
                           <td>{lead.phone || '-'}</td>
+                          <td className="apport-cell">{lead.down_payment || '-'}</td>
                           <td>
                             <span className={`status-badge ${lead.lead_status || 'new'}`}>
                               {lead.lead_status === 'assigned' ? 'Assigné' : 'Nouveau'}
@@ -464,6 +466,7 @@ const AdminLeads: React.FC = () => {
           }
           .no-agent { color: var(--color-text-tertiary); }
           .date-cell { color: var(--color-text-secondary); white-space: nowrap; }
+          .apport-cell { font-weight: 500; color: var(--color-primary); }
           
           .pagination { 
             display: flex; 
