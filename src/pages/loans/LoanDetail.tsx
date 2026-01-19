@@ -14,6 +14,7 @@ import DocumentChecklist from '@/components/loans/DocumentChecklist';
 import NotaryPanel from '@/components/loans/NotaryPanel';
 import SequestrePanel from '@/components/loans/SequestrePanel';
 import ReceivedDocumentsList from '@/components/documents/ReceivedDocumentsList';
+import ReplaceDocumentButton from '@/components/documents/ReplaceDocumentButton';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
 import { useToast } from '@/components/finom/Toast';
 import { useUserRoles } from '@/hooks/useUserRoles';
@@ -507,8 +508,22 @@ const LoanDetail: React.FC = () => {
                                 </span>
                               )}
                             </span>
+                            {doc.status === 'rejected' && doc.rejection_reason && (
+                              <span className="doc-rejection-reason" style={{ color: '#ef4444', fontSize: '0.8rem', display: 'block', marginTop: '4px' }}>
+                                ❌ {doc.rejection_reason}
+                              </span>
+                            )}
                           </div>
                           <StatusBadge status={doc.status} size="sm" />
+                          {doc.status === 'rejected' && (
+                            <ReplaceDocumentButton
+                              documentId={doc.id}
+                              documentCategory={doc.category || 'other'}
+                              loanId={id}
+                              documentOwner={doc.document_owner as 'primary' | 'co_borrower' | undefined}
+                              onSuccess={loadLoanData}
+                            />
+                          )}
                         </div>
                       ))}
                   </div>

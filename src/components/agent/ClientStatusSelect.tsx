@@ -8,17 +8,18 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
+import { useAuth } from '@/context/AuthContext';
 import logger from '@/lib/logger';
 
 export const CLIENT_STATUSES = [
-  { value: 'new', label: 'Nouveau', color: '#3B82F6' },
+  { value: 'nouveau', label: 'Nouveau', color: '#3B82F6' },
   { value: 'nrp', label: 'NRP', color: '#EF4444' },
-  { value: 'not_interested', label: 'Pas intéressé', color: '#6B7280' },
-  { value: 'pending', label: 'En attente', color: '#F59E0B' },
-  { value: 'callback', label: 'À rappeler', color: '#8B5CF6' },
-  { value: 'interested', label: 'Intéressé', color: '#10B981' },
-  { value: 'qualified', label: 'Qualifié', color: '#059669' },
-  { value: 'converted', label: 'Converti', color: '#22C55E' },
+  { value: 'pas_interesse', label: 'Pas intéressé', color: '#6B7280' },
+  { value: 'en_attente', label: 'En attente', color: '#F59E0B' },
+  { value: 'a_rappeler', label: 'À rappeler', color: '#8B5CF6' },
+  { value: 'interesse', label: 'Intéressé', color: '#10B981' },
+  { value: 'qualifie', label: 'Qualifié', color: '#059669' },
+  { value: 'converti', label: 'Converti', color: '#22C55E' },
 ] as const;
 
 export type ClientStatusValue = typeof CLIENT_STATUSES[number]['value'];
@@ -37,17 +38,35 @@ const ClientStatusSelect: React.FC<ClientStatusSelectProps> = ({
   size = 'default',
 }) => {
   const [updating, setUpdating] = useState(false);
+  const { user } = useAuth();
   const toast = useToast();
 
   const handleStatusChange = async (newStatus: string) => {
+    if (newStatus === currentStatus) return;
+    
     setUpdating(true);
     try {
+      // Update profile status
       const { error } = await supabase
         .from('profiles')
         .update({ pipeline_stage: newStatus })
         .eq('id', clientId);
 
       if (error) throw error;
+
+      // Log status change to history
+      const { error: historyError } = await supabase
+        .from('client_status_history')
+        .insert({
+          client_id: clientId,
+          old_status: currentStatus,
+          new_status: newStatus,
+          changed_by: user?.id || null,
+        });
+
+      if (historyError) {
+        logger.warn('Failed to log status history', { error: historyError.message });
+      }
 
       toast.success('Statut mis à jour');
       onStatusChange?.(newStatus);
@@ -63,7 +82,7 @@ const ClientStatusSelect: React.FC<ClientStatusSelectProps> = ({
 
   return (
     <Select
-      value={currentStatus || 'new'}
+      value={currentStatus || 'nouveau'}
       onValueChange={handleStatusChange}
       disabled={updating}
     >

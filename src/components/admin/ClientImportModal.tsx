@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Upload, AlertCircle, CheckCircle, Download } from 'lucide-react';
+import { X, Upload, AlertCircle, CheckCircle, Download, Mail } from 'lucide-react';
 import { adminApi, importsApi } from '../../services/api';
+import { emailService } from '../../services/emailService';
 import { useAuth } from '../../context/AuthContext';
 
 interface ClientImportModalProps {
@@ -138,7 +139,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
   const [importing, setImporting] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const [importMode, setImportMode] = useState<'direct' | 'pending'>('direct');
-  const [results, setResults] = useState<{ success: number; failed: number; errors: string[] }>({ success: 0, failed: 0, errors: [] });
+  const [sendWelcomeEmails, setSendWelcomeEmails] = useState(true);
+  const [results, setResults] = useState<{ success: number; failed: number; errors: string[]; emailsSent: number }>({ success: 0, failed: 0, errors: [], emailsSent: 0 });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -368,12 +370,29 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
       }
     } else {
       // Direct import
-      const importResults = { success: 0, failed: 0, errors: [] as string[] };
+      const importResults = { success: 0, failed: 0, errors: [] as string[], emailsSent: 0 };
+      const tempPassword = 'TempPass123!';
 
       for (const lead of parsedLeads) {
         try {
           await adminApi.createLead(lead);
           importResults.success++;
+          
+          // Send welcome email with credentials if enabled
+          if (sendWelcomeEmails && lead.email) {
+            try {
+              await emailService.sendAccountOpening(
+                lead.email,
+                lead.firstName,
+                tempPassword,
+                'https://pret-finom.co/login'
+              );
+              importResults.emailsSent++;
+            } catch (emailErr) {
+              console.warn('Email send failed for', lead.email, emailErr);
+              // Don't fail the import if email fails
+            }
+          }
         } catch (err: any) {
           importResults.failed++;
           importResults.errors.push(`${lead.email}: ${err.message || 'Erreur'}`);
@@ -396,7 +415,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
     setError(null);
     setFileName('');
     setImportMode('direct');
-    setResults({ success: 0, failed: 0, errors: [] });
+    setSendWelcomeEmails(true);
+    setResults({ success: 0, failed: 0, errors: [], emailsSent: 0 });
   };
 
   const handleClose = () => {
@@ -633,6 +653,37 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                 </tbody>
               </table>
             </div>
+            
+            {/* Email option for direct import */}
+            {importMode === 'direct' && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px',
+                backgroundColor: '#f0f9ff',
+                borderRadius: '8px',
+                marginBottom: '16px'
+              }}>
+                <input
+                  type="checkbox"
+                  id="sendWelcomeEmails"
+                  checked={sendWelcomeEmails}
+                  onChange={(e) => setSendWelcomeEmails(e.target.checked)}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+                <label htmlFor="sendWelcomeEmails" style={{ cursor: 'pointer', flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Mail size={18} color="#0369a1" />
+                    <strong style={{ color: '#0369a1', fontSize: '14px' }}>Envoyer les identifiants par email</strong>
+                  </div>
+                  <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 26px' }}>
+                    Chaque lead recevra un email avec son mot de passe temporaire (TempPass123!)
+                  </p>
+                </label>
+              </div>
+            )}
+            
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
               <button
                 onClick={resetModal}
@@ -665,7 +716,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                       ? 'Import en cours...'
                       : importMode === 'pending'
                         ? `Envoyer ${parsedLeads.length} leads pour validation`
-                        : `Importer ${parsedLeads.length} leads`}
+                        : `Importer ${parsedLeads.length} leads${sendWelcomeEmails ? ' + emails' : ''}`}
                   </button>
             </div>
           </div>
@@ -690,6 +741,12 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                 <div style={{ fontSize: '24px', fontWeight: 700, color: '#dc2626' }}>{results.failed}</div>
                 <div style={{ fontSize: '12px', color: '#64748b' }}>Échoués</div>
               </div>
+              {results.emailsSent > 0 && (
+                <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '24px', fontWeight: 700, color: '#0369a1' }}>{results.emailsSent}</div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>Emails envoyés</div>
+                </div>
+              )}
             </div>
             {results.errors.length > 0 && (
               <div style={{
