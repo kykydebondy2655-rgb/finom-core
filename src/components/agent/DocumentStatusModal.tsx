@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import { documentStatusUpdateSchema, DOCUMENT_STATUSES as VALID_STATUSES } from '@/lib/validations/statusSchemas';
 import { Clock, Inbox, Search, CheckCircle2, XCircle, FileText } from 'lucide-react';
 import '@/styles/components.css';
 
@@ -50,8 +51,15 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
   const handleSubmit = async () => {
     if (!document) return;
 
-    if (selectedStatus === 'rejected' && !rejectionReason.trim()) {
-      toast.error('Veuillez indiquer la raison du rejet');
+    // Validate status update using schema
+    const validationResult = documentStatusUpdateSchema.safeParse({
+      status: selectedStatus,
+      rejectionReason: rejectionReason
+    });
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      toast.error(firstError?.message || 'Données invalides');
       return;
     }
 

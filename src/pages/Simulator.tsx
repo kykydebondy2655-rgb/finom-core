@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
+import { loanApplicationSchema, coborrowerSchema } from '@/lib/validations/loanSchemas';
 import { FileText, Wallet, ShieldCheck, Calculator, CreditCard, PiggyBank, TrendingUp, Home } from 'lucide-react';
 
 interface FormData {
@@ -133,6 +134,34 @@ const Simulator = () => {
     if (!result || !result.isValid) {
       toast.error('Simulation invalide. Veuillez vérifier vos paramètres.');
       return;
+    }
+
+    // Validate loan application data
+    const validationResult = loanApplicationSchema.safeParse({
+      propertyPrice: formData.propertyPrice,
+      notaryFees: formData.notaryFees,
+      agencyFees: formData.agencyFees,
+      worksAmount: formData.worksAmount,
+      downPayment: formData.downPayment,
+      durationYears: formData.durationYears,
+      rate: formData.rate,
+      projectType: formData.projectType
+    });
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      toast.error(firstError?.message || 'Données de simulation invalides');
+      return;
+    }
+
+    // Validate coborrower data if present
+    if (hasCoborrower) {
+      const coborrowerValidation = coborrowerSchema.safeParse(coborrowerData);
+      if (!coborrowerValidation.success) {
+        const firstError = coborrowerValidation.error.errors[0];
+        toast.error(`Co-emprunteur: ${firstError?.message || 'Données invalides'}`);
+        return;
+      }
     }
 
     try {
