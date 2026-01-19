@@ -1,7 +1,535 @@
 /* ============================================
    FINOM DESIGN SYSTEM - Admin & Agent Pages
-   Version: 2.0
+   Version: 2.1
    ============================================ */
+
+/* ============= Client Import Modal ============= */
+.client-import-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.client-import-modal {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 1100px;
+  width: 95%;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.client-import-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.client-import-modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.client-import-modal-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.client-import-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #dc2626;
+}
+
+.client-import-error span {
+  font-size: 14px;
+}
+
+.client-import-instructions {
+  color: #64748b;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.client-import-template-banner {
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.client-import-template-banner span {
+  font-size: 13px;
+  color: #0369a1;
+}
+
+.client-import-template-link {
+  background-color: #0ea5e9;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.client-import-template-link:hover {
+  background-color: #0284c7;
+}
+
+.client-import-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+}
+
+.client-import-dropzone input {
+  display: none;
+}
+
+.client-import-upload-label {
+  background-color: #f97316;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.client-import-upload-label:hover {
+  background-color: #ea580c;
+}
+
+.client-import-dropzone p {
+  color: #94a3b8;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.client-import-preview-count {
+  color: #64748b;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+/* Skipped lines warning box */
+.client-import-skipped-box {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.client-import-skipped-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.client-import-skipped-header strong {
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.client-import-skipped-list {
+  max-height: 80px;
+  overflow: auto;
+}
+
+.client-import-skipped-list p {
+  font-size: 12px;
+  color: #b91c1c;
+  margin-bottom: 2px;
+}
+
+.client-import-skipped-list p.more {
+  font-style: italic;
+}
+
+/* Validation warnings box */
+.client-import-warnings-box {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.client-import-warnings-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.client-import-warnings-header strong {
+  font-size: 13px;
+  color: #d97706;
+}
+
+.client-import-warnings-list {
+  max-height: 80px;
+  overflow: auto;
+}
+
+.client-import-warnings-list p {
+  font-size: 12px;
+  color: #b45309;
+  margin-bottom: 2px;
+}
+
+.client-import-warnings-list p.more {
+  font-style: italic;
+}
+
+/* Preview table wrapper */
+.client-import-table-wrapper {
+  max-height: 400px;
+  overflow: auto;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.client-import-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 900px;
+}
+
+.client-import-table thead tr {
+  background-color: #f8fafc;
+  position: sticky;
+  top: 0;
+}
+
+.client-import-table th {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.client-import-table th.right {
+  text-align: right;
+}
+
+.client-import-table td {
+  padding: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.client-import-table td.right {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.client-import-table td.line-num {
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.client-import-table td.email {
+  word-break: break-all;
+}
+
+.client-import-table td.nowrap {
+  white-space: nowrap;
+}
+
+.client-import-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.client-import-table tbody tr.has-warnings {
+  background-color: #fffbeb;
+}
+
+.client-import-warning-icon {
+  margin-left: 4px;
+  color: #d97706;
+}
+
+/* Email checkbox option */
+.client-import-email-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #f0f9ff;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.client-import-email-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.client-import-email-option label {
+  cursor: pointer;
+  flex: 1;
+}
+
+.client-import-email-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.client-import-email-title strong {
+  color: #0369a1;
+  font-size: 14px;
+}
+
+.client-import-email-option label p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 4px 0 0 26px;
+}
+
+/* Action buttons row */
+.client-import-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.client-import-btn-cancel {
+  padding: 10px 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.client-import-btn-cancel:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.client-import-btn-submit {
+  padding: 10px 20px;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.client-import-btn-submit:hover:not(:disabled) {
+  background-color: #ea580c;
+}
+
+.client-import-btn-submit:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Result step */
+.client-import-result {
+  text-align: center;
+}
+
+.client-import-result-icon {
+  margin: 0 auto 12px;
+}
+
+.client-import-result h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.client-import-result-stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.client-import-stat-success {
+  text-align: center;
+  padding: 16px;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+}
+
+.client-import-stat-success .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #22c55e;
+  display: block;
+}
+
+.client-import-stat-success .label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.client-import-stat-failed {
+  text-align: center;
+  padding: 16px;
+  background-color: #fef2f2;
+  border-radius: 8px;
+}
+
+.client-import-stat-failed .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #dc2626;
+  display: block;
+}
+
+.client-import-stat-failed .label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.client-import-stat-emails {
+  text-align: center;
+  padding: 16px;
+  background-color: #f0f9ff;
+  border-radius: 8px;
+}
+
+.client-import-stat-emails .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0369a1;
+  display: block;
+}
+
+.client-import-stat-emails .label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.client-import-errors-box {
+  background-color: #fef2f2;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  max-height: 150px;
+  overflow: auto;
+  text-align: left;
+}
+
+.client-import-errors-box p.title {
+  font-weight: 600;
+  color: #dc2626;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.client-import-errors-box p.error {
+  font-size: 12px;
+  color: #b91c1c;
+  margin-bottom: 4px;
+}
+
+.client-import-errors-box p.more {
+  font-size: 12px;
+  color: #b91c1c;
+  font-style: italic;
+}
+
+.client-import-btn-close {
+  width: 100%;
+  padding: 12px;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.client-import-btn-close:hover {
+  background-color: #ea580c;
+}
+
+/* Dark mode support */
+.dark .client-import-modal {
+  background-color: #1e293b;
+}
+
+.dark .client-import-modal-header h2 {
+  color: #f1f5f9;
+}
+
+.dark .client-import-instructions {
+  color: #94a3b8;
+}
+
+.dark .client-import-dropzone {
+  border-color: #475569;
+}
+
+.dark .client-import-table thead tr {
+  background-color: #334155;
+}
+
+.dark .client-import-table th {
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .client-import-table td {
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.dark .client-import-table tbody tr:nth-child(even) {
+  background-color: #334155;
+}
+
+.dark .client-import-btn-cancel {
+  background-color: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .client-import-btn-cancel:hover {
+  background-color: #475569;
+}
 
 /* ============= Common Variables ============= */
 :root {

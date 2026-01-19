@@ -84,9 +84,6 @@ const formatDownPayment = (value: string | undefined): string | undefined => {
   return numericValue !== undefined ? numericValue.toString() : undefined;
 };
 
-// Note: Validation functions imported from @/lib/validators
-// isValidEmail and parseAndValidatePhone are used instead of local definitions
-
 interface ValidationWarning {
   line: number;
   field: string;
@@ -398,156 +395,72 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 50
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '24px',
-        maxWidth: '1100px',
-        width: '95%',
-        maxHeight: '90vh',
-        overflow: 'auto'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#1e293b' }}>Import de leads CSV</h2>
-          <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+    <div className="client-import-modal-overlay">
+      <div className="client-import-modal">
+        <div className="client-import-modal-header">
+          <h2>Import de leads CSV</h2>
+          <button onClick={handleClose}>
             <X size={20} />
           </button>
         </div>
 
         {error && (
-          <div style={{
-            backgroundColor: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '8px',
-            padding: '12px',
-            marginBottom: '16px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '8px',
-            color: '#dc2626'
-          }}>
+          <div className="client-import-error">
             <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
-            <span style={{ fontSize: '14px' }}>{error}</span>
+            <span>{error}</span>
           </div>
         )}
 
         {step === 'upload' && (
           <div>
-            <p style={{ color: '#64748b', marginBottom: '16px', fontSize: '14px' }}>
+            <p className="client-import-instructions">
               Téléchargez un fichier CSV avec les colonnes: <strong>email, prénom, nom</strong><br />
               Colonnes optionnelles: téléphone, prix du bien, apport, type d'achat, source, pipeline
             </p>
             
-            <div style={{
-              backgroundColor: '#f0f9ff',
-              border: '1px solid #bae6fd',
-              borderRadius: '8px',
-              padding: '12px 16px',
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <span style={{ fontSize: '13px', color: '#0369a1' }}>
-                📄 Besoin d'un modèle ? Téléchargez notre fichier exemple
-              </span>
-              <a
-                href="/templates/leads-template.csv"
-                download="leads-template.csv"
-                style={{
-                  backgroundColor: '#0ea5e9',
-                  color: 'white',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}
-              >
+            <div className="client-import-template-banner">
+              <span>📄 Besoin d'un modèle ? Téléchargez notre fichier exemple</span>
+              <a href="/templates/leads-template.csv" download="leads-template.csv" className="client-import-template-link">
                 <Download size={14} />
                 Télécharger le modèle
               </a>
             </div>
             
-            <div style={{
-              border: '2px dashed #cbd5e1',
-              borderRadius: '8px',
-              padding: '40px',
-              textAlign: 'center'
-            }}>
-              <Upload size={48} color="#94a3b8" style={{ margin: '0 auto 16px' }} />
+            <div className="client-import-dropzone">
+              <Upload size={48} color="#94a3b8" style={{ margin: '0 auto 16px', display: 'block' }} />
               <input
                 type="file"
                 accept=".csv"
                 onChange={handleFileChange}
-                style={{ display: 'none' }}
                 id="csv-upload"
               />
-              <label
-                htmlFor="csv-upload"
-                style={{
-                  backgroundColor: '#f97316',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  display: 'inline-block',
-                  fontSize: '14px',
-                  fontWeight: 500
-                }}
-              >
+              <label htmlFor="csv-upload" className="client-import-upload-label">
                 Sélectionner un fichier CSV
               </label>
-              <p style={{ color: '#94a3b8', marginTop: '12px', fontSize: '12px' }}>
-                Formats supportés: virgule (,) ou point-virgule (;) comme séparateur
-              </p>
+              <p>Formats supportés: virgule (,) ou point-virgule (;) comme séparateur</p>
             </div>
           </div>
         )}
 
         {step === 'preview' && (
           <div>
-            <p style={{ color: '#64748b', marginBottom: '16px', fontSize: '14px' }}>
+            <p className="client-import-preview-count">
               <strong>{parsedLeads.length}</strong> leads prêts à être importés
             </p>
             
             {/* Skipped lines warning */}
             {skippedLines.length > 0 && (
-              <div style={{
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
-                borderRadius: '8px',
-                padding: '12px',
-                marginBottom: '16px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div className="client-import-skipped-box">
+                <div className="client-import-skipped-header">
                   <AlertCircle size={16} color="#dc2626" />
-                  <strong style={{ fontSize: '13px', color: '#dc2626' }}>
-                    {skippedLines.length} ligne(s) ignorée(s)
-                  </strong>
+                  <strong>{skippedLines.length} ligne(s) ignorée(s)</strong>
                 </div>
-                <div style={{ maxHeight: '80px', overflow: 'auto' }}>
+                <div className="client-import-skipped-list">
                   {skippedLines.slice(0, 5).map((skip, idx) => (
-                    <p key={idx} style={{ fontSize: '12px', color: '#b91c1c', marginBottom: '2px' }}>
-                      • Ligne {skip.line}: {skip.reason}
-                    </p>
+                    <p key={idx}>• Ligne {skip.line}: {skip.reason}</p>
                   ))}
                   {skippedLines.length > 5 && (
-                    <p style={{ fontSize: '12px', color: '#b91c1c', fontStyle: 'italic' }}>
-                      ... et {skippedLines.length - 5} autres
-                    </p>
+                    <p className="more">... et {skippedLines.length - 5} autres</p>
                   )}
                 </div>
               </div>
@@ -555,70 +468,61 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             
             {/* Validation warnings */}
             {validationWarnings.length > 0 && (
-              <div style={{
-                backgroundColor: '#fffbeb',
-                border: '1px solid #fde68a',
-                borderRadius: '8px',
-                padding: '12px',
-                marginBottom: '16px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div className="client-import-warnings-box">
+                <div className="client-import-warnings-header">
                   <AlertCircle size={16} color="#d97706" />
-                  <strong style={{ fontSize: '13px', color: '#d97706' }}>
-                    {validationWarnings.length} avertissement(s)
-                  </strong>
+                  <strong>{validationWarnings.length} avertissement(s)</strong>
                 </div>
-                <div style={{ maxHeight: '80px', overflow: 'auto' }}>
+                <div className="client-import-warnings-list">
                   {validationWarnings.slice(0, 5).map((warn, idx) => (
-                    <p key={idx} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>
-                      • Ligne {warn.line} - {warn.field}: {warn.message} {warn.value && `("${warn.value}")`}
-                    </p>
+                    <p key={idx}>• Ligne {warn.line} - {warn.field}: {warn.message} {warn.value && `("${warn.value}")`}</p>
                   ))}
                   {validationWarnings.length > 5 && (
-                    <p style={{ fontSize: '12px', color: '#b45309', fontStyle: 'italic' }}>
-                      ... et {validationWarnings.length - 5} autres
-                    </p>
+                    <p className="more">... et {validationWarnings.length - 5} autres</p>
                   )}
                 </div>
               </div>
             )}
             
-            <div style={{ maxHeight: '400px', overflow: 'auto', marginBottom: '16px', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', minWidth: '900px' }}>
+            <div className="client-import-table-wrapper">
+              <table className="client-import-table">
                 <thead>
-                  <tr style={{ backgroundColor: '#f8fafc', position: 'sticky', top: 0 }}>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, whiteSpace: 'nowrap' }}>#</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '180px' }}>Email</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '120px' }}>Prénom</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '120px' }}>Nom</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '120px' }}>Téléphone</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'right', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '100px' }}>Prix bien</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'right', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '100px' }}>Apport</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '100px' }}>Type</th>
-                    <th style={{ padding: '10px 8px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontWeight: 600, minWidth: '80px' }}>Source</th>
+                  <tr>
+                    <th>#</th>
+                    <th style={{ minWidth: '180px' }}>Email</th>
+                    <th style={{ minWidth: '120px' }}>Prénom</th>
+                    <th style={{ minWidth: '120px' }}>Nom</th>
+                    <th style={{ minWidth: '120px' }}>Téléphone</th>
+                    <th className="right" style={{ minWidth: '100px' }}>Prix bien</th>
+                    <th className="right" style={{ minWidth: '100px' }}>Apport</th>
+                    <th style={{ minWidth: '100px' }}>Type</th>
+                    <th style={{ minWidth: '80px' }}>Source</th>
                   </tr>
                 </thead>
                 <tbody>
                   {parsedLeads.map((lead, idx) => (
-                    <tr key={idx} style={{ backgroundColor: lead.warnings.length > 0 ? '#fffbeb' : idx % 2 === 0 ? '#fff' : '#f8fafc' }}>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', color: '#64748b', whiteSpace: 'nowrap' }}>
+                    <tr key={idx} className={lead.warnings.length > 0 ? 'has-warnings' : ''}>
+                      <td className="line-num">
                         {lead.lineNumber}
                         {lead.warnings.length > 0 && (
-                          <span title={lead.warnings.map(w => `${w.field}: ${w.message}`).join('\n')} style={{ marginLeft: '4px', color: '#d97706' }}>⚠</span>
+                          <span 
+                            title={lead.warnings.map(w => `${w.field}: ${w.message}`).join('\n')} 
+                            className="client-import-warning-icon"
+                          >⚠</span>
                         )}
                       </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', wordBreak: 'break-all' }}>{lead.email}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.firstName}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.lastName}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{lead.phone || '-'}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <td className="email">{lead.email}</td>
+                      <td>{lead.firstName}</td>
+                      <td>{lead.lastName}</td>
+                      <td className="nowrap">{lead.phone || '-'}</td>
+                      <td className="right">
                         {lead.propertyPrice ? `${lead.propertyPrice.toLocaleString('fr-FR')} €` : '-'}
                       </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <td className="right">
                         {lead.downPayment ? `${parseFloat(lead.downPayment).toLocaleString('fr-FR')} €` : '-'}
                       </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.purchaseType || '-'}</td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{lead.source || '-'}</td>
+                      <td>{lead.purchaseType || '-'}</td>
+                      <td>{lead.source || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -627,132 +531,80 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             
             {/* Email option for direct import */}
             {importMode === 'direct' && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '16px',
-                backgroundColor: '#f0f9ff',
-                borderRadius: '8px',
-                marginBottom: '16px'
-              }}>
+              <div className="client-import-email-option">
                 <input
                   type="checkbox"
                   id="sendWelcomeEmails"
                   checked={sendWelcomeEmails}
                   onChange={(e) => setSendWelcomeEmails(e.target.checked)}
-                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                 />
-                <label htmlFor="sendWelcomeEmails" style={{ cursor: 'pointer', flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <label htmlFor="sendWelcomeEmails">
+                  <div className="client-import-email-title">
                     <Mail size={18} color="#0369a1" />
-                    <strong style={{ color: '#0369a1', fontSize: '14px' }}>Envoyer les identifiants par email</strong>
+                    <strong>Envoyer les identifiants par email</strong>
                   </div>
-                  <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 26px' }}>
-                    Chaque lead recevra un email avec son mot de passe temporaire (TempPass123!)
-                  </p>
+                  <p>Chaque lead recevra un email avec son mot de passe temporaire (TempPass123!)</p>
                 </label>
               </div>
             )}
             
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={resetModal}
-                style={{
-                  padding: '10px 20px',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '8px',
-                  backgroundColor: 'white',
-                  cursor: 'pointer',
-                  fontSize: '14px'
-                }}
-              >
+            <div className="client-import-actions">
+              <button onClick={resetModal} className="client-import-btn-cancel">
                 Annuler
               </button>
               <button
                 onClick={handleImport}
                 disabled={importing}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: importing ? '#94a3b8' : '#f97316',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: importing ? 'not-allowed' : 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 500
-                }}
-                  >
-                    {importing
-                      ? 'Import en cours...'
-                      : importMode === 'pending'
-                        ? `Envoyer ${parsedLeads.length} leads pour validation`
-                        : `Importer ${parsedLeads.length} leads${sendWelcomeEmails ? ' + emails' : ''}`}
-                  </button>
+                className="client-import-btn-submit"
+              >
+                {importing
+                  ? 'Import en cours...'
+                  : importMode === 'pending'
+                    ? `Envoyer ${parsedLeads.length} leads pour validation`
+                    : `Importer ${parsedLeads.length} leads${sendWelcomeEmails ? ' + emails' : ''}`}
+              </button>
             </div>
           </div>
         )}
 
         {step === 'result' && (
-          <div>
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <div className="client-import-result">
+            <div className="client-import-result-icon">
               {results.success > 0 ? (
-                <CheckCircle size={48} color="#22c55e" style={{ margin: '0 auto 12px' }} />
+                <CheckCircle size={48} color="#22c55e" />
               ) : (
-                <AlertCircle size={48} color="#dc2626" style={{ margin: '0 auto 12px' }} />
+                <AlertCircle size={48} color="#dc2626" />
               )}
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1e293b' }}>Import terminé</h3>
             </div>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '20px' }}>
-              <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#f0fdf4', borderRadius: '8px' }}>
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#22c55e' }}>{results.success}</div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>Réussis</div>
+            <h3>Import terminé</h3>
+            <div className="client-import-result-stats">
+              <div className="client-import-stat-success">
+                <span className="value">{results.success}</span>
+                <span className="label">Réussis</span>
               </div>
-              <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#fef2f2', borderRadius: '8px' }}>
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#dc2626' }}>{results.failed}</div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>Échoués</div>
+              <div className="client-import-stat-failed">
+                <span className="value">{results.failed}</span>
+                <span className="label">Échoués</span>
               </div>
               {results.emailsSent > 0 && (
-                <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '24px', fontWeight: 700, color: '#0369a1' }}>{results.emailsSent}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>Emails envoyés</div>
+                <div className="client-import-stat-emails">
+                  <span className="value">{results.emailsSent}</span>
+                  <span className="label">Emails envoyés</span>
                 </div>
               )}
             </div>
             {results.errors.length > 0 && (
-              <div style={{
-                backgroundColor: '#fef2f2',
-                borderRadius: '8px',
-                padding: '12px',
-                marginBottom: '16px',
-                maxHeight: '150px',
-                overflow: 'auto'
-              }}>
-                <p style={{ fontWeight: 600, color: '#dc2626', fontSize: '13px', marginBottom: '8px' }}>Détails des erreurs:</p>
+              <div className="client-import-errors-box">
+                <p className="title">Détails des erreurs:</p>
                 {results.errors.slice(0, 10).map((err, idx) => (
-                  <p key={idx} style={{ fontSize: '12px', color: '#b91c1c', marginBottom: '4px' }}>• {err}</p>
+                  <p key={idx} className="error">• {err}</p>
                 ))}
                 {results.errors.length > 10 && (
-                  <p style={{ fontSize: '12px', color: '#b91c1c', fontStyle: 'italic' }}>
-                    ... et {results.errors.length - 10} autres erreurs
-                  </p>
+                  <p className="more">... et {results.errors.length - 10} autres erreurs</p>
                 )}
               </div>
             )}
-            <button
-              onClick={handleClose}
-              style={{
-                width: '100%',
-                padding: '12px',
-                backgroundColor: '#f97316',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 500
-              }}
-            >
+            <button onClick={handleClose} className="client-import-btn-close">
               Fermer
             </button>
           </div>
