@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   motion, 
@@ -5,6 +6,7 @@ import {
   scaleIn,
   staggerContainer
 } from '@/components/animations';
+import { useScroll, useTransform } from 'framer-motion';
 import { 
   BarChart3, 
   Percent, 
@@ -31,12 +33,23 @@ const staggerHome = {
 };
 
 const Home = () => {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  
+  // Parallax transforms
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
+  const imageOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.6]);
+
   return (
     <>
       <Header />
       <div className="home-page">
         {/* Hero Section */}
-        <section className="hero">
+        <section className="hero" ref={heroRef}>
           <div className="container hero-container">
             <motion.div 
               className="hero-content"
@@ -105,9 +118,11 @@ const Home = () => {
             </motion.div>
             <motion.div 
               className="hero-image"
-              initial={{ opacity: 0, x: 50, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
+              style={{ 
+                y: imageY, 
+                scale: imageScale,
+                opacity: imageOpacity 
+              }}
             >
               <img src={heroImage} alt="Financement immobilier FINOM" />
             </motion.div>
