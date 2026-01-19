@@ -9,7 +9,7 @@ import { useToast } from '@/components/finom/Toast';
 import { logger } from '@/lib/logger';
 import { isStrongPassword } from '@/lib/validators';
 import { useExportProfile } from '@/hooks/useExportProfile';
-import { User, Lock, BarChart3, Download, LogOut } from 'lucide-react';
+import { User, Lock, BarChart3, Download, LogOut, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 const Profile = () => {
     const { user, logout } = useAuth();
@@ -223,7 +223,7 @@ const Profile = () => {
 
                             {saved && (
                                 <div className="success-message">
-                                    ✅ Vos modifications ont été enregistrées avec succès !
+                                    <CheckCircle2 size={18} className="success-icon-inline" /> Vos modifications ont été enregistrées avec succès !
                                 </div>
                             )}
 
@@ -373,7 +373,7 @@ const Profile = () => {
                                 {passwordErrors.length > 0 && (
                                     <div className="password-errors">
                                         {passwordErrors.map((err, i) => (
-                                            <p key={i} className="error-text">⚠️ {err}</p>
+                                            <p key={i} className="error-text"><AlertTriangle size={14} /> {err}</p>
                                         ))}
                                     </div>
                                 )}

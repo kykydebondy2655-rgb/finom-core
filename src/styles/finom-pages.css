@@ -190,6 +190,9 @@
 }
 
 .auth-trust-finom .trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: white;
   padding: 0.5rem 0.875rem;
   border-radius: 2rem;
@@ -197,6 +200,11 @@
   font-weight: 500;
   color: hsl(var(--muted-foreground));
   border: 1px solid hsl(var(--border));
+}
+
+.auth-trust-finom .trust-icon {
+  color: hsl(var(--accent));
+  flex-shrink: 0;
 }
 
 .terms-notice {

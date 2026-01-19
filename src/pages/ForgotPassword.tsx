@@ -5,6 +5,7 @@ import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/validations/
 import { logger } from '@/lib/logger';
 import Button from '@/components/finom/Button';
 import { emailService } from '@/services/emailService';
+import { CheckCircle2 } from 'lucide-react';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -83,7 +84,7 @@ const ForgotPassword = () => {
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-card auth-card-centered">
-            <div className="success-icon">✓</div>
+            <div className="success-icon"><CheckCircle2 size={32} /></div>
             <h1 className="auth-title">Email envoyé !</h1>
             <p className="auth-subtitle">
               Si un compte existe avec cette adresse email, vous recevrez un lien pour réinitialiser votre mot de passe.

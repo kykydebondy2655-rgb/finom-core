@@ -208,7 +208,7 @@ const Simulator = () => {
       user_id: admin.user_id,
       type: 'new_loan',
       category: 'loan',
-      title: '📋 Nouvelle demande de prêt',
+      title: 'Nouvelle demande de prêt',
       message: `${clientName} a soumis une demande de ${amount.toLocaleString('fr-FR')} €`,
       related_entity: 'loan_applications',
       related_id: loanId
