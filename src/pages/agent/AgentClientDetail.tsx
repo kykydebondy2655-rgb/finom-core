@@ -20,6 +20,7 @@ import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 
 const AgentClientDetail: React.FC = () => {
@@ -130,21 +131,21 @@ const AgentClientDetail: React.FC = () => {
           {/* Quick Actions */}
           <div className="quick-actions fade-in">
             <Button variant="primary" onClick={() => window.location.href = `tel:${client.phone || ''}`} disabled={!client.phone}>
-              📞 Appeler
+              <Phone size={16} className="mr-1" /> Appeler
             </Button>
             <Button 
               variant="secondary" 
               onClick={() => window.location.href = `mailto:${client.email || ''}`}
               disabled={!client.email}
             >
-              📧 Email
+              <Mail size={16} className="mr-1" /> Email
             </Button>
             <Button 
               variant="secondary" 
               onClick={() => setShowAccountEmailModal(true)}
               disabled={!client.email}
             >
-              🔐 Envoyer identifiants
+              <KeyRound size={16} className="mr-1" /> Envoyer identifiants
             </Button>
             <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Rappel</Button>
             {isAdmin && (
@@ -152,7 +153,7 @@ const AgentClientDetail: React.FC = () => {
                 variant="danger" 
                 onClick={() => setShowDeleteModal(true)}
               >
-                🗑️ Supprimer
+                <Trash2 size={16} className="mr-1" /> Supprimer
               </Button>
             )}
           </div>
@@ -199,9 +200,9 @@ const AgentClientDetail: React.FC = () => {
                 <div className="bank-card-wrapper">
                   <Card className="bank-card fade-in" padding="lg">
                     <div className="bank-header">
-                      <h3>💳 Compte bancaire</h3>
+                      <h3><CreditCard size={18} className="inline mr-2" />Compte bancaire</h3>
                       <Button variant="primary" size="sm" onClick={() => setShowBankModal(true)}>
-                        ✏️ Modifier
+                        <Pencil size={14} className="mr-1" /> Modifier
                       </Button>
                     </div>
                     <div className="info-grid">
@@ -218,7 +219,7 @@ const AgentClientDetail: React.FC = () => {
                         <strong>{bankAccount?.bic || '-'}</strong>
                       </div>
                     </div>
-                    <p className="admin-notice">⚠️ Seul un administrateur peut modifier ces informations</p>
+                    <p className="admin-notice"><AlertTriangle size={14} className="inline mr-1" />Seul un administrateur peut modifier ces informations</p>
                   </Card>
                 </div>
               )}
@@ -250,7 +251,7 @@ const AgentClientDetail: React.FC = () => {
                           }}
                           title="Modifier le statut"
                         >
-                          ✏️
+                          <Pencil size={14} />
                         </button>
                       </div>
                     </div>
@@ -263,14 +264,14 @@ const AgentClientDetail: React.FC = () => {
           {activeTab === 'documents' && (
             <Card className="docs-card fade-in" padding="lg">
               <div className="docs-header">
-                <h3>📤 Documents du client</h3>
+                <h3><Upload size={18} className="inline mr-2" />Documents du client</h3>
                 {isAdmin && client && (
                   <Button 
                     variant="primary" 
                     size="sm"
                     onClick={() => setShowAdminUploadModal(true)}
                   >
-                    📥 Envoyer un document
+                    <Download size={14} className="mr-1" /> Envoyer un document
                   </Button>
                 )}
               </div>
@@ -280,7 +281,7 @@ const AgentClientDetail: React.FC = () => {
                 <div className="docs-list">
                   {documents.filter(d => (d as any).direction !== 'incoming').map(doc => (
                     <div key={doc.id} className="doc-item">
-                      <span className="doc-icon">📄</span>
+                      <span className="doc-icon"><FileText size={16} /></span>
                       <div className="doc-info">
                         <span className="doc-name">{doc.file_name}</span>
                         <span className="doc-meta">{doc.category} • {formatDate(doc.uploaded_at)}</span>
@@ -295,7 +296,7 @@ const AgentClientDetail: React.FC = () => {
                         }}
                         title="Modifier le statut"
                       >
-                        ✏️
+                        <Pencil size={14} />
                       </button>
                       <button 
                         className="download-btn"
@@ -319,7 +320,7 @@ const AgentClientDetail: React.FC = () => {
                         }}
                         title="Télécharger"
                       >
-                        ⬇️
+                        <Download size={14} />
                       </button>
                     </div>
                   ))}
@@ -329,11 +330,11 @@ const AgentClientDetail: React.FC = () => {
               {/* Documents envoyés au client */}
               {documents.filter(d => (d as any).direction === 'incoming').length > 0 && (
                 <div className="sent-docs-section">
-                  <h4>📥 Documents envoyés au client</h4>
+                  <h4><Download size={16} className="inline mr-2" />Documents envoyés au client</h4>
                   <div className="docs-list">
                     {documents.filter(d => (d as any).direction === 'incoming').map(doc => (
                       <div key={doc.id} className="doc-item sent">
-                        <span className="doc-icon">📋</span>
+                        <span className="doc-icon"><ClipboardList size={16} /></span>
                         <div className="doc-info">
                           <span className="doc-name">{doc.file_name}</span>
                           <span className="doc-meta">
@@ -358,7 +359,7 @@ const AgentClientDetail: React.FC = () => {
                           }}
                           title="Télécharger"
                         >
-                          ⬇️
+                          <Download size={14} />
                         </button>
                       </div>
                     ))}

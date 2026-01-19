@@ -14,6 +14,7 @@ import { useToast } from '@/components/finom/Toast';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import logger from '@/lib/logger';
+import { Phone, CalendarDays, Check } from 'lucide-react';
 
 interface CreateCallbackModalProps {
   isOpen: boolean;
@@ -150,7 +151,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            📞 Planifier un rappel
+            <Phone size={20} /> Planifier un rappel
           </DialogTitle>
           <DialogDescription className="sr-only">
             Planifiez un rappel avec une date, une heure, un motif et des notes.
@@ -197,8 +198,8 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
                 className="mx-auto"
               />
               {selectedDate && (
-                <div className="mt-2 text-center text-sm font-medium text-primary">
-                  📅 {format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })}
+                <div className="mt-2 text-center text-sm font-medium text-primary flex items-center justify-center gap-1">
+                  <CalendarDays size={14} /> {format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })}
                 </div>
               )}
             </div>
@@ -250,7 +251,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
               type="submit" 
               disabled={loading || !selectedClient || !selectedDate || !scheduledTime}
             >
-              {loading ? 'Création...' : '✓ Planifier le rappel'}
+              {loading ? 'Création...' : <><Check size={16} className="mr-1" /> Planifier le rappel</>}
             </Button>
           </div>
         </form>

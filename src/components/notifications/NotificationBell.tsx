@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { formatDateTime } from '@/services/api';
+import { Bell, FileText, MessageCircle, Phone, ClipboardList } from 'lucide-react';
 import '@/styles/NotificationBell.css';
 
 const NotificationBell: React.FC = () => {
@@ -51,13 +52,14 @@ const NotificationBell: React.FC = () => {
     }
   };
 
-  const getCategoryIcon = (category: string): string => {
+  const getCategoryIcon = (category: string): React.ReactNode => {
+    const iconProps = { size: 16, className: 'notif-category-icon' };
     switch (category) {
-      case 'loan': return '📋';
-      case 'document': return '📄';
-      case 'message': return '💬';
-      case 'callback': return '📞';
-      default: return '🔔';
+      case 'loan': return <ClipboardList {...iconProps} />;
+      case 'document': return <FileText {...iconProps} />;
+      case 'message': return <MessageCircle {...iconProps} />;
+      case 'callback': return <Phone {...iconProps} />;
+      default: return <Bell {...iconProps} />;
     }
   };
 
@@ -68,7 +70,7 @@ const NotificationBell: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} non lues)` : ''}`}
       >
-        <span className="bell-icon">🔔</span>
+        <Bell size={20} className="bell-icon" />
         {unreadCount > 0 && (
           <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
         )}

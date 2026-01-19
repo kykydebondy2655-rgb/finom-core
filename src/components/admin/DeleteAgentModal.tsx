@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from '@/components/finom/Button';
 import { adminApi, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+import { AlertTriangle } from 'lucide-react';
 
 interface DeleteAgentModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ const DeleteAgentModal: React.FC<DeleteAgentModalProps> = ({
         </div>
 
         <div className="modal-body centered">
-          <div className="warning-icon">⚠️</div>
+          <div className="warning-icon"><AlertTriangle size={32} className="text-amber-500" /></div>
           <p className="warning-text">
             Cette action est irréversible.
           </p>

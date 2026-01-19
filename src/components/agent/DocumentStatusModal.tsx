@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import { Clock, Inbox, Search, CheckCircle2, XCircle, FileText } from 'lucide-react';
 import '@/styles/components.css';
 
 interface DocumentStatusModalProps {
@@ -21,11 +22,11 @@ interface DocumentStatusModalProps {
 }
 
 const DOCUMENT_STATUSES = [
-  { value: 'pending', label: 'En attente', color: '#f59e0b', icon: '⏳' },
-  { value: 'received', label: 'Reçu', color: '#3b82f6', icon: '📥' },
-  { value: 'under_review', label: 'En analyse', color: '#8b5cf6', icon: '🔍' },
-  { value: 'validated', label: 'Validé', color: '#10b981', icon: '✅' },
-  { value: 'rejected', label: 'Rejeté', color: '#ef4444', icon: '❌' },
+  { value: 'pending', label: 'En attente', color: '#f59e0b', Icon: Clock },
+  { value: 'received', label: 'Reçu', color: '#3b82f6', Icon: Inbox },
+  { value: 'under_review', label: 'En analyse', color: '#8b5cf6', Icon: Search },
+  { value: 'validated', label: 'Validé', color: '#10b981', Icon: CheckCircle2 },
+  { value: 'rejected', label: 'Rejeté', color: '#ef4444', Icon: XCircle },
 ];
 
 const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
@@ -139,7 +140,7 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
       <DialogContent className="sm:max-w-[450px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl document-status-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            📄 Statuer sur le document
+            <FileText size={20} /> Statuer sur le document
           </DialogTitle>
           <DialogDescription>
             {document.file_name}
@@ -160,7 +161,7 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
                     '--status-color': status.color,
                   } as React.CSSProperties}
                 >
-                  <span className="status-icon">{status.icon}</span>
+                  <span className="status-icon"><status.Icon size={16} /></span>
                   <span className="status-label">{status.label}</span>
                 </button>
               ))}

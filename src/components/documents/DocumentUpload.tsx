@@ -7,6 +7,7 @@ import Button from '@/components/finom/Button';
 import { storageService } from '@/services/storageService';
 import { documentsApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import { FileText, CheckCircle2 } from 'lucide-react';
 
 // Document types for the checklist matching
 const DOCUMENT_TYPES = [
@@ -241,12 +242,12 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
               <div className="progress-fill" style={{ width: `${progress}%` }} />
             </div>
             <span className="progress-text">
-              {progress < 100 ? 'Envoi en cours...' : '✓ Terminé !'}
+              {progress < 100 ? 'Envoi en cours...' : <><CheckCircle2 size={14} className="inline mr-1" /> Terminé !</>}
             </span>
           </div>
         ) : (
           <>
-            <div className="upload-icon">📄</div>
+            <div className="upload-icon"><FileText size={32} /></div>
             <p className="upload-text">
               {showTypeSelector && !selectedType ? (
                 <>Sélectionnez d'abord le type de document</>

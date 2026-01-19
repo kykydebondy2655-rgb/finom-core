@@ -9,6 +9,7 @@ import { useToast } from '@/components/finom/Toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import logger from '@/lib/logger';
+import { Upload, Paperclip } from 'lucide-react';
 
 interface AdminDocumentUploadModalProps {
   isOpen: boolean;
@@ -163,7 +164,7 @@ const AdminDocumentUploadModal: React.FC<AdminDocumentUploadModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>📤 Envoyer un document au client</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Upload size={20} /> Envoyer un document au client</DialogTitle>
           <DialogDescription>
             Ce document sera disponible dans l'espace client de <strong>{clientName}</strong>
           </DialogDescription>
@@ -184,7 +185,7 @@ const AdminDocumentUploadModal: React.FC<AdminDocumentUploadModalProps> = ({
             />
             {file && (
               <span className="file-info">
-                📎 {file.name} ({(file.size / 1024 / 1024).toFixed(2)} Mo)
+                <Paperclip size={14} className="inline mr-1" /> {file.name} ({(file.size / 1024 / 1024).toFixed(2)} Mo)
               </span>
             )}
           </div>
@@ -257,7 +258,7 @@ const AdminDocumentUploadModal: React.FC<AdminDocumentUploadModalProps> = ({
               variant="primary"
               disabled={uploading || !file || !fileName.trim() || !motif.trim()}
             >
-              {uploading ? 'Envoi en cours...' : '📤 Envoyer au client'}
+              {uploading ? 'Envoi en cours...' : <><Upload size={16} className="mr-1" /> Envoyer au client</>}
             </Button>
           </div>
         </form>
