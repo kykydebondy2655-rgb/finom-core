@@ -12,6 +12,7 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
   under_review: { label: 'En analyse', color: '#1E40AF', bg: '#DBEAFE' }, // Alias
   documents_required: { label: 'Documents requis', color: '#7C3AED', bg: '#EDE9FE' },
   processing: { label: 'En traitement', color: '#0891B2', bg: '#CFFAFE' },
+  offer_issued: { label: 'Offre émise', color: '#C2410C', bg: '#FFEDD5' }, // 10-day reflection period
   approved: { label: 'Approuvé', color: '#065F46', bg: '#D1FAE5' },
   rejected: { label: 'Refusé', color: '#991B1B', bg: '#FEE2E2' },
   funded: { label: 'Financé', color: '#065F46', bg: '#D1FAE5' },
@@ -20,6 +21,7 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
   // Document statuses
   received: { label: 'Reçu', color: '#1E40AF', bg: '#DBEAFE' },
   validated: { label: 'Validé', color: '#065F46', bg: '#D1FAE5' },
+  expired: { label: 'Expiré', color: '#991B1B', bg: '#FEE2E2' },
   // General statuses
   active: { label: 'Actif', color: '#065F46', bg: '#D1FAE5' },
   inactive: { label: 'Inactif', color: '#475569', bg: '#F1F5F9' },

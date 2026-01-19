@@ -15,9 +15,13 @@ import NotaryPanel from '@/components/loans/NotaryPanel';
 import SequestrePanel from '@/components/loans/SequestrePanel';
 import ReceivedDocumentsList from '@/components/documents/ReceivedDocumentsList';
 import ReplaceDocumentButton from '@/components/documents/ReplaceDocumentButton';
+import DownloadAllDocuments from '@/components/documents/DownloadAllDocuments';
+import DocumentExpirationBadge from '@/components/documents/DocumentExpirationBadge';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
 import { useToast } from '@/components/finom/Toast';
 import { useUserRoles } from '@/hooks/useUserRoles';
+import { useDocumentProgress } from '@/hooks/useDocumentProgress';
+import { useSequestreAlert } from '@/hooks/useSequestreAlert';
 import type { ProjectType } from '@/lib/documentChecklist';
 import { logger } from '@/lib/logger';
 
@@ -81,6 +85,25 @@ const LoanDetail: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Auto-transition hook when documents are complete
+  useDocumentProgress({
+    loanId: id || '',
+    userId: loan?.user_id || '',
+    projectType: ((loan as any)?.project_type as ProjectType) || 'achat_residence_principale',
+    currentStatus: loan?.status || null,
+    hasCoborrower: loan?.has_coborrower || false,
+    onStatusChange: loadLoanData,
+  });
+
+  // Sequestre 100% alert hook
+  useSequestreAlert({
+    loanId: id || '',
+    userId: loan?.user_id || '',
+    amountExpected: loan?.sequestre_amount_expected || 0,
+    amountReceived: loan?.sequestre_amount_received || 0,
+    sequestreStatus: loan?.sequestre_status || 'none',
+  });
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !id || !user || !loan) return;
@@ -421,6 +444,9 @@ const LoanDetail: React.FC = () => {
                 <div className="documents-header">
                   <h3>📤 Documents envoyés</h3>
                   <div className="documents-actions">
+                    {(isAdmin || isAgent) && loan && id && (
+                      <DownloadAllDocuments loanId={id} loanRef={loan.id.slice(0, 8)} />
+                    )}
                     {(isAdmin || isAgent) && loan && (
                       <Button 
                         variant="primary" 
