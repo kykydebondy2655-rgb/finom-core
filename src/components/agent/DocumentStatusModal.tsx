@@ -136,7 +136,7 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[450px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl document-status-modal" style={{ backgroundColor: 'white' }}>
+      <DialogContent className="sm:max-w-[450px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl document-status-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             📄 Statuer sur le document
