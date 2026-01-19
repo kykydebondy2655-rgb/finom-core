@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  motion, 
+  AnimatePresence, 
+  fadeInUp, 
+  staggerContainer, 
+  scaleIn 
+} from '@/components/animations';
 import { useAuth } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Card from '../components/finom/Card';
@@ -32,26 +38,6 @@ interface FormData {
   profileLabel: string;
   projectType: string;
 }
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const scaleIn = {
-  initial: { opacity: 0, scale: 0.95 },
-  animate: { opacity: 1, scale: 1 },
-};
 
 const Simulator = () => {
   const navigate = useNavigate();

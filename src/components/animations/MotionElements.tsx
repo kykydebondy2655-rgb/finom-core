@@ -1,12 +1,20 @@
 import { motion, HTMLMotionProps, Variants } from 'framer-motion';
-import { forwardRef, ReactNode } from 'react';
+import { forwardRef, ReactNode, useState, useEffect } from 'react';
 
 // ============= ANIMATION VARIANTS =============
 
+// Standard fadeInUp - for cards, sections, text elements
 export const fadeInUp: Variants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -10 },
+};
+
+// Larger motion for hero elements
+export const fadeInUpLarge: Variants = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -15 },
 };
 
 export const fadeIn: Variants = {
@@ -48,6 +56,27 @@ export const staggerFast: Variants = {
   animate: {
     transition: {
       staggerChildren: 0.05,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+export const staggerMedium: Variants = {
+  initial: {},
+  animate: {
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+// For auth pages with slightly slower stagger
+export const staggerAuth: Variants = {
+  initial: {},
+  animate: {
+    transition: {
+      staggerChildren: 0.08,
       delayChildren: 0.05,
     },
   },
@@ -382,4 +411,28 @@ function easeOutExpo(x: number): number {
   return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
 }
 
-import { useState, useEffect } from 'react';
+// ============= TRANSITION PRESETS =============
+
+export const springTransition = {
+  type: 'spring' as const,
+  stiffness: 400,
+  damping: 17,
+};
+
+export const springBouncy = {
+  type: 'spring' as const,
+  stiffness: 500,
+  damping: 15,
+};
+
+export const smoothTransition = {
+  type: 'tween' as const,
+  ease: 'easeOut' as const,
+  duration: 0.4,
+};
+
+export const fastTransition = {
+  type: 'tween' as const,
+  ease: 'easeOut' as const,
+  duration: 0.3,
+};

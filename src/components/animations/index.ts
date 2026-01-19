@@ -8,12 +8,15 @@ export { AnimatedList, AnimatedGrid } from './AnimatedList';
 export {
   // Variants
   fadeInUp,
+  fadeInUpLarge,
   fadeIn,
   scaleIn,
   slideInLeft,
   slideInRight,
   staggerContainer,
   staggerFast,
+  staggerMedium,
+  staggerAuth,
   // Components
   FadeInUp,
   ScaleIn,
@@ -32,6 +35,11 @@ export {
   SkeletonPulse,
   // Counter
   AnimatedCounter,
+  // Transitions
+  springTransition,
+  springBouncy,
+  smoothTransition,
+  fastTransition,
 } from './MotionElements';
 
 // Re-export framer-motion utilities for convenience
