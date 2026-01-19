@@ -64,7 +64,7 @@ const AdminLoans: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-loans-page">
         <div className="page-header">
           <div className="container">

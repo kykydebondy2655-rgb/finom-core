@@ -123,7 +123,7 @@ const AdminImports: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-imports-page">
         <div className="page-header">
           <div className="container">

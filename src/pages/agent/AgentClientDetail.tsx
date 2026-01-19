@@ -92,12 +92,12 @@ const AgentClientDetail: React.FC = () => {
   const backPath = isAdminRoute ? '/admin/clients' : '/agent/clients';
 
   if (loading) {
-    return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
+    return <PageLayout showAnimatedBackground={false}><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
   }
 
   if (!client) {
     return (
-      <PageLayout>
+      <PageLayout showAnimatedBackground={false}>
         <div className="error-page">
           <Card padding="xl">
             <h2>Client non trouvé</h2>
@@ -109,7 +109,7 @@ const AgentClientDetail: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className={`client-detail-page ${isAdminRoute ? 'admin-theme' : 'agent-theme'}`}>
         <div className="page-header">
           <div className="container">

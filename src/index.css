@@ -386,36 +386,36 @@
   z-index: 2;
 }
 
-/* Gradient orbs */
+/* Gradient orbs - Subtle effect */
 .bg-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
+  filter: blur(100px);
+  opacity: 0.2;
 }
 
 .bg-orb-1 {
-  width: 600px;
-  height: 600px;
-  top: -200px;
-  right: -100px;
-  background: radial-gradient(circle, hsl(var(--accent) / 0.3) 0%, transparent 70%);
+  width: 450px;
+  height: 450px;
+  top: -150px;
+  right: -80px;
+  background: radial-gradient(circle, hsl(var(--accent) / 0.25) 0%, transparent 70%);
 }
 
 .bg-orb-2 {
-  width: 500px;
-  height: 500px;
-  bottom: 10%;
-  left: -150px;
-  background: radial-gradient(circle, hsl(217 91% 60% / 0.25) 0%, transparent 70%);
+  width: 380px;
+  height: 380px;
+  bottom: 15%;
+  left: -120px;
+  background: radial-gradient(circle, hsl(217 91% 60% / 0.2) 0%, transparent 70%);
 }
 
 .bg-orb-3 {
-  width: 400px;
-  height: 400px;
-  top: 40%;
-  right: 20%;
-  background: radial-gradient(circle, hsl(160 84% 39% / 0.15) 0%, transparent 70%);
+  width: 300px;
+  height: 300px;
+  top: 45%;
+  right: 15%;
+  background: radial-gradient(circle, hsl(160 84% 39% / 0.12) 0%, transparent 70%);
 }
 
 /* Subtle grid pattern */
@@ -438,7 +438,7 @@
 
 /* Dark mode adjustments */
 .dark .bg-orb {
-  opacity: 0.2;
+  opacity: 0.12;
 }
 
 .dark .bg-grid-pattern {

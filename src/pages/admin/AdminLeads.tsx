@@ -189,7 +189,7 @@ const AdminLeads: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-leads-page">
         <div className="page-header">
           <div className="container">

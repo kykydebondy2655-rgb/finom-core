@@ -41,7 +41,7 @@ const Dashboard = () => {
 
     // Skeleton loading component
     const DashboardSkeleton = () => (
-        <PageLayout>
+        <PageLayout showAnimatedBackground={false}>
             <div className="dashboard-page">
                 <div className="page-header">
                     <div className="page-header-content">
@@ -79,7 +79,7 @@ const Dashboard = () => {
     if (loading) return <DashboardSkeleton />;
 
     return (
-        <PageLayout>
+            <PageLayout showAnimatedBackground={false}>
             <div className="dashboard-page">
                 {/* Page Header */}
                 <motion.div 

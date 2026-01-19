@@ -208,7 +208,7 @@ const Profile = () => {
     }
 
     return (
-        <PageLayout>
+        <PageLayout showAnimatedBackground={false}>
             <div className="profile-page">
                 <div className="container">
                     <header className="profile-header">

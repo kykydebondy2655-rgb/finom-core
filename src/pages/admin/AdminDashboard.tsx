@@ -64,11 +64,11 @@ const AdminDashboard: React.FC = () => {
   };
 
   if (loading) {
-    return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
+    return <PageLayout showAnimatedBackground={false}><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-dashboard">
         <div className="page-header">
           <div className="container">
