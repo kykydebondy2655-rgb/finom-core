@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import '@/styles/components.css';
 
 interface LoanStatusModalProps {
   isOpen: boolean;
@@ -177,7 +178,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl" style={{ backgroundColor: 'white' }}>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl agent-loan-status-modal" style={{ backgroundColor: 'white' }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             📁 Statuer sur le dossier
@@ -254,54 +255,6 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
             {loading ? 'Mise à jour...' : 'Confirmer'}
           </button>
         </div>
-
-        <style>{`
-          .status-option {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-          }
-          .status-option:hover {
-            border-color: var(--status-color);
-            background: color-mix(in srgb, var(--status-color) 5%, white);
-          }
-          .status-option.selected {
-            border-color: var(--status-color);
-            background: color-mix(in srgb, var(--status-color) 10%, white);
-          }
-          .status-icon { font-size: 1.25rem; margin-top: 0.1rem; }
-          .status-content { display: flex; flex-direction: column; }
-          .status-label { font-weight: 600; color: #374151; }
-          .status-desc { font-size: 0.8rem; color: #6b7280; }
-          .cancel-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            background: white;
-            color: #374151;
-            font-weight: 500;
-            cursor: pointer;
-          }
-          .cancel-btn:hover { background: #f3f4f6; }
-          .submit-btn {
-            padding: 0.5rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            background: #10b981;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-          }
-          .submit-btn:hover { background: #059669; }
-          .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        `}</style>
       </DialogContent>
     </Dialog>
   );

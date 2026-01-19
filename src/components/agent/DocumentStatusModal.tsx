@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import '@/styles/components.css';
 
 interface DocumentStatusModalProps {
   isOpen: boolean;
@@ -135,7 +136,7 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[450px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl" style={{ backgroundColor: 'white' }}>
+      <DialogContent className="sm:max-w-[450px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl document-status-modal" style={{ backgroundColor: 'white' }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             📄 Statuer sur le document
@@ -198,52 +199,6 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
             {loading ? 'Mise à jour...' : 'Confirmer'}
           </button>
         </div>
-
-        <style>{`
-          .status-option {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-          }
-          .status-option:hover {
-            border-color: var(--status-color);
-            background: color-mix(in srgb, var(--status-color) 5%, white);
-          }
-          .status-option.selected {
-            border-color: var(--status-color);
-            background: color-mix(in srgb, var(--status-color) 10%, white);
-          }
-          .status-icon { font-size: 1.25rem; }
-          .status-label { font-weight: 500; color: #374151; }
-          .cancel-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            background: white;
-            color: #374151;
-            font-weight: 500;
-            cursor: pointer;
-          }
-          .cancel-btn:hover { background: #f3f4f6; }
-          .submit-btn {
-            padding: 0.5rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            background: #10b981;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-          }
-          .submit-btn:hover { background: #059669; }
-          .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        `}</style>
       </DialogContent>
     </Dialog>
   );
