@@ -710,8 +710,9 @@ export const adminApi = {
       throw new Error('Session admin requise');
     }
 
-    // Use default temp password from secrets
-    const tempPassword = 'TempPass123!';
+    // Generate secure random password for new accounts
+    const { generateTempPassword } = await import('@/lib/securePassword');
+    const tempPassword = generateTempPassword();
 
     const response = await supabase.functions.invoke('create-user', {
       body: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,7 @@ import Button from '@/components/finom/Button';
 import { emailService } from '@/services/emailService';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
+import { generateTempPassword } from '@/lib/securePassword';
 
 interface SendAccountEmailModalProps {
   isOpen: boolean;
@@ -17,8 +18,6 @@ interface SendAccountEmailModalProps {
   clientEmail: string;
   clientFirstName: string;
 }
-
-const DEFAULT_TEMP_PASSWORD = 'TempPass123!';
 
 const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
   isOpen,
@@ -28,6 +27,9 @@ const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
 }) => {
   const [sending, setSending] = useState(false);
   const toast = useToast();
+  
+  // Generate a secure password for this session
+  const tempPassword = useMemo(() => generateTempPassword(), [isOpen]);
 
   const handleSendEmail = async () => {
     if (!clientEmail) {
@@ -40,7 +42,7 @@ const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
       const result = await emailService.sendAccountOpening(
         clientEmail,
         clientFirstName || 'Client',
-        DEFAULT_TEMP_PASSWORD
+        tempPassword
       );
 
       if (result.success) {
@@ -80,7 +82,7 @@ const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Mot de passe temporaire</span>
               <code className="bg-background px-2 py-1 rounded text-sm font-mono">
-                {DEFAULT_TEMP_PASSWORD}
+                {tempPassword}
               </code>
             </div>
           </div>

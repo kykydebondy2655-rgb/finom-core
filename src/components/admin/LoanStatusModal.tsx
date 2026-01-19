@@ -6,6 +6,7 @@ import { emailService } from '@/services/emailService';
 import { useToast } from '@/components/finom/Toast';
 import { useAuth } from '@/context/AuthContext';
 import logger from '@/lib/logger';
+import { loanStatusUpdateSchema } from '@/lib/validations/statusSchemas';
 import '@/styles/components.css';
 
 interface LoanStatusModalProps {
@@ -60,8 +61,16 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
     e.preventDefault();
     if (!loan) return;
 
-    if (selectedStatus === 'rejected' && !rejectionReason.trim()) {
-      setError('Veuillez indiquer un motif de refus');
+    // Validate status update using schema
+    const validationResult = loanStatusUpdateSchema.safeParse({
+      status: selectedStatus,
+      nextAction: nextAction,
+      rejectionReason: rejectionReason
+    });
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      setError(firstError?.message || 'Données invalides');
       return;
     }
 

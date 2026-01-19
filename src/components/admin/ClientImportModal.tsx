@@ -339,7 +339,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
     } else {
       // Direct import
       const importResults = { success: 0, failed: 0, errors: [] as string[], emailsSent: 0 };
-      const tempPassword = 'TempPass123!';
+      // Import secure password generator dynamically
+      const { generateTempPassword } = await import('@/lib/securePassword');
 
       for (const lead of parsedLeads) {
         try {
@@ -349,10 +350,12 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           // Send welcome email with credentials if enabled
           if (sendWelcomeEmails && lead.email) {
             try {
+              // Generate a unique temp password for each lead
+              const leadTempPassword = generateTempPassword();
               await emailService.sendAccountOpening(
                 lead.email,
                 lead.firstName,
-                tempPassword,
+                leadTempPassword,
                 'https://pret-finom.co/login'
               );
               importResults.emailsSent++;

@@ -7,6 +7,7 @@ import { useToast } from '@/components/finom/Toast';
 import { useAuth } from '@/context/AuthContext';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import { loanStatusUpdateSchema, LOAN_STATUSES as VALID_LOAN_STATUSES } from '@/lib/validations/statusSchemas';
 import { Clock, ClipboardList, Search, Settings, Send, CheckCircle2, XCircle, Wallet, FolderOpen } from 'lucide-react';
 import '@/styles/components.css';
 
@@ -59,8 +60,16 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
   const handleSubmit = async () => {
     if (!loan) return;
 
-    if (selectedStatus === 'rejected' && !rejectionReason.trim()) {
-      toast.error('Veuillez indiquer la raison du rejet');
+    // Validate status update using schema
+    const validationResult = loanStatusUpdateSchema.safeParse({
+      status: selectedStatus,
+      nextAction: nextAction,
+      rejectionReason: rejectionReason
+    });
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      toast.error(firstError?.message || 'Données invalides');
       return;
     }
 

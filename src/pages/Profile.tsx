@@ -9,6 +9,7 @@ import { useToast } from '@/components/finom/Toast';
 import { logger } from '@/lib/logger';
 import { isStrongPassword } from '@/lib/validators';
 import { useExportProfile } from '@/hooks/useExportProfile';
+import { profileUpdateSchema } from '@/lib/validations/profileSchemas';
 import { User, Lock, BarChart3, Download, LogOut, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 const Profile = () => {
@@ -87,12 +88,11 @@ const Profile = () => {
         e.preventDefault();
         if (!user?.id || loading) return;
 
-        if (formData.firstName.trim().length < 1) {
-            toast.error('Le prénom est requis');
-            return;
-        }
-        if (formData.lastName.trim().length < 1) {
-            toast.error('Le nom est requis');
+        // Validate form data using Zod schema
+        const validationResult = profileUpdateSchema.safeParse(formData);
+        if (!validationResult.success) {
+            const firstError = validationResult.error.errors[0];
+            toast.error(firstError?.message || 'Données du profil invalides');
             return;
         }
 
