@@ -9,6 +9,7 @@ import { storageService } from '@/services/storageService';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { useAuth } from '@/context/AuthContext';
+import logger from '@/lib/logger';
 
 interface ReplaceDocumentButtonProps {
   documentId: string;
@@ -81,7 +82,7 @@ const ReplaceDocumentButton: React.FC<ReplaceDocumentButtonProps> = ({
       toast.success('Document remplacé avec succès');
       onSuccess();
     } catch (err) {
-      console.error('Replace document error:', err);
+      logger.logError('Replace document error', err);
       toast.error('Erreur lors du remplacement du document');
     } finally {
       setUploading(false);
@@ -106,11 +107,10 @@ const ReplaceDocumentButton: React.FC<ReplaceDocumentButtonProps> = ({
         size="sm"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
+        className="btn-icon-text"
       >
         <RefreshCw size={14} className={uploading ? 'animate-spin' : ''} />
-        <span style={{ marginLeft: '4px' }}>
-          {uploading ? 'Envoi...' : 'Remplacer'}
-        </span>
+        <span>{uploading ? 'Envoi...' : 'Remplacer'}</span>
       </Button>
     </>
   );
