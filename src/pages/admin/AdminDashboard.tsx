@@ -116,32 +116,6 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        <style>{`
-          .admin-dashboard { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%); color: white; padding: 3rem 1.5rem; margin-bottom: 2rem; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.5rem; }
-          .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-          .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
-          .stat-card { text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-          .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-          .stat-card.highlight { background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%); color: white; }
-          .stat-card.highlight .stat-value { color: white; }
-          .stat-card.wide { grid-column: span 2; }
-          .stat-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
-          .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--color-admin); display: block; }
-          .stat-label { font-size: 0.9rem; color: var(--color-text-secondary); }
-          .stat-card.highlight .stat-label { color: rgba(255,255,255,0.9); }
-          .quick-actions h3 { margin-bottom: 1.5rem; }
-          .actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-          .action-card { text-align: center; cursor: pointer; transition: transform 0.2s; }
-          .action-card:hover { transform: translateY(-2px); }
-          .action-icon { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
-          .action-label { font-weight: 600; color: var(--color-text); }
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          @media (max-width: 1024px) { .stats-grid, .actions-grid { grid-template-columns: repeat(2, 1fr); } .stat-card.wide { grid-column: span 2; } }
-          @media (max-width: 640px) { .stats-grid, .actions-grid { grid-template-columns: 1fr; } .stat-card.wide { grid-column: span 1; } }
-        `}</style>
       </div>
     </PageLayout>
   );
