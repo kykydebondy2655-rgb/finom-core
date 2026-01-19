@@ -5,7 +5,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
-import StatusBadge from '@/components/common/StatusBadge';
+import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import { agentApi, formatDate } from '@/services/api';
 import logger from '@/lib/logger';
 
@@ -82,25 +82,32 @@ const AgentClients: React.FC = () => {
                       <th>Client</th>
                       <th>Email</th>
                       <th>Téléphone</th>
-                      <th>KYC</th>
+                      <th>Statut</th>
                       <th>Assigné le</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredClients.map(assignment => (
-                      <tr key={assignment.id} onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>
-                        <td>
+                      <tr key={assignment.id}>
+                        <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>
                           <div className="client-cell">
                             <div className="client-avatar">{assignment.client?.first_name?.[0] || 'C'}</div>
                             <span>{assignment.client?.first_name} {assignment.client?.last_name}</span>
                           </div>
                         </td>
-                        <td>{assignment.client?.email || '-'}</td>
-                        <td>{assignment.client?.phone || '-'}</td>
-                        <td><StatusBadge status={assignment.client?.kyc_status} size="sm" /></td>
-                        <td className="date">{formatDate(assignment.assigned_at)}</td>
-                        <td><Button variant="ghost" size="sm">Voir →</Button></td>
+                        <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{assignment.client?.email || '-'}</td>
+                        <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{assignment.client?.phone || '-'}</td>
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <ClientStatusSelect 
+                            clientId={assignment.client_user_id}
+                            currentStatus={assignment.client?.pipeline_stage}
+                            size="sm"
+                            onStatusChange={() => loadClients()}
+                          />
+                        </td>
+                        <td className="date" onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{formatDate(assignment.assigned_at)}</td>
+                        <td><Button variant="ghost" size="sm" onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>Voir →</Button></td>
                       </tr>
                     ))}
                   </tbody>

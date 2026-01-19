@@ -15,6 +15,8 @@ import LoanStatusModal from '@/components/agent/LoanStatusModal';
 import ClientBankModal from '@/components/admin/ClientBankModal';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
 import DeleteClientModal from '@/components/admin/DeleteClientModal';
+import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
+import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
@@ -37,6 +39,7 @@ const AgentClientDetail: React.FC = () => {
   const [showBankModal, setShowBankModal] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAccountEmailModal, setShowAccountEmailModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
   const toast = useToast();
@@ -137,9 +140,16 @@ const AgentClientDetail: React.FC = () => {
               onClick={() => window.location.href = `mailto:${client.email || ''}`}
               disabled={!client.email}
             >
-              📧 Envoyer un email
+              📧 Email
             </Button>
-            <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Planifier un rappel</Button>
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowAccountEmailModal(true)}
+              disabled={!client.email}
+            >
+              🔐 Envoyer identifiants
+            </Button>
+            <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Rappel</Button>
             {isAdmin && (
               <Button 
                 variant="danger" 
@@ -148,6 +158,16 @@ const AgentClientDetail: React.FC = () => {
                 🗑️ Supprimer
               </Button>
             )}
+          </div>
+
+          {/* Client Status Selector */}
+          <div className="status-selector-row fade-in">
+            <span className="status-label">Statut client :</span>
+            <ClientStatusSelect 
+              clientId={id || ''} 
+              currentStatus={client.pipeline_stage} 
+              onStatusChange={(newStatus) => setClient(prev => prev ? {...prev, pipeline_stage: newStatus} : null)}
+            />
           </div>
 
           {/* Tabs */}
@@ -431,6 +451,14 @@ const AgentClientDetail: React.FC = () => {
           />
         )}
 
+        {/* Send Account Email Modal */}
+        <SendAccountEmailModal
+          isOpen={showAccountEmailModal}
+          onClose={() => setShowAccountEmailModal(false)}
+          clientEmail={client.email || ''}
+          clientFirstName={client.first_name || ''}
+        />
+
         <style>{`
           .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
           .docs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -446,7 +474,9 @@ const AgentClientDetail: React.FC = () => {
           .page-header h1 { color: white; font-size: 1.75rem; margin: 0; }
           .page-header p { opacity: 0.9; margin: 0.25rem 0 0; }
           .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
-          .quick-actions { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+          .quick-actions { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+          .status-selector-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+          .status-label { font-weight: 500; color: var(--color-text-secondary); }
           .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
           .tab { padding: 0.75rem 1.25rem; border: none; background: white; border-radius: var(--radius-full); font-weight: 600; color: var(--color-text-secondary); cursor: pointer; }
           .tab.active { background: ${themeColor}; color: white; }
