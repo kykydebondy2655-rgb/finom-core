@@ -19,10 +19,8 @@ const Register = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get redirect destination from state
     const from = location.state?.from?.pathname;
 
-    // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated && user) {
             if (from) {
@@ -36,13 +34,11 @@ const Register = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Prevent double-submission
         if (loading) return;
         
         setError('');
         setFieldErrors({});
 
-        // Validation Zod
         const result = registerSchema.safeParse(formData);
         if (!result.success) {
             const errors: Record<string, string> = {};
@@ -59,7 +55,6 @@ const Register = () => {
 
         try {
             await register(result.data.email, result.data.password, result.data.firstName, result.data.lastName);
-            // After successful registration, redirect to the intended page or dashboard
             if (from) {
                 navigate(from, { replace: true });
             } else {
@@ -79,100 +74,131 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-container">
-                <div className="auth-card">
-                    <h1 className="auth-title">Créer mon espace client</h1>
-                    <p className="auth-subtitle">Accédez à votre espace personnel pour suivre votre demande de crédit</p>
+        <div className="auth-page-finom">
+            <div className="auth-container-finom auth-container-wide fade-in">
+                {/* Logo */}
+                <div className="auth-logo">
+                    <span className="logo-text">FINOM</span>
+                </div>
 
-                    {error && <div className="error-message">{error}</div>}
+                <div className="auth-card-finom">
+                    <div className="auth-header-finom">
+                        <h1>Créer mon compte</h1>
+                        <p>Rejoignez FINOM et gérez vos projets de financement</p>
+                    </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Prénom *</label>
+                    {error && (
+                        <div className="auth-error-finom fade-in">
+                            <span className="error-icon">⚠️</span>
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="auth-form-finom">
+                        <div className="form-row-finom">
+                            <div className="form-group-finom">
+                                <label>Prénom</label>
                                 <input
                                     type="text"
                                     name="firstName"
                                     value={formData.firstName}
                                     onChange={handleChange}
-                                    className={`form-input ${fieldErrors.firstName ? 'input-error' : ''}`}
+                                    className={`input-finom ${fieldErrors.firstName ? 'input-error' : ''}`}
+                                    placeholder="Jean"
                                 />
                                 {fieldErrors.firstName && (
-                                    <span className="field-error">{fieldErrors.firstName}</span>
+                                    <span className="field-error-finom">{fieldErrors.firstName}</span>
                                 )}
                             </div>
-                            <div className="form-group">
-                                <label>Nom *</label>
+                            <div className="form-group-finom">
+                                <label>Nom</label>
                                 <input
                                     type="text"
                                     name="lastName"
                                     value={formData.lastName}
                                     onChange={handleChange}
-                                    className={`form-input ${fieldErrors.lastName ? 'input-error' : ''}`}
+                                    className={`input-finom ${fieldErrors.lastName ? 'input-error' : ''}`}
+                                    placeholder="Dupont"
                                 />
                                 {fieldErrors.lastName && (
-                                    <span className="field-error">{fieldErrors.lastName}</span>
+                                    <span className="field-error-finom">{fieldErrors.lastName}</span>
                                 )}
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Email *</label>
+                        <div className="form-group-finom">
+                            <label>Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className={`form-input ${fieldErrors.email ? 'input-error' : ''}`}
+                                className={`input-finom ${fieldErrors.email ? 'input-error' : ''}`}
                                 placeholder="votre@email.com"
                             />
                             {fieldErrors.email && (
-                                <span className="field-error">{fieldErrors.email}</span>
+                                <span className="field-error-finom">{fieldErrors.email}</span>
                             )}
                         </div>
 
-                        <div className="form-group">
-                            <label>Mot de passe *</label>
+                        <div className="form-group-finom">
+                            <label>Mot de passe</label>
                             <input
                                 type="password"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className={`form-input ${fieldErrors.password ? 'input-error' : ''}`}
+                                className={`input-finom ${fieldErrors.password ? 'input-error' : ''}`}
                                 placeholder="Minimum 6 caractères"
                             />
                             {fieldErrors.password && (
-                                <span className="field-error">{fieldErrors.password}</span>
+                                <span className="field-error-finom">{fieldErrors.password}</span>
                             )}
                         </div>
 
-                        <div className="form-group">
-                            <label>Confirmer le mot de passe *</label>
+                        <div className="form-group-finom">
+                            <label>Confirmer le mot de passe</label>
                             <input
                                 type="password"
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className={`form-input ${fieldErrors.confirmPassword ? 'input-error' : ''}`}
+                                className={`input-finom ${fieldErrors.confirmPassword ? 'input-error' : ''}`}
+                                placeholder="••••••••"
                             />
                             {fieldErrors.confirmPassword && (
-                                <span className="field-error">{fieldErrors.confirmPassword}</span>
+                                <span className="field-error-finom">{fieldErrors.confirmPassword}</span>
                             )}
                         </div>
 
-                        <Button type="submit" isLoading={loading} variant="primary" className="full-width">
-                            {loading ? 'Création...' : 'Créer mon espace client'}
+                        <Button type="submit" isLoading={loading} variant="primary" className="btn-full-width">
+                            {loading ? 'Création...' : 'Créer mon compte'}
                         </Button>
 
+                        <p className="terms-notice">
+                            En créant un compte, vous acceptez nos{' '}
+                            <Link to="/terms">conditions générales</Link> et notre{' '}
+                            <Link to="/privacy">politique de confidentialité</Link>.
+                        </p>
                     </form>
 
-                    <p className="auth-footer">
-                        Déjà un compte ? <Link to="/login" state={{ from: location.state?.from }}>Se connecter</Link>
+                    <div className="auth-divider-finom">
+                        <span>ou</span>
+                    </div>
+
+                    <p className="auth-footer-finom">
+                        Déjà un compte ?{' '}
+                        <Link to="/login" state={{ from: location.state?.from }} className="link-accent">
+                            Se connecter
+                        </Link>
                     </p>
                 </div>
-            </div>
 
+                <div className="auth-trust-finom">
+                    <span className="trust-item">🔒 Inscription sécurisée</span>
+                    <span className="trust-item">✓ Conforme RGPD</span>
+                </div>
+            </div>
         </div>
     );
 };

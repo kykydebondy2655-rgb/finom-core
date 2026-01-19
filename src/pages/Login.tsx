@@ -15,10 +15,8 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get redirect destination from state or default based on role
     const from = location.state?.from?.pathname;
 
-    // Redirect if already authenticated and doesn't need password change
     useEffect(() => {
         if (isAuthenticated && user && !user.mustChangePassword) {
             redirectUser(user.role);
@@ -42,7 +40,6 @@ const Login = () => {
         setError('');
         setFieldErrors({});
 
-        // Validation Zod
         const result = loginSchema.safeParse(formData);
         if (!result.success) {
             const errors: Record<string, string> = {};
@@ -60,7 +57,6 @@ const Login = () => {
         try {
             const loggedUser = await login(result.data.email, result.data.password);
             
-            // Check if user must change password
             if (loggedUser.mustChangePassword) {
                 setShowPasswordChange(true);
             } else {
@@ -82,66 +78,88 @@ const Login = () => {
         }
     };
 
-    // Show password change form if required
     if (showPasswordChange && user) {
         return <ForcePasswordChange onSuccess={handlePasswordChangeSuccess} />;
     }
 
     return (
-        <div className="auth-page">
-            <div className="auth-container">
-                <div className="auth-card">
-                    <h1 className="auth-title">Connexion</h1>
-                    <p className="auth-subtitle">Accédez à votre espace FINOM</p>
+        <div className="auth-page-finom">
+            <div className="auth-container-finom fade-in">
+                {/* Logo */}
+                <div className="auth-logo">
+                    <span className="logo-text">FINOM</span>
+                </div>
 
-                    {error && <div className="error-message">{error}</div>}
+                <div className="auth-card-finom">
+                    <div className="auth-header-finom">
+                        <h1>Connexion</h1>
+                        <p>Accédez à votre espace personnel</p>
+                    </div>
 
-                    <form onSubmit={handleSubmit} autoComplete="off">
-                        <div className="form-group">
+                    {error && (
+                        <div className="auth-error-finom fade-in">
+                            <span className="error-icon">⚠️</span>
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} autoComplete="off" className="auth-form-finom">
+                        <div className="form-group-finom">
                             <label>Email</label>
                             <input
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className={`form-input ${fieldErrors.email ? 'input-error' : ''}`}
+                                className={`input-finom ${fieldErrors.email ? 'input-error' : ''}`}
                                 autoComplete="off"
                                 placeholder="votre@email.com"
                             />
                             {fieldErrors.email && (
-                                <span className="field-error">{fieldErrors.email}</span>
+                                <span className="field-error-finom">{fieldErrors.email}</span>
                             )}
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group-finom">
                             <label>Mot de passe</label>
                             <input
                                 type="password"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className={`form-input ${fieldErrors.password ? 'input-error' : ''}`}
+                                className={`input-finom ${fieldErrors.password ? 'input-error' : ''}`}
                                 autoComplete="new-password"
+                                placeholder="••••••••"
                             />
                             {fieldErrors.password && (
-                                <span className="field-error">{fieldErrors.password}</span>
+                                <span className="field-error-finom">{fieldErrors.password}</span>
                             )}
                         </div>
 
-                        <div className="forgot-password-link">
+                        <div className="forgot-link-finom">
                             <Link to="/forgot-password">Mot de passe oublié ?</Link>
                         </div>
 
-                        <Button type="submit" isLoading={loading} variant="primary" className="full-width">
+                        <Button type="submit" isLoading={loading} variant="primary" className="btn-full-width">
                             {loading ? 'Connexion...' : 'Se connecter'}
                         </Button>
-
                     </form>
 
-                    <p className="auth-footer">
-                        Pas encore de compte ? <Link to="/register" state={{ from: location.state?.from }}>Créer un compte</Link>
+                    <div className="auth-divider-finom">
+                        <span>ou</span>
+                    </div>
+
+                    <p className="auth-footer-finom">
+                        Pas encore de compte ?{' '}
+                        <Link to="/register" state={{ from: location.state?.from }} className="link-accent">
+                            Créer un compte
+                        </Link>
                     </p>
                 </div>
-            </div>
 
+                <div className="auth-trust-finom">
+                    <span className="trust-item">🔒 Connexion sécurisée</span>
+                    <span className="trust-item">🛡️ Données chiffrées</span>
+                </div>
+            </div>
         </div>
     );
 };
