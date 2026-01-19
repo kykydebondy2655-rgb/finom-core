@@ -1,12 +1,14 @@
 import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from './Header';
+import AnimatedBackground from '../common/AnimatedBackground';
 
 interface PageLayoutProps {
   children: React.ReactNode;
   showHeader?: boolean;
   className?: string;
   animate?: boolean;
+  showAnimatedBackground?: boolean;
 }
 
 const pageVariants = {
@@ -34,11 +36,13 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
   children, 
   showHeader = true,
   className = '',
-  animate = true
+  animate = true,
+  showAnimatedBackground = true
 }, ref) => {
   if (!animate) {
     return (
       <div ref={ref} className={`page-layout ${className}`}>
+        {showAnimatedBackground && <AnimatedBackground />}
         {showHeader && <Header />}
         <main className="page-content">
           {children}
@@ -49,6 +53,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
 
   return (
     <div ref={ref} className={`page-layout ${className}`}>
+      {showAnimatedBackground && <AnimatedBackground />}
       {showHeader && <Header />}
       <motion.main 
         className="page-content"
