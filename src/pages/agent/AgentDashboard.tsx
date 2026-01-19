@@ -185,36 +185,6 @@ const AgentDashboard: React.FC = () => {
           callback={selectedCallback}
         />
 
-        <style>{`
-          .agent-dashboard { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-agent) 0%, #047857 100%); color: white; padding: 3rem 1.5rem; margin-bottom: 2rem; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.5rem; }
-          .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-          .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-          .stat-card { text-align: center; }
-          .stat-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
-          .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--color-agent); display: block; }
-          .stat-label { font-size: 0.9rem; color: var(--color-text-secondary); }
-          .quick-actions { display: flex; gap: 1rem; margin-bottom: 2rem; }
-          .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-          .card-header h3 { margin: 0; }
-          .callbacks-card, .clients-card { margin-bottom: 1.5rem; }
-          .empty-text { color: var(--color-text-tertiary); text-align: center; padding: 2rem; }
-          .callbacks-list, .clients-list { display: flex; flex-direction: column; gap: 0.75rem; }
-          .callback-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8fafc; border-radius: var(--radius-md); }
-          .callback-client { font-weight: 600; display: block; }
-          .callback-time { font-size: 0.85rem; color: var(--color-text-secondary); }
-          .callback-reason { font-size: 0.8rem; color: var(--color-text-tertiary); display: block; }
-          .client-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f8fafc; border-radius: var(--radius-md); cursor: pointer; transition: background 0.2s; }
-          .client-item:hover { background: #f1f5f9; }
-          .client-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--color-agent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
-          .client-info { flex: 1; }
-          .client-name { font-weight: 600; display: block; }
-          .client-email { font-size: 0.85rem; color: var(--color-text-tertiary); }
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } .quick-actions { flex-direction: column; } }
-        `}</style>
       </div>
     </PageLayout>
   );
