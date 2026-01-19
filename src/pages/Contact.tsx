@@ -4,6 +4,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 import contactBuildingImage from '@/assets/contact-building.jpg';
+import { MapPin, Phone, Mail, Lock, CheckCircle2 } from 'lucide-react';
 
 const companyInfo = {
     name: 'FINOM',
@@ -72,7 +73,7 @@ const Contact = () => {
                             
                             {submitted && (
                                 <div className="success-message-finom">
-                                    ✅ Votre message a été envoyé. Un conseiller vous répondra sous 24-48h.
+                                    <CheckCircle2 size={18} className="success-icon" /> Votre message a été envoyé. Un conseiller vous répondra sous 24-48h.
                                 </div>
                             )}
 
@@ -145,21 +146,21 @@ const Contact = () => {
                             <div className="info-card-finom">
                                 <h3>Coordonnées</h3>
                                 <div className="contact-method-finom">
-                                    <span className="method-icon">📍</span>
+                                    <span className="method-icon"><MapPin size={20} strokeWidth={1.5} /></span>
                                     <div>
                                         <strong>Adresse</strong>
                                         <p>9 Rue du Quatre Septembre<br />75002 Paris, France</p>
                                     </div>
                                 </div>
                                 <div className="contact-method-finom">
-                                    <span className="method-icon">📞</span>
+                                    <span className="method-icon"><Phone size={20} strokeWidth={1.5} /></span>
                                     <div>
                                         <strong>Téléphone</strong>
                                         <p><a href="tel:0187680890">01 87 68 08 90</a></p>
                                     </div>
                                 </div>
                                 <div className="contact-method-finom">
-                                    <span className="method-icon">✉️</span>
+                                    <span className="method-icon"><Mail size={20} strokeWidth={1.5} /></span>
                                     <div>
                                         <strong>Email</strong>
                                         <p><a href={`mailto:${companyInfo.email}`}>{companyInfo.email}</a></p>
@@ -187,7 +188,7 @@ const Contact = () => {
 
                 {/* Domain Banner */}
                 <div className="domain-banner-finom">
-                    <span className="domain-lock">🔒</span>
+                    <span className="domain-lock"><Lock size={14} /></span>
                     Vous êtes sur <strong>pret-finom.co</strong> — Site officiel FINOM
                 </div>
             </div>

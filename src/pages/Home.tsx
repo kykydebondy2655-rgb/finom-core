@@ -107,9 +107,9 @@ const Home = () => {
                 variants={fadeInUp}
                 transition={{ duration: 0.5 }}
               >
-                <span className="trust-item">🏦 Établissement bancaire</span>
-                <span className="trust-item">🇪🇺 Conforme RGPD</span>
-                <span className="trust-item">📋 Conditions claires</span>
+                <span className="trust-item"><Building2 size={16} className="trust-icon" /> Établissement bancaire</span>
+                <span className="trust-item"><Globe size={16} className="trust-icon" /> Conforme RGPD</span>
+                <span className="trust-item"><BadgeCheck size={16} className="trust-icon" /> Conditions claires</span>
               </motion.div>
               <motion.p 
                 className="no-data-warning"

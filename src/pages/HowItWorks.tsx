@@ -5,6 +5,12 @@ import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 import processImage from '@/assets/process-digital.jpg';
 import { 
+    motion,
+    fadeInUp,
+    scaleIn,
+    staggerContainer
+} from '@/components/animations';
+import { 
     Calculator, 
     FileText, 
     Upload, 
@@ -152,25 +158,48 @@ const HowItWorks = () => {
                     </div>
                 </section>
 
-                {/* Advantages */}
                 <section className="advantages-section-finom">
                     <div className="container">
-                        <h2 className="section-title">Les avantages FINOM</h2>
-                        <div className="advantages-grid-finom">
+                        <motion.h2 
+                            className="section-title"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-100px' }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            Les avantages FINOM
+                        </motion.h2>
+                        <motion.div 
+                            className="advantages-grid-finom"
+                            initial="initial"
+                            whileInView="animate"
+                            viewport={{ once: true, margin: '-50px' }}
+                            variants={staggerContainer}
+                        >
                             {advantages.map((adv, idx) => (
-                                <div 
+                                <motion.div 
                                     key={idx} 
-                                    className="advantage-card-finom fade-in"
-                                    style={{ animationDelay: `${idx * 100}ms` }}
+                                    className="advantage-card-finom"
+                                    variants={scaleIn}
+                                    transition={{ duration: 0.4 }}
+                                    whileHover={{ 
+                                        y: -8, 
+                                        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+                                        transition: { duration: 0.2 }
+                                    }}
                                 >
-                                    <span className="advantage-icon-finom">
+                                    <motion.span 
+                                        className="advantage-icon-finom"
+                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                        transition={{ type: 'spring', stiffness: 300 }}
+                                    >
                                         <adv.Icon size={32} strokeWidth={1.5} />
-                                    </span>
+                                    </motion.span>
                                     <h4>{adv.title}</h4>
                                     <p>{adv.desc}</p>
-                                </div>
+                                </motion.div>
                             ))}
-                        </div>
+                        </motion.div>
                     </div>
                 </section>
 

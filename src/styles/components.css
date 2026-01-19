@@ -823,6 +823,9 @@
 }
 
 .home-page .trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: white;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-full);
@@ -831,6 +834,11 @@
   color: var(--color-text-secondary);
   border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: var(--shadow-xs);
+}
+
+.home-page .trust-icon {
+  color: hsl(var(--accent));
+  flex-shrink: 0;
 }
 
 .home-page .no-data-warning {

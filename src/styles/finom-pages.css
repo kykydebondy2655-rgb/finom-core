@@ -298,7 +298,15 @@
 }
 
 .highlight-box .highlight-icon {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, hsl(var(--accent) / 0.2) 0%, hsl(var(--accent) / 0.08) 100%);
+  color: hsl(var(--accent));
+  flex-shrink: 0;
 }
 
 .highlight-box strong {
@@ -366,9 +374,15 @@
 .expertise-icon,
 .partner-icon,
 .value-icon {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, hsl(var(--accent) / 0.12) 0%, hsl(var(--accent) / 0.04) 100%);
+  color: hsl(var(--accent));
+  margin: 0 auto 1rem;
 }
 
 .expertise-card h3,
@@ -510,12 +524,20 @@
 }
 
 .success-message-finom {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: hsl(160 84% 39% / 0.1);
   color: hsl(160 84% 30%);
   padding: 1rem;
   border-radius: 0.75rem;
   font-size: 0.9375rem;
   margin-bottom: 1rem;
+}
+
+.success-message-finom .success-icon {
+  color: hsl(160 84% 39%);
+  flex-shrink: 0;
 }
 
 .contact-info-finom {
@@ -545,7 +567,15 @@
 }
 
 .contact-method-finom .method-icon {
-  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, hsl(var(--accent) / 0.12) 0%, hsl(var(--accent) / 0.04) 100%);
+  color: hsl(var(--accent));
+  flex-shrink: 0;
 }
 
 .contact-method-finom strong {
