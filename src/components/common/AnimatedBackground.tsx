@@ -1,9 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const AnimatedBackground: React.FC = () => {
+interface AnimatedBackgroundProps {
+  variant?: 'default' | 'auth';
+}
+
+const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ variant = 'default' }) => {
+  const containerClass = variant === 'auth' 
+    ? 'animated-background-container animated-background-auth' 
+    : 'animated-background-container';
+
   return (
-    <div className="animated-background-container">
+    <div className={containerClass}>
       {/* Gradient orbs */}
       <motion.div
         className="bg-orb bg-orb-1"
@@ -44,6 +52,23 @@ const AnimatedBackground: React.FC = () => {
           ease: "easeInOut",
         }}
       />
+      
+      {/* Additional orb for auth variant */}
+      {variant === 'auth' && (
+        <motion.div
+          className="bg-orb bg-orb-4"
+          animate={{
+            x: [0, -40, 80, -60, 0],
+            y: [0, 60, -30, 80, 0],
+            scale: [1, 1.15, 0.9, 1.1, 1],
+          }}
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      )}
       
       {/* Subtle grid pattern overlay */}
       <div className="bg-grid-pattern" />
