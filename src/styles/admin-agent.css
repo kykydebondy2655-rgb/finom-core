@@ -2896,3 +2896,77 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ============= Admin Imports Page ============= */
+.admin-imports-page .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.admin-imports-page .status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.admin-imports-page .status-badge.approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.admin-imports-page .status-badge.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-imports-page .status-badge.processed {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.admin-imports-page .file-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-imports-page .file-cell svg {
+  color: #64748b;
+}
+
+.admin-imports-page .valid-count {
+  color: #059669;
+}
+
+.admin-imports-page .invalid-count {
+  color: #64748b;
+}
+
+.admin-imports-page .invalid-count.has-errors {
+  color: #dc2626;
+}
+
+.admin-imports-page .errors-title {
+  color: #dc2626;
+}
+
+.admin-imports-page .reject-textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.admin-imports-page .reject-textarea:focus {
+  outline: none;
+  border-color: #FE42B4;
+  box-shadow: 0 0 0 3px rgba(254, 66, 180, 0.1);
+}
