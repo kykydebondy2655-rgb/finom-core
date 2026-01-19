@@ -1,20 +1,31 @@
+/* ==========================================================================
+   CARD STYLES - Finom.co Design System
+   ========================================================================== */
+
 .card {
     background: var(--color-white);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(15, 23, 42, 0.04);
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
 }
 
 .card.hoverable:hover {
-    box-shadow: var(--shadow-xl);
-    transform: translateY(-4px);
-    border-color: rgba(254, 66, 180, 0.1);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+    border-color: rgba(15, 23, 42, 0.06);
 }
 
-/* Padding variants */
+.card.clickable {
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   PADDING VARIANTS
+   ========================================================================== */
+
 .card.p-none {
     padding: 0;
 }
@@ -33,4 +44,34 @@
 
 .card.p-xl {
     padding: var(--spacing-xl);
+}
+
+/* ==========================================================================
+   CARD VARIANTS
+   ========================================================================== */
+
+/* Elevated card with stronger shadow */
+.card.elevated {
+    box-shadow: var(--shadow-lg);
+}
+
+.card.elevated:hover {
+    box-shadow: var(--shadow-xl);
+}
+
+/* Bordered card (no shadow) */
+.card.bordered {
+    box-shadow: none;
+    border: 1.5px solid var(--color-bg-alt);
+}
+
+.card.bordered:hover {
+    border-color: var(--color-text-muted);
+}
+
+/* Glass card effect */
+.card.glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
