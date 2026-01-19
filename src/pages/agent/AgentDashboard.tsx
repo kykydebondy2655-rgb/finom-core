@@ -7,10 +7,11 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import CallModal from '@/components/agent/CallModal';
+import ClientStatusStats from '@/components/agent/ClientStatusStats';
 import { agentApi, formatDateTime } from '@/services/api';
 import type { ClientAssignment, Callback, Profile } from '@/services/api';
 import { logger } from '@/lib/logger';
-import { Users, Phone, ClipboardList, Calendar } from 'lucide-react';
+import { Users, Phone, ClipboardList, Calendar, BarChart3 } from 'lucide-react';
 
 // Extended types for joined data
 interface ClientAssignmentWithProfile extends ClientAssignment {
@@ -90,6 +91,14 @@ const AgentDashboard: React.FC = () => {
               <span className="stat-label">Rappels en attente</span>
             </Card>
           </div>
+
+          {/* Status Statistics */}
+          <Card className="stats-panel-card fade-in" padding="lg">
+            <div className="card-header">
+              <h3><BarChart3 size={20} className="inline-icon" />Statistiques clients</h3>
+            </div>
+            <ClientStatusStats clients={clients} />
+          </Card>
 
           {/* Quick Actions */}
           <div className="quick-actions fade-in">
