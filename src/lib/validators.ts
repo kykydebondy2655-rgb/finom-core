@@ -79,6 +79,40 @@ export const isValidPhone = (phone: string): boolean => {
 };
 
 /**
+ * Parses and validates phone number with formatting
+ * Supports French and international formats
+ * @param phone - The phone number to parse
+ * @returns Object with valid boolean and formatted phone
+ */
+export const parseAndValidatePhone = (phone: string): { valid: boolean; formatted: string | undefined } => {
+  if (!phone) return { valid: true, formatted: undefined };
+  
+  // Remove all non-digit characters except +
+  const cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // French phone formats: 0612345678, +33612345678, 0033612345678
+  if (/^0[1-9]\d{8}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  if (/^\+33[1-9]\d{8}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  if (/^0033[1-9]\d{8}$/.test(cleaned)) {
+    return { valid: true, formatted: '+33' + cleaned.slice(4) };
+  }
+  // International format (at least 8 digits with +)
+  if (/^\+\d{8,15}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  // Just digits, at least 8
+  if (/^\d{8,15}$/.test(cleaned)) {
+    return { valid: true, formatted: cleaned };
+  }
+  
+  return { valid: false, formatted: undefined };
+};
+
+/**
  * Validates BIC/SWIFT code format
  * @param bic - The BIC code to validate
  * @returns true if valid BIC format
@@ -89,4 +123,47 @@ export const isValidBIC = (bic: string): boolean => {
   // BIC format: 8 or 11 characters
   const bicRegex = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
   return bicRegex.test(cleanBic);
+};
+
+// ============================================
+// STATUS LABELS - Centralized for consistency
+// ============================================
+
+/**
+ * Labels for client/lead statuses
+ */
+export const CLIENT_STATUS_LABELS: Record<string, string> = {
+  nouveau: 'Nouveau',
+  nrp: 'NRP',
+  pas_interesse: 'Pas intéressé',
+  en_attente: 'En attente',
+  a_rappeler: 'À rappeler',
+  interesse: 'Intéressé',
+  qualifie: 'Qualifié',
+  converti: 'Converti',
+  new: 'Nouveau',
+  assigned: 'Assigné',
+  contacted: 'Contacté',
+};
+
+/**
+ * Labels for call statuses
+ */
+export const CALL_STATUS_LABELS: Record<string, string> = {
+  answered: 'Répondu',
+  no_answer: 'Pas de réponse',
+  busy: 'Occupé',
+  voicemail: 'Messagerie',
+};
+
+/**
+ * Get status label from any status type
+ */
+export const getClientStatusLabel = (status: string | null): string => {
+  if (!status) return '-';
+  return CLIENT_STATUS_LABELS[status] || status;
+};
+
+export const getCallStatusLabel = (status: string): string => {
+  return CALL_STATUS_LABELS[status] || status;
 };

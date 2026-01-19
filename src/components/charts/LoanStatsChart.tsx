@@ -12,6 +12,7 @@ import {
   Cell,
   Legend
 } from 'recharts';
+import { getStatusLabel } from '@/services/api';
 
 interface LoanStatsChartProps {
   data: {
@@ -20,16 +21,6 @@ interface LoanStatsChartProps {
   }[];
   type?: 'bar' | 'pie';
 }
-
-const statusLabels: Record<string, string> = {
-  pending: 'En attente',
-  under_review: 'En analyse',
-  documents_required: 'Documents requis',
-  processing: 'En traitement',
-  approved: 'Approuvé',
-  rejected: 'Refusé',
-  funded: 'Financé'
-};
 
 const COLORS = [
   'hsl(var(--accent))',
@@ -44,7 +35,7 @@ const COLORS = [
 export const LoanStatsChart: React.FC<LoanStatsChartProps> = ({ data, type = 'bar' }) => {
   const chartData = data.map(d => ({
     ...d,
-    name: statusLabels[d.status] || d.status,
+    name: getStatusLabel(d.status),
     value: d.count
   }));
 

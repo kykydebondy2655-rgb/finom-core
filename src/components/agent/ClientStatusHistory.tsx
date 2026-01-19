@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDateTime } from '@/services/api';
+import { getClientStatusLabel } from '@/lib/validators';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, History } from 'lucide-react';
 
@@ -24,17 +25,6 @@ interface StatusHistoryEntry {
 interface ClientStatusHistoryProps {
   clientId: string;
 }
-
-const STATUS_LABELS: Record<string, string> = {
-  'nouveau': 'Nouveau',
-  'nrp': 'NRP',
-  'pas_interesse': 'Pas intéressé',
-  'en_attente': 'En attente',
-  'a_rappeler': 'À rappeler',
-  'interesse': 'Intéressé',
-  'qualifie': 'Qualifié',
-  'converti': 'Converti',
-};
 
 const ClientStatusHistory: React.FC<ClientStatusHistoryProps> = ({ clientId }) => {
   const [history, setHistory] = useState<StatusHistoryEntry[]>([]);
@@ -93,10 +83,7 @@ const ClientStatusHistory: React.FC<ClientStatusHistoryProps> = ({ clientId }) =
     }
   };
 
-  const getStatusLabel = (status: string | null) => {
-    if (!status) return '-';
-    return STATUS_LABELS[status] || status;
-  };
+  // Using centralized getClientStatusLabel from validators
 
   if (loading) {
     return (
@@ -130,11 +117,11 @@ const ClientStatusHistory: React.FC<ClientStatusHistoryProps> = ({ clientId }) =
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground line-through">
-                    {getStatusLabel(entry.old_status)}
+                    {getClientStatusLabel(entry.old_status)}
                   </span>
                   <span className="text-muted-foreground">→</span>
                   <span className="font-medium">
-                    {getStatusLabel(entry.new_status)}
+                    {getClientStatusLabel(entry.new_status)}
                   </span>
                 </div>
                 {entry.notes && (

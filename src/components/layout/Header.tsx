@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import NotificationBell from '@/components/notifications/NotificationBell';
-import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { Menu, X, User, LogOut, ChevronDown, Settings } from 'lucide-react';
 
 const Header = forwardRef<HTMLElement, object>((_props, ref) => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -45,6 +46,7 @@ const Header = forwardRef<HTMLElement, object>((_props, ref) => {
     { path: '/admin/clients', label: 'Clients' },
     { path: '/admin/loans', label: 'Dossiers' },
     { path: '/admin/agents', label: 'Agents' },
+    { path: '/admin/settings', label: 'Paramètres' },
   ];
 
   const getNavLinks = () => {
@@ -80,6 +82,7 @@ const Header = forwardRef<HTMLElement, object>((_props, ref) => {
 
         {/* Desktop Actions */}
         <div className="header-actions">
+          <ThemeToggle />
           {isAuthenticated && <NotificationBell />}
           {isAuthenticated ? (
             <div className="user-menu-wrapper">
