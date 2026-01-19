@@ -99,7 +99,7 @@ const CallModal: React.FC<CallModalProps> = ({
       // Update the callback
       if (markAsCompleted) {
         await agentApi.updateCallback(callback.id, {
-          status: 'completed',
+          status: 'done',
           completed_at: new Date().toISOString(),
           notes: notes || null
         });

@@ -60,7 +60,7 @@ const AgentCallbacks: React.FC = () => {
     try {
       setUpdatingCallbackId(id);
       await agentApi.updateCallback(id, { 
-        status: 'completed', 
+        status: 'done', 
         completed_at: new Date().toISOString() 
       });
       loadCallbacks();
@@ -106,6 +106,7 @@ const AgentCallbacks: React.FC = () => {
 
   const filteredCallbacks = callbacks.filter(c => {
     if (filter === 'all') return true;
+    if (filter === 'completed') return c.status === 'done';
     return c.status === filter;
   });
 
@@ -158,7 +159,7 @@ const AgentCallbacks: React.FC = () => {
                   className={`filter-btn ${filter === 'completed' ? 'active' : ''}`} 
                   onClick={() => setFilter('completed')}
                 >
-                  ✓ Terminés ({callbacks.filter(c => c.status === 'completed').length})
+                  ✓ Terminés ({callbacks.filter(c => c.status === 'done').length})
                 </button>
                 <button 
                   className={`filter-btn ${filter === 'all' ? 'active' : ''}`} 
@@ -267,7 +268,7 @@ const AgentCallbacks: React.FC = () => {
                                     </Button>
                                   </>
                                 )}
-                                {callback.status === 'completed' && callback.completed_at && (
+                                {callback.status === 'done' && callback.completed_at && (
                                   <span className="completed-at">
                                     Terminé le {formatDateTime(callback.completed_at)}
                                   </span>

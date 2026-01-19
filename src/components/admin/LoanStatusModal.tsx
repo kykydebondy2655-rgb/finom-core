@@ -129,6 +129,15 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
                 'Votre financement est débloqué ! 🎉',
                 'Les fonds de votre prêt immobilier ont été versés. Félicitations pour votre nouveau projet !'
               ).catch(err => logger.logError('Email send error', err));
+            } else if (selectedStatus === 'offer_issued') {
+              emailService.sendLoanOfferIssued(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                loan.id,
+                loan.amount,
+                loan.rate || 0,
+                loan.monthly_payment || 0
+              ).catch(err => logger.logError('Email send error', err));
             } else if (selectedStatus === 'documents_required') {
               emailService.sendDocumentRequired(
                 clientProfile.email,
