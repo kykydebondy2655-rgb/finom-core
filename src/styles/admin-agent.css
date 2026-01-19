@@ -279,6 +279,48 @@
   color: #d97706;
 }
 
+/* Column widths for import table */
+.client-import-table th.col-email {
+  min-width: 180px;
+}
+
+.client-import-table th.col-name {
+  min-width: 120px;
+}
+
+.client-import-table th.col-amount {
+  min-width: 100px;
+}
+
+.client-import-table th.col-source {
+  min-width: 80px;
+}
+
+/* Icons styling */
+.client-import-error-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.client-import-upload-icon {
+  display: block;
+  margin: 0 auto 16px;
+  color: #94a3b8;
+}
+
+/* Semantic color classes */
+.text-destructive {
+  color: hsl(var(--destructive));
+}
+
+.text-warning {
+  color: #d97706;
+}
+
+.text-info {
+  color: #0369a1;
+}
+
 /* Email checkbox option */
 .client-import-email-option {
   display: flex;
@@ -2790,6 +2832,39 @@
 
 .loan-status-modal .status-icon {
   font-size: 1rem;
+}
+
+/* Status-specific colors */
+.loan-status-modal .status-option.status-pending {
+  --status-color: var(--color-warning, #f59e0b);
+}
+
+.loan-status-modal .status-option.status-documents_required {
+  --status-color: #7C3AED;
+}
+
+.loan-status-modal .status-option.status-under_review {
+  --status-color: var(--color-info, #3b82f6);
+}
+
+.loan-status-modal .status-option.status-processing {
+  --status-color: #0891B2;
+}
+
+.loan-status-modal .status-option.status-offer_issued {
+  --status-color: #f97316;
+}
+
+.loan-status-modal .status-option.status-approved {
+  --status-color: var(--color-success, #22c55e);
+}
+
+.loan-status-modal .status-option.status-rejected {
+  --status-color: var(--color-danger, #ef4444);
+}
+
+.loan-status-modal .status-option.status-funded {
+  --status-color: var(--color-success, #22c55e);
 }
 
 .loan-status-modal .modal-actions {

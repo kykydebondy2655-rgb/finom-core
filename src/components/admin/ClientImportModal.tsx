@@ -406,7 +406,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
 
         {error && (
           <div className="client-import-error">
-            <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <AlertCircle size={16} className="client-import-error-icon" />
             <span>{error}</span>
           </div>
         )}
@@ -427,7 +427,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             </div>
             
             <div className="client-import-dropzone">
-              <Upload size={48} color="#94a3b8" style={{ margin: '0 auto 16px', display: 'block' }} />
+              <Upload size={48} className="client-import-upload-icon" />
               <input
                 type="file"
                 accept=".csv"
@@ -452,7 +452,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             {skippedLines.length > 0 && (
               <div className="client-import-skipped-box">
                 <div className="client-import-skipped-header">
-                  <AlertCircle size={16} color="#dc2626" />
+                  <AlertCircle size={16} className="text-destructive" />
                   <strong>{skippedLines.length} ligne(s) ignorée(s)</strong>
                 </div>
                 <div className="client-import-skipped-list">
@@ -470,7 +470,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             {validationWarnings.length > 0 && (
               <div className="client-import-warnings-box">
                 <div className="client-import-warnings-header">
-                  <AlertCircle size={16} color="#d97706" />
+                  <AlertCircle size={16} className="text-warning" />
                   <strong>{validationWarnings.length} avertissement(s)</strong>
                 </div>
                 <div className="client-import-warnings-list">
@@ -489,14 +489,14 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th style={{ minWidth: '180px' }}>Email</th>
-                    <th style={{ minWidth: '120px' }}>Prénom</th>
-                    <th style={{ minWidth: '120px' }}>Nom</th>
-                    <th style={{ minWidth: '120px' }}>Téléphone</th>
-                    <th className="right" style={{ minWidth: '100px' }}>Prix bien</th>
-                    <th className="right" style={{ minWidth: '100px' }}>Apport</th>
-                    <th style={{ minWidth: '100px' }}>Type</th>
-                    <th style={{ minWidth: '80px' }}>Source</th>
+                    <th className="col-email">Email</th>
+                    <th className="col-name">Prénom</th>
+                    <th className="col-name">Nom</th>
+                    <th className="col-name">Téléphone</th>
+                    <th className="right col-amount">Prix bien</th>
+                    <th className="right col-amount">Apport</th>
+                    <th className="col-amount">Type</th>
+                    <th className="col-source">Source</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -540,7 +540,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                 />
                 <label htmlFor="sendWelcomeEmails">
                   <div className="client-import-email-title">
-                    <Mail size={18} color="#0369a1" />
+                    <Mail size={18} className="text-info" />
                     <strong>Envoyer les identifiants par email</strong>
                   </div>
                   <p>Chaque lead recevra un email avec son mot de passe temporaire (TempPass123!)</p>
