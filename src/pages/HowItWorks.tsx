@@ -4,6 +4,20 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 import processImage from '@/assets/process-digital.jpg';
+import { 
+    Calculator, 
+    FileText, 
+    Upload, 
+    Search, 
+    CheckCircle2, 
+    Zap, 
+    ShieldCheck, 
+    UserCheck, 
+    BadgeEuro, 
+    Smartphone, 
+    Target,
+    Clock
+} from 'lucide-react';
 
 const HowItWorks = () => {
     const navigate = useNavigate();
@@ -11,7 +25,7 @@ const HowItWorks = () => {
     const steps = [
         {
             number: 1,
-            icon: '🧮',
+            Icon: Calculator,
             title: 'Simulation en ligne',
             duration: '5 minutes',
             description: "Estimez votre capacité d'emprunt et vos mensualités gratuitement.",
@@ -23,7 +37,7 @@ const HowItWorks = () => {
         },
         {
             number: 2,
-            icon: '📝',
+            Icon: FileText,
             title: 'Constitution du dossier',
             duration: '30-45 minutes',
             description: 'Créez votre compte et complétez votre demande de crédit en ligne.',
@@ -35,7 +49,7 @@ const HowItWorks = () => {
         },
         {
             number: 3,
-            icon: '📄',
+            Icon: Upload,
             title: 'Upload des documents',
             duration: '15-20 minutes',
             description: 'Transmettez vos justificatifs de manière sécurisée.',
@@ -47,7 +61,7 @@ const HowItWorks = () => {
         },
         {
             number: 4,
-            icon: '🔍',
+            Icon: Search,
             title: 'Analyse et étude',
             duration: '5-7 jours ouvrés',
             description: 'Nos experts analysent votre dossier.',
@@ -59,7 +73,7 @@ const HowItWorks = () => {
         },
         {
             number: 5,
-            icon: '✅',
+            Icon: CheckCircle2,
             title: 'Décision et offre',
             duration: '2-3 jours ouvrés',
             description: "Recevez votre décision et votre offre de prêt personnalisée.",
@@ -72,12 +86,12 @@ const HowItWorks = () => {
     ];
 
     const advantages = [
-        { icon: '⚡', title: 'Rapidité', desc: 'Réponse sous 7 jours ouvrés' },
-        { icon: '🔒', title: 'Sécurité', desc: 'Données chiffrées' },
-        { icon: '👤', title: 'Accompagnement', desc: 'Un conseiller dédié' },
-        { icon: '💰', title: 'Transparence', desc: 'Aucun frais caché' },
-        { icon: '📱', title: '100% en ligne', desc: 'Gérez où vous voulez' },
-        { icon: '🎯', title: 'Sur-mesure', desc: 'Solutions adaptées' }
+        { Icon: Zap, title: 'Rapidité', desc: 'Réponse sous 7 jours ouvrés' },
+        { Icon: ShieldCheck, title: 'Sécurité', desc: 'Données chiffrées' },
+        { Icon: UserCheck, title: 'Accompagnement', desc: 'Un conseiller dédié' },
+        { Icon: BadgeEuro, title: 'Transparence', desc: 'Aucun frais caché' },
+        { Icon: Smartphone, title: '100% en ligne', desc: 'Gérez où vous voulez' },
+        { Icon: Target, title: 'Sur-mesure', desc: 'Solutions adaptées' }
     ];
 
     return (
@@ -114,10 +128,15 @@ const HowItWorks = () => {
                                     <div className="step-number-finom">{step.number}</div>
                                     <div className="step-content-finom">
                                         <div className="step-header-finom">
-                                            <span className="step-icon-finom">{step.icon}</span>
+                                            <span className="step-icon-finom">
+                                                <step.Icon size={28} strokeWidth={1.5} />
+                                            </span>
                                             <div>
                                                 <h3>{step.title}</h3>
-                                                <span className="step-duration">⏱️ {step.duration}</span>
+                                                <span className="step-duration">
+                                                    <Clock size={14} className="inline-icon" />
+                                                    {step.duration}
+                                                </span>
                                             </div>
                                         </div>
                                         <p className="step-description">{step.description}</p>
@@ -144,7 +163,9 @@ const HowItWorks = () => {
                                     className="advantage-card-finom fade-in"
                                     style={{ animationDelay: `${idx * 100}ms` }}
                                 >
-                                    <span className="advantage-icon-finom">{adv.icon}</span>
+                                    <span className="advantage-icon-finom">
+                                        <adv.Icon size={32} strokeWidth={1.5} />
+                                    </span>
                                     <h4>{adv.title}</h4>
                                     <p>{adv.desc}</p>
                                 </div>
