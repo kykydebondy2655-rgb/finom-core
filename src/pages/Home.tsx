@@ -20,9 +20,11 @@ import {
 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import FloatingElements from '@/components/common/FloatingElements';
 import heroVideo from '@/assets/hero-mortgage-video.mp4';
 import securityImage from '@/assets/security-trust.jpg';
 import ctaBackground from '@/assets/cta-background.jpg';
+import parisProperty from '@/assets/paris-property.jpg';
 
 // Custom stagger variant for Home page
 const staggerHome = {
@@ -50,6 +52,7 @@ const Home = () => {
   return (
     <>
       <Header />
+      <FloatingElements variant="hero" />
       <div className="home-page">
         {/* Hero Section */}
         <section className="hero" ref={heroRef}>
