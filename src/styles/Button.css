@@ -1,3 +1,7 @@
+/* ==========================================================================
+   BUTTON STYLES - Finom.co Design System
+   ========================================================================== */
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -5,16 +9,17 @@
     border-radius: var(--radius-full);
     font-weight: 600;
     font-family: var(--font-heading);
-    transition: all var(--transition-fast);
+    transition: all var(--transition-normal);
     cursor: pointer;
-    border: 1px solid transparent;
+    border: none;
     gap: 0.5rem;
     position: relative;
     overflow: hidden;
+    letter-spacing: -0.01em;
 }
 
 .btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
@@ -24,72 +29,103 @@
     transform: scale(0.98);
 }
 
-/* Variants */
+/* ==========================================================================
+   VARIANTS - Following finom.co button styles
+   ========================================================================== */
+
+/* Primary: Dark charcoal (main CTA on finom.co) */
 .btn-primary {
     background: var(--color-primary);
-    color: white;
-    box-shadow: var(--shadow-md);
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: var(--color-primary-dark);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background: var(--color-text);
     color: white;
     box-shadow: var(--shadow-sm);
 }
 
-.btn-secondary:hover:not(:disabled) {
-    background: #000;
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    box-shadow: var(--shadow-md);
     transform: translateY(-1px);
 }
 
+/* Secondary: Slightly lighter dark */
+.btn-secondary {
+    background: var(--color-secondary);
+    color: white;
+    box-shadow: var(--shadow-xs);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+/* Ghost: Transparent with subtle border */
 .btn-ghost {
     background: transparent;
     color: var(--color-text);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1.5px solid var(--color-text-muted);
 }
 
 .btn-ghost:hover:not(:disabled) {
-    background: rgba(0, 0, 0, 0.03);
-    border-color: rgba(0, 0, 0, 0.2);
+    background: var(--color-bg-alt);
+    border-color: var(--color-text-tertiary);
 }
 
+/* Danger: For destructive actions */
 .btn-danger {
-    background: #fee2e2;
+    background: #FEF2F2;
     color: var(--color-danger);
-    border: 1px solid #fecaca;
+    border: 1.5px solid #FECACA;
 }
 
 .btn-danger:hover:not(:disabled) {
     background: var(--color-danger);
     color: white;
+    border-color: var(--color-danger);
 }
 
-/* Sizes */
+/* Accent: Pink gradient for special CTAs */
+.btn-accent {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(254, 66, 180, 0.25);
+}
+
+.btn-accent:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(254, 66, 180, 0.35);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   SIZES
+   ========================================================================== */
+
 .btn-sm {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8125rem;
 }
 
 .btn-md {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.75rem 1.75rem;
+    font-size: 0.9375rem;
 }
 
 .btn-lg {
-    padding: 1rem 2rem;
-    font-size: 1.125rem;
+    padding: 1rem 2.25rem;
+    font-size: 1rem;
 }
 
-/* Outline */
+/* ==========================================================================
+   MODIFIERS
+   ========================================================================== */
+
 .btn-outline {
     background: transparent;
     border: 2px solid currentColor;
+}
+
+.btn-outline:hover:not(:disabled) {
+    background: currentColor;
+    color: white;
 }
 
 /* Loading Spinner */
@@ -99,15 +135,10 @@
     border: 2px solid currentColor;
     border-right-color: transparent;
     border-radius: 50%;
-    animation: spin 0.75s linear infinite;
+    animation: btn-spin 0.75s linear infinite;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+@keyframes btn-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
