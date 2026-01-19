@@ -1,3 +1,558 @@
+/* ============================================
+   LOAN PAGES STYLES 
+   ============================================ */
+
+/* ============= LoansList Styles ============= */
+.loans-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding-bottom: 4rem;
+}
+
+.loans-page .page-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1e3a5f 100%);
+  color: white;
+  padding: 3rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.loans-page .page-header h1 {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.loans-page .page-header p {
+  opacity: 0.9;
+}
+
+.loans-page .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.loans-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.loans-card {
+  margin-bottom: 2rem;
+}
+
+.loans-page .error-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-danger);
+}
+
+.loans-table-wrapper {
+  overflow-x: auto;
+}
+
+.loans-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.loans-table th {
+  text-align: left;
+  padding: 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.loans-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.loan-row {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.loan-row:hover {
+  background-color: #f8fafc;
+}
+
+.ref-badge {
+  background: #f1f5f9;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  font-family: monospace;
+}
+
+.loans-table .amount {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.loans-table .date {
+  color: var(--color-text-tertiary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .loans-actions {
+    flex-direction: column;
+  }
+}
+
+/* ============= LoanDetail Styles ============= */
+.loan-detail-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding-bottom: 4rem;
+}
+
+.loan-detail-page .page-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1e3a5f 100%);
+  color: white;
+  padding: 2rem 1.5rem 3rem;
+  margin-bottom: -1rem;
+}
+
+.loan-detail-page .back-button {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.loan-detail-page .back-button:hover {
+  color: white;
+}
+
+.loan-detail-page .header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.loan-ref {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  font-family: monospace;
+}
+
+.loan-detail-page .page-header h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin: 0.25rem 0;
+}
+
+.loan-detail-page .page-header p {
+  opacity: 0.9;
+  margin: 0;
+}
+
+.coborrower-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255,255,255,0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  margin-left: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.loan-detail-page .container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.loan-detail-page .tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 1.5rem;
+}
+
+.loan-detail-page .tab {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.loan-detail-page .tab:hover {
+  background: var(--color-surface-hover);
+}
+
+.loan-detail-page .tab.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tab-content {
+  margin-bottom: 2rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.summary-card {
+  grid-column: span 2;
+}
+
+.summary-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row.highlight {
+  color: var(--color-primary);
+  font-size: 1.1rem;
+}
+
+.summary-row.highlight-apport {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  padding: 0.875rem 1rem;
+  margin: 0.25rem -1rem;
+  border-radius: var(--radius-sm);
+  border-bottom: none;
+  font-weight: 600;
+}
+
+.summary-row.highlight-apport span {
+  color: #047857;
+}
+
+.summary-row.highlight-apport strong {
+  color: #065f46;
+}
+
+.status-card h3,
+.dates-card h3 {
+  margin-bottom: 1rem;
+}
+
+.status-description {
+  color: var(--color-text-secondary);
+  margin: 1rem 0;
+}
+
+.next-action,
+.rejection-reason {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.rejection-reason {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.date-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.date-label {
+  color: var(--color-text-secondary);
+}
+
+.documents-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.documents-header h3 {
+  margin: 0;
+}
+
+.documents-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.upload-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+}
+
+.empty-docs,
+.empty-messages {
+  text-align: center;
+  padding: 3rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+}
+
+.doc-icon {
+  font-size: 1.5rem;
+}
+
+.doc-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-name {
+  font-weight: 600;
+}
+
+.doc-meta {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+}
+
+.doc-owner-badge {
+  color: var(--color-primary);
+}
+
+.doc-rejection-reason {
+  color: #ef4444;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 4px;
+}
+
+.doc-owner-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.doc-owner-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.doc-owner-tab:hover {
+  background: var(--color-surface-hover);
+}
+
+.doc-owner-tab.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.document-item.coborrower-doc {
+  border-left: 3px solid var(--color-primary);
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.message-item.sent {
+  align-self: flex-end;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: #f1f5f9;
+}
+
+.message-item.sent .message-bubble {
+  background: var(--color-primary);
+  color: white;
+}
+
+.message-time {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+.message-input {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.message-input input {
+  flex: 1;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -2rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-item.completed .timeline-marker {
+  border-color: var(--color-success);
+  background: #d1fae5;
+}
+
+.timeline-item.pending .timeline-marker {
+  border-color: var(--color-primary);
+  background: #fce7f3;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(254, 66, 180, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(254, 66, 180, 0); }
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+}
+
+.timeline-label {
+  font-weight: 600;
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+}
+
+.timeline-item.upcoming .timeline-label {
+  color: var(--color-text-tertiary);
+}
+
+.loan-detail-page .error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.error-page .error-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.error-page .retry-btn-icon {
+  margin-right: 6px;
+}
+
+@media (max-width: 768px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    grid-column: span 1;
+  }
+
+  .loan-detail-page .tabs {
+    overflow-x: auto;
+  }
+
+  .loan-detail-page .tab {
+    white-space: nowrap;
+  }
+}
+
 /* =============================================================================
    COMPONENTS.CSS - Consolidated Component Styles
    All styles migrated from inline <style> tags for CSP compliance
