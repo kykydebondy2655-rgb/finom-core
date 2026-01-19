@@ -1,9 +1,10 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
 import { detectDevice, getClientIP } from '@/lib/deviceDetector';
+import { updateLeadStatusOnFirstLogin } from '@/hooks/useFirstLoginStatusUpdate';
 
 export interface AuthUser {
     id: string;
@@ -39,6 +40,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
+    const firstLoginCheckedRef = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         // Get initial session
@@ -150,6 +152,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logLoginHistory(loggedUser).catch(err => 
             logger.logError('Failed to log login history', err)
         );
+
+        // Check for first login status update (only once per user per session)
+        if (loggedUser.role === 'client' && !firstLoginCheckedRef.current.has(loggedUser.id)) {
+            firstLoginCheckedRef.current.add(loggedUser.id);
+            updateLeadStatusOnFirstLogin(loggedUser.id).catch(err =>
+                logger.logError('Failed to update first login status', err)
+            );
+        }
 
         return loggedUser;
     };
