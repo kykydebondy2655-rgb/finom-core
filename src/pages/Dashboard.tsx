@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { 
+  motion, 
+  fadeInUp, 
+  staggerContainer 
+} from '@/components/animations';
 import { useAuth } from '../context/AuthContext';
 import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
@@ -8,21 +12,6 @@ import Button from '../components/finom/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, LoanApplication } from '../services/api';
 import logger from '../lib/logger';
-
-const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-    initial: {},
-    animate: {
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.1,
-        },
-    },
-};
 
 const Dashboard = () => {
     const { user } = useAuth();

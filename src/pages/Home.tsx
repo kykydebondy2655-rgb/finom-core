@@ -1,16 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { 
+  motion, 
+  fadeInUp, 
+  scaleIn,
+  staggerContainer
+} from '@/components/animations';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import heroImage from '@/assets/hero-mortgage.png';
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
+// Custom stagger variant for Home page
+const staggerHome = {
   initial: {},
   animate: {
     transition: {
@@ -18,11 +19,6 @@ const staggerContainer = {
       delayChildren: 0.1,
     },
   },
-};
-
-const scaleIn = {
-  initial: { opacity: 0, scale: 0.9 },
-  animate: { opacity: 1, scale: 1 },
 };
 
 const Home = () => {

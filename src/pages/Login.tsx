@@ -1,25 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  motion, 
+  AnimatePresence, 
+  fadeInUp, 
+  staggerContainer
+} from '@/components/animations';
 import { useAuth } from '../context/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 import ForcePasswordChange from '../components/auth/ForcePasswordChange';
-
-const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-    initial: {},
-    animate: {
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.05,
-        },
-    },
-};
 
 const Login = () => {
     const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
