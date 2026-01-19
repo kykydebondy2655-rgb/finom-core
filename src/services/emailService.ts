@@ -12,6 +12,7 @@ export type EmailTemplate =
   | 'loanSubmitted'
   | 'loanApproved'
   | 'loanRejected'
+  | 'loanOfferIssued'
   | 'documentRequired'
   | 'documentValidated'
   | 'documentRejected'
@@ -114,6 +115,31 @@ export const emailService = {
       template: 'loanApproved',
       to: email,
       data: { firstName, loanId, amount, rate, monthlyPayment },
+    });
+  },
+
+  /**
+   * Email d'offre de prêt émise (délai légal 10 jours)
+   */
+  async sendLoanOfferIssued(
+    email: string,
+    firstName: string,
+    loanId: string,
+    amount: number,
+    rate: number,
+    monthlyPayment: number
+  ): Promise<EmailResponse> {
+    return this.send({
+      template: 'loanOfferIssued',
+      to: email,
+      data: { 
+        firstName, 
+        loanId, 
+        amount, 
+        rate, 
+        monthlyPayment,
+        reflectionPeriod: 10 
+      },
     });
   },
 

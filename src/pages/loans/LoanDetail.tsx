@@ -180,6 +180,11 @@ const LoanDetail: React.FC = () => {
       events.push({ date: null, label: 'Finalisation', icon: '⚙️', status: 'pending' });
     }
 
+    if (loan?.status === 'offer_issued') {
+      events.push({ date: loan?.updated_at, label: 'Offre émise', icon: '📨', status: 'completed' });
+      events.push({ date: null, label: 'Acceptation (10 jours)', icon: '⏳', status: 'pending' });
+    }
+
     if (loan?.status === 'approved') {
       events.push({ date: null, label: 'Financement', icon: '💰', status: 'pending' });
     }
@@ -313,6 +318,7 @@ const LoanDetail: React.FC = () => {
                       {(loan.status === 'in_review' || loan.status === 'under_review') && 'Votre dossier est en cours d\'analyse par nos équipes.'}
                       {loan.status === 'documents_required' && 'Des documents supplémentaires sont nécessaires pour traiter votre dossier.'}
                       {loan.status === 'processing' && 'Votre dossier est en cours de traitement final.'}
+                      {loan.status === 'offer_issued' && 'Une offre de prêt vous a été émise. Vous disposez d\'un délai légal de 10 jours pour l\'accepter.'}
                       {loan.status === 'approved' && 'Félicitations ! Votre demande a été approuvée.'}
                       {loan.status === 'rejected' && 'Votre demande n\'a pas pu être acceptée.'}
                       {loan.status === 'funded' && 'Le financement a été effectué.'}

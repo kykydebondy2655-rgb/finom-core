@@ -26,11 +26,14 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
   active: { label: 'Actif', color: '#065F46', bg: '#D1FAE5' },
   inactive: { label: 'Inactif', color: '#475569', bg: '#F1F5F9' },
   planned: { label: 'Planifié', color: '#1E40AF', bg: '#DBEAFE' },
+  done: { label: 'Terminé', color: '#065F46', bg: '#D1FAE5' },
+  missed: { label: 'Manqué', color: '#991B1B', bg: '#FEE2E2' },
   cancelled: { label: 'Annulé', color: '#991B1B', bg: '#FEE2E2' },
   // KYC statuses
   new: { label: 'Nouveau', color: '#1E40AF', bg: '#DBEAFE' },
   verified: { label: 'Vérifié', color: '#065F46', bg: '#D1FAE5' },
   // Lead statuses
+  assigned: { label: 'Assigné', color: '#0891B2', bg: '#CFFAFE' },
   contacted: { label: 'Contacté', color: '#0891B2', bg: '#CFFAFE' },
   qualified: { label: 'Qualifié', color: '#7C3AED', bg: '#EDE9FE' },
   converted: { label: 'Converti', color: '#065F46', bg: '#D1FAE5' },

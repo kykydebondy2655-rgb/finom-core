@@ -974,11 +974,13 @@ export const formatDateTime = (date: string | null | undefined): string => {
 
 export const getStatusLabel = (status: string | null): string => {
   const labels: Record<string, string> = {
+    // Loan statuses
     pending: 'En attente',
     in_review: 'En cours d\'analyse',
     under_review: 'En analyse',
     documents_required: 'Documents requis',
     processing: 'En traitement',
+    offer_issued: 'Offre émise',
     approved: 'Approuvé',
     rejected: 'Refusé',
     funded: 'Financé',
@@ -987,12 +989,19 @@ export const getStatusLabel = (status: string | null): string => {
     // Document statuses
     received: 'Reçu',
     validated: 'Validé',
+    expired: 'Expiré',
     // General statuses
     active: 'Actif',
     inactive: 'Inactif',
     planned: 'Planifié',
     cancelled: 'Annulé',
+    // Lead statuses
     new: 'Nouveau',
+    assigned: 'Assigné',
+    contacted: 'Contacté',
+    qualified: 'Qualifié',
+    converted: 'Converti',
+    lost: 'Perdu',
     verified: 'Vérifié',
   };
   return labels[status || ''] || status || 'Inconnu';
@@ -1000,11 +1009,13 @@ export const getStatusLabel = (status: string | null): string => {
 
 export const getStatusColor = (status: string | null): string => {
   const colors: Record<string, string> = {
+    // Loan statuses
     pending: 'var(--color-warning)',
     in_review: 'var(--color-info)',
     under_review: 'var(--color-info)',
     documents_required: '#7C3AED',
     processing: '#0891B2',
+    offer_issued: '#f97316',
     approved: 'var(--color-success)',
     rejected: 'var(--color-danger)',
     funded: 'var(--color-success)',
@@ -1013,12 +1024,19 @@ export const getStatusColor = (status: string | null): string => {
     // Document statuses
     received: 'var(--color-info)',
     validated: 'var(--color-success)',
+    expired: 'var(--color-danger)',
     // General statuses
     active: 'var(--color-success)',
     inactive: 'var(--color-text-tertiary)',
     planned: 'var(--color-info)',
     cancelled: 'var(--color-danger)',
+    // Lead statuses
     new: 'var(--color-info)',
+    assigned: '#0891B2',
+    contacted: '#0891B2',
+    qualified: '#7C3AED',
+    converted: 'var(--color-success)',
+    lost: 'var(--color-danger)',
     verified: 'var(--color-success)',
   };
   return colors[status || ''] || 'var(--color-text-secondary)';

@@ -75,6 +75,7 @@ interface TemplateData {
   rejectionReason?: string;
   tempPassword?: string;
   loginUrl?: string;
+  reflectionPeriod?: number;
 }
 
 const generateTemplate = (template: string, data: TemplateData): { subject: string; html: string } => {
@@ -211,6 +212,38 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
               </div>
               <p>Les fonds seront débloqués après signature électronique de votre contrat.</p>
               <a href="${BASE_URL}/loans" class="button">Voir mon dossier</a>
+            </div>
+            ${legalFooter}
+          </div>
+        </body>
+        </html>
+      `,
+    }),
+
+    loanOfferIssued: () => ({
+      subject: "Votre offre de prêt est disponible ! 📨",
+      html: `
+        <!DOCTYPE html>
+        <html><head><style>${baseStyles}</style></head>
+        <body>
+          <div class="container">
+            <div class="header"><h1>FINOM</h1></div>
+            <div class="content">
+              <h2>Offre de prêt émise 📨</h2>
+              <p>Bonjour ${data.firstName || ''},</p>
+              <p>Suite à l'analyse de votre dossier, nous avons le plaisir de vous transmettre votre <span class="highlight">offre de prêt</span>.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="label">Référence</span><span class="value">#${(data.loanId || '').slice(0, 8).toUpperCase()}</span></div>
+                <div class="info-row"><span class="label">Montant</span><span class="value">${(data.amount || 0).toLocaleString('fr-FR')} €</span></div>
+                <div class="info-row"><span class="label">Taux</span><span class="value">${data.rate || 0}%</span></div>
+                <div class="info-row"><span class="label">Mensualité</span><span class="value">${(data.monthlyPayment || 0).toLocaleString('fr-FR')} €</span></div>
+                <div class="info-row"><span class="label">Statut</span><span class="status-badge" style="background: #FFEDD5; color: #C2410C;">Offre émise</span></div>
+              </div>
+              <div class="warning-box">
+                <p>⚠️ <strong>Délai légal de réflexion :</strong> Conformément à la réglementation, vous disposez d'un délai de <strong>${data.reflectionPeriod || 10} jours</strong> pour accepter ou refuser cette offre. Ce délai commence à courir à réception de ce document.</p>
+              </div>
+              <p>Vous trouverez l'ensemble des conditions dans votre espace client. Notre équipe reste à votre disposition pour toute question.</p>
+              <a href="${BASE_URL}/loans" class="button">Consulter mon offre</a>
             </div>
             ${legalFooter}
           </div>
