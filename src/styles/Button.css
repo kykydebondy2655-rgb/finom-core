@@ -1,5 +1,6 @@
 /* ==========================================================================
    BUTTON STYLES - Finom.co Design System
+   Pill-shaped buttons with smooth animations
    ========================================================================== */
 
 .btn {
@@ -9,7 +10,7 @@
     border-radius: var(--radius-full);
     font-weight: 600;
     font-family: var(--font-heading);
-    transition: all var(--transition-normal);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     border: none;
     gap: 0.5rem;
@@ -26,73 +27,95 @@
 }
 
 .btn:active:not(:disabled) {
-    transform: scale(0.98);
+    transform: scale(0.97);
+}
+
+/* Ripple effect on click */
+.btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.4s ease-out;
+}
+
+.btn:active::after {
+    opacity: 1;
+    transform: scale(2);
 }
 
 /* ==========================================================================
-   VARIANTS - Following finom.co button styles
+   VARIANTS
    ========================================================================== */
 
-/* Primary: Dark charcoal (main CTA on finom.co) */
+/* Primary: Dark charcoal (main CTA) */
 .btn-primary {
     background: var(--color-primary);
     color: white;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
 }
 
 .btn-primary:hover:not(:disabled) {
     background: var(--color-primary-dark);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.25);
+    transform: translateY(-2px);
 }
 
-/* Secondary: Slightly lighter dark */
+/* Secondary: Light background */
 .btn-secondary {
-    background: var(--color-secondary);
-    color: white;
+    background: var(--color-bg-alt);
+    color: var(--color-text);
     box-shadow: var(--shadow-xs);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: var(--color-primary);
+    background: var(--color-white);
+    box-shadow: var(--shadow-md);
     transform: translateY(-1px);
 }
 
-/* Ghost: Transparent with subtle border */
+/* Ghost: Transparent */
 .btn-ghost {
     background: transparent;
     color: var(--color-text);
-    border: 1.5px solid var(--color-text-muted);
+    border: 2px solid transparent;
 }
 
 .btn-ghost:hover:not(:disabled) {
     background: var(--color-bg-alt);
-    border-color: var(--color-text-tertiary);
+    border-color: var(--color-text-muted);
 }
 
-/* Danger: For destructive actions */
+/* Danger: Destructive actions */
 .btn-danger {
     background: #FEF2F2;
     color: var(--color-danger);
-    border: 1.5px solid #FECACA;
+    border: 2px solid #FECACA;
 }
 
 .btn-danger:hover:not(:disabled) {
     background: var(--color-danger);
     color: white;
     border-color: var(--color-danger);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
 }
 
 /* Accent: Pink gradient for special CTAs */
 .btn-accent {
     background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
     color: white;
-    box-shadow: 0 4px 14px rgba(254, 66, 180, 0.25);
+    box-shadow: 0 4px 20px rgba(254, 66, 180, 0.3);
 }
 
 .btn-accent:hover:not(:disabled) {
-    box-shadow: 0 6px 20px rgba(254, 66, 180, 0.35);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(254, 66, 180, 0.4);
+    transform: translateY(-3px);
+}
+
+.btn-accent:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.98);
 }
 
 /* ==========================================================================
@@ -110,8 +133,13 @@
 }
 
 .btn-lg {
-    padding: 1rem 2.25rem;
+    padding: 1rem 2.5rem;
     font-size: 1rem;
+}
+
+.btn-xl {
+    padding: 1.125rem 3rem;
+    font-size: 1.0625rem;
 }
 
 /* ==========================================================================
@@ -125,13 +153,49 @@
 
 .btn-outline:hover:not(:disabled) {
     background: currentColor;
+}
+
+.btn-outline.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary);
     color: white;
 }
 
-/* Loading Spinner */
+.btn-outline.btn-accent:hover:not(:disabled) {
+    background: var(--color-accent);
+    color: white;
+}
+
+/* Full width */
+.btn-full {
+    width: 100%;
+}
+
+/* Icon only */
+.btn-icon {
+    padding: 0.75rem;
+    aspect-ratio: 1;
+}
+
+/* ==========================================================================
+   LOADING STATE
+   ========================================================================== */
+
+.btn-loading {
+    pointer-events: none;
+    position: relative;
+}
+
+.btn-loading .btn-text {
+    opacity: 0;
+}
+
 .btn-loading .spinner {
-    width: 1em;
-    height: 1em;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1.25em;
+    height: 1.25em;
     border: 2px solid currentColor;
     border-right-color: transparent;
     border-radius: 50%;
@@ -139,6 +203,31 @@
 }
 
 @keyframes btn-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ==========================================================================
+   BUTTON GROUP
+   ========================================================================== */
+
+.btn-group {
+    display: inline-flex;
+    gap: 0;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-radius: var(--radius-full) 0 0 var(--radius-full);
+}
+
+.btn-group .btn:last-child {
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.btn-group .btn:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
