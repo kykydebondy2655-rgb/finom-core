@@ -2,22 +2,27 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import heroImage from '@/assets/hero-fintech.png';
+import aboutTeamImage from '@/assets/about-team.jpg';
 
 const About: React.FC = () => {
   return (
     <>
       <Header />
       <div className="about-page-finom">
-        {/* Hero Section */}
+        {/* Hero Section with Image */}
         <section className="about-hero fade-in">
-          <div className="container">
-            <span className="badge-finom">À PROPOS</span>
-            <h1>Votre partenaire pour le crédit immobilier</h1>
-            <p className="hero-subtitle">
-              FINOM est un établissement bancaire spécialisé dans le financement immobilier. 
-              Nous accompagnons et finançons directement les projets de nos clients.
-            </p>
+          <div className="container about-hero-grid">
+            <div className="about-hero-content">
+              <span className="badge-finom">À PROPOS</span>
+              <h1>Votre partenaire pour le crédit immobilier</h1>
+              <p className="hero-subtitle">
+                FINOM est un établissement bancaire spécialisé dans le financement immobilier. 
+                Nous accompagnons et finançons directement les projets de nos clients.
+              </p>
+            </div>
+            <div className="about-hero-image">
+              <img src={aboutTeamImage} alt="Équipe FINOM" />
+            </div>
           </div>
         </section>
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
+import contactBuildingImage from '@/assets/contact-building.jpg';
 
 const companyInfo = {
     name: 'FINOM',
@@ -47,14 +48,19 @@ const Contact = () => {
         <>
             <Header />
             <div className="contact-page-finom">
-                {/* Hero */}
+                {/* Hero with Image */}
                 <section className="contact-hero fade-in">
-                    <div className="container">
-                        <span className="badge-finom">CONTACT</span>
-                        <h1>Nous contacter</h1>
-                        <p className="hero-subtitle">
-                            Notre équipe est à votre disposition pour toute question relative à votre projet de financement.
-                        </p>
+                    <div className="container contact-hero-grid">
+                        <div className="contact-hero-content">
+                            <span className="badge-finom">CONTACT</span>
+                            <h1>Nous contacter</h1>
+                            <p className="hero-subtitle">
+                                Notre équipe est à votre disposition pour toute question relative à votre projet de financement.
+                            </p>
+                        </div>
+                        <div className="contact-hero-image">
+                            <img src={contactBuildingImage} alt="Siège FINOM Paris" />
+                        </div>
                     </div>
                 </section>
 
