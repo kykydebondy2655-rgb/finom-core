@@ -73,6 +73,8 @@ interface TemplateData {
   resetLink?: string;
   documentName?: string;
   rejectionReason?: string;
+  tempPassword?: string;
+  loginUrl?: string;
 }
 
 const generateTemplate = (template: string, data: TemplateData): { subject: string; html: string } => {
@@ -96,6 +98,34 @@ const generateTemplate = (template: string, data: TemplateData): { subject: stri
                 <p>✅ Déposez votre demande en ligne</p>
               </div>
               <a href="${BASE_URL}/dashboard" class="button">Accéder à mon espace</a>
+            </div>
+            ${legalFooter}
+          </div>
+        </body>
+        </html>
+      `,
+    }),
+
+    accountOpening: () => ({
+      subject: "Vos identifiants de connexion FINOM 🔐",
+      html: `
+        <!DOCTYPE html>
+        <html><head><style>${baseStyles}</style></head>
+        <body>
+          <div class="container">
+            <div class="header"><h1>FINOM</h1></div>
+            <div class="content">
+              <h2>Bienvenue ${data.firstName || ''} ! 👋</h2>
+              <p>Votre compte FINOM a été créé par notre équipe. Voici vos identifiants de connexion :</p>
+              <div class="info-box">
+                <div class="info-row"><span class="label">Email</span><span class="value">${data.email || ''}</span></div>
+                <div class="info-row"><span class="label">Mot de passe temporaire</span><span class="value" style="font-family: monospace; letter-spacing: 1px;">${data.tempPassword || ''}</span></div>
+              </div>
+              <div class="warning-box">
+                <p>⚠️ <strong>Important :</strong> Pour des raisons de sécurité, vous devrez changer ce mot de passe lors de votre première connexion.</p>
+              </div>
+              <a href="${data.loginUrl || `${BASE_URL}/login`}" class="button">Se connecter</a>
+              <p style="font-size: 13px; color: #64748B; margin-top: 20px;">Si vous n'êtes pas à l'origine de cette demande, veuillez contacter notre service client.</p>
             </div>
             ${legalFooter}
           </div>

@@ -7,6 +7,7 @@ import logger from '@/lib/logger';
 
 export type EmailTemplate = 
   | 'welcome'
+  | 'accountOpening'
   | 'passwordReset'
   | 'loanSubmitted'
   | 'loanApproved'
@@ -61,6 +62,22 @@ export const emailService = {
       template: 'welcome',
       to: email,
       data: { firstName, email },
+    });
+  },
+
+  /**
+   * Email d'ouverture de compte avec identifiants
+   */
+  async sendAccountOpening(
+    email: string,
+    firstName: string,
+    tempPassword: string,
+    loginUrl?: string
+  ): Promise<EmailResponse> {
+    return this.send({
+      template: 'accountOpening',
+      to: email,
+      data: { firstName, email, tempPassword, loginUrl: loginUrl || 'https://pret-finom.co/login' },
     });
   },
 
