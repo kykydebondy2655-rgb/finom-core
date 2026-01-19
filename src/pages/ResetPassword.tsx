@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { resetPasswordSchema } from '@/lib/validations/authSchemas';
 import { logger } from '@/lib/logger';
 import Button from '@/components/finom/Button';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 const ResetPassword = () => {
   const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
@@ -95,7 +96,7 @@ const ResetPassword = () => {
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-card auth-card-centered">
-            <div className="error-icon">✕</div>
+            <div className="error-icon"><XCircle size={32} /></div>
             <h1 className="auth-title">Lien invalide ou expiré</h1>
             <p className="auth-subtitle">
               Ce lien de réinitialisation n'est plus valide. Veuillez faire une nouvelle demande.
@@ -117,7 +118,7 @@ const ResetPassword = () => {
       <div className="auth-page">
         <div className="auth-container">
           <div className="auth-card auth-card-centered">
-            <div className="success-icon">✓</div>
+            <div className="success-icon"><CheckCircle2 size={32} /></div>
             <h1 className="auth-title">Mot de passe modifié !</h1>
             <p className="auth-subtitle">
               Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion...

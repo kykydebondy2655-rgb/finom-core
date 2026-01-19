@@ -4,6 +4,12 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import aboutTeamImage from '@/assets/about-team.jpg';
 import { 
+  motion,
+  fadeInUp,
+  scaleIn,
+  staggerContainer
+} from '@/components/animations';
+import { 
   Lightbulb, 
   BarChart3, 
   Wallet, 
@@ -25,24 +31,45 @@ const About: React.FC = () => {
       <Header />
       <div className="about-page-finom">
         {/* Hero Section with Image */}
-        <section className="about-hero fade-in">
+        <motion.section 
+          className="about-hero"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="container about-hero-grid">
-            <div className="about-hero-content">
-              <span className="badge-finom">À PROPOS</span>
-              <h1>Votre partenaire pour le crédit immobilier</h1>
-              <p className="hero-subtitle">
+            <motion.div 
+              className="about-hero-content"
+              initial="initial"
+              animate="animate"
+              variants={staggerContainer}
+            >
+              <motion.span className="badge-finom" variants={fadeInUp}>À PROPOS</motion.span>
+              <motion.h1 variants={fadeInUp}>Votre partenaire pour le crédit immobilier</motion.h1>
+              <motion.p className="hero-subtitle" variants={fadeInUp}>
                 FINOM est un établissement bancaire spécialisé dans le financement immobilier. 
                 Nous accompagnons et finançons directement les projets de nos clients.
-              </p>
-            </div>
-            <div className="about-hero-image">
+              </motion.p>
+            </motion.div>
+            <motion.div 
+              className="about-hero-image"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <img src={aboutTeamImage} alt="Équipe FINOM" />
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Mission Section */}
-        <section className="about-section fade-in">
+        <motion.section 
+          className="about-section"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="container">
             <div className="content-card">
               <h2>Notre mission</h2>
@@ -63,76 +90,168 @@ const About: React.FC = () => {
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Expertise Grid */}
         <section className="expertise-section">
           <div className="container">
-            <h2 className="section-title">Notre expertise bancaire</h2>
-            <div className="expertise-grid">
+            <motion.h2 
+              className="section-title"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.5 }}
+            >
+              Notre expertise bancaire
+            </motion.h2>
+            <motion.div 
+              className="expertise-grid"
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, margin: '-50px' }}
+              variants={staggerContainer}
+            >
               {[
                 { Icon: BarChart3, title: 'Analyse financière', desc: "Évaluation approfondie de votre situation financière et de votre capacité d'emprunt." },
                 { Icon: Wallet, title: 'Structuration du crédit', desc: "Montage financier sur mesure : durée, taux, mensualités adaptés à votre profil." },
                 { Icon: FileCheck, title: 'Étude de solvabilité', desc: "Analyse rigoureuse pour vous proposer les meilleures conditions de financement." },
                 { Icon: Home, title: 'Financement immobilier', desc: "Crédit pour résidence principale, secondaire ou investissement locatif." }
               ].map((item, idx) => (
-                <div key={idx} className="expertise-card fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                  <span className="expertise-icon"><item.Icon size={28} strokeWidth={1.5} /></span>
+                <motion.div 
+                  key={idx} 
+                  className="expertise-card"
+                  variants={scaleIn}
+                  transition={{ duration: 0.4 }}
+                  whileHover={{ 
+                    y: -8, 
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <motion.span 
+                    className="expertise-icon"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <item.Icon size={28} strokeWidth={1.5} />
+                  </motion.span>
                   <h3>{item.title}</h3>
                   <p>{item.desc}</p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Partners Section */}
         <section className="partners-section">
           <div className="container">
-            <h2 className="section-title">Cadre réglementaire</h2>
-            <div className="partners-grid">
-              <div className="partner-card fade-in">
-                <span className="partner-icon"><Building2 size={28} strokeWidth={1.5} /></span>
-                <h3>Treezor</h3>
-                <p>Établissement de paiement agréé par l'ACPR (Banque de France)</p>
-              </div>
-              <div className="partner-card fade-in" style={{ animationDelay: '100ms' }}>
-                <span className="partner-icon"><Landmark size={28} strokeWidth={1.5} /></span>
-                <h3>Solaris</h3>
-                <p>Établissement de crédit agréé par la BaFin (Allemagne)</p>
-              </div>
-              <div className="partner-card fade-in" style={{ animationDelay: '200ms' }}>
-                <span className="partner-icon"><Globe size={28} strokeWidth={1.5} /></span>
-                <h3>Conformité européenne</h3>
-                <p>Respect des directives bancaires et du RGPD</p>
-              </div>
-            </div>
+            <motion.h2 
+              className="section-title"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.5 }}
+            >
+              Cadre réglementaire
+            </motion.h2>
+            <motion.div 
+              className="partners-grid"
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, margin: '-50px' }}
+              variants={staggerContainer}
+            >
+              {[
+                { Icon: Building2, title: 'Treezor', desc: "Établissement de paiement agréé par l'ACPR (Banque de France)" },
+                { Icon: Landmark, title: 'Solaris', desc: "Établissement de crédit agréé par la BaFin (Allemagne)" },
+                { Icon: Globe, title: 'Conformité européenne', desc: "Respect des directives bancaires et du RGPD" }
+              ].map((item, idx) => (
+                <motion.div 
+                  key={idx} 
+                  className="partner-card"
+                  variants={scaleIn}
+                  transition={{ duration: 0.4 }}
+                  whileHover={{ 
+                    y: -8, 
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <motion.span 
+                    className="partner-icon"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <item.Icon size={28} strokeWidth={1.5} />
+                  </motion.span>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
         {/* Values Section */}
         <section className="values-section">
           <div className="container">
-            <h2 className="section-title">Nos engagements</h2>
-            <div className="values-grid">
+            <motion.h2 
+              className="section-title"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.5 }}
+            >
+              Nos engagements
+            </motion.h2>
+            <motion.div 
+              className="values-grid"
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, margin: '-50px' }}
+              variants={staggerContainer}
+            >
               {[
                 { Icon: ShieldCheck, title: 'Sécurité', desc: 'Données chiffrées et hébergées sur serveurs sécurisés en Europe.' },
                 { Icon: FileText, title: 'Transparence', desc: 'Conditions claires : taux, frais et TAEG communiqués dès la simulation.' },
                 { Icon: Scale, title: 'Conformité', desc: 'Respect strict des obligations légales en matière de crédit.' },
                 { Icon: UserCheck, title: 'Accompagnement', desc: 'Un conseiller dédié de la simulation au déblocage des fonds.' }
               ].map((item, idx) => (
-                <div key={idx} className="value-card fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                  <span className="value-icon"><item.Icon size={24} strokeWidth={1.5} /></span>
+                <motion.div 
+                  key={idx} 
+                  className="value-card"
+                  variants={scaleIn}
+                  transition={{ duration: 0.4 }}
+                  whileHover={{ 
+                    y: -8, 
+                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <motion.span 
+                    className="value-icon"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <item.Icon size={24} strokeWidth={1.5} />
+                  </motion.span>
                   <h4>{item.title}</h4>
                   <p>{item.desc}</p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="cta-section-finom">
+        <motion.section 
+          className="cta-section-finom"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="container">
             <div className="cta-content">
               <h2>Besoin d'un financement ?</h2>
@@ -143,7 +262,7 @@ const About: React.FC = () => {
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Domain Banner */}
         <div className="domain-banner-finom">

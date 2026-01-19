@@ -6117,12 +6117,26 @@
 }
 
 .profile-page .success-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: hsl(142 76% 92%);
   color: hsl(143 64% 24%);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-weight: 500;
+}
+
+.profile-page .success-icon-inline {
+  color: hsl(143 64% 40%);
+  flex-shrink: 0;
+}
+
+.profile-page .password-errors .error-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .profile-page .password-errors {

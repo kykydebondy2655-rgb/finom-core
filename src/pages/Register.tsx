@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { registerSchema, RegisterFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
+import { AlertTriangle, Lock, Check } from 'lucide-react';
 
 const Register = () => {
     const [formData, setFormData] = useState<RegisterFormData>({
@@ -125,7 +126,7 @@ const Register = () => {
                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <span className="error-icon">⚠️</span>
+                                <span className="error-icon"><AlertTriangle size={16} /></span>
                                 {error}
                             </motion.div>
                         )}
@@ -332,13 +333,13 @@ const Register = () => {
                         className="trust-item"
                         whileHover={{ scale: 1.05 }}
                     >
-                        🔒 Inscription sécurisée
+                        <Lock size={14} className="trust-icon" /> Inscription sécurisée
                     </motion.span>
                     <motion.span 
                         className="trust-item"
                         whileHover={{ scale: 1.05 }}
                     >
-                        ✓ Conforme RGPD
+                        <Check size={14} className="trust-icon" /> Conforme RGPD
                     </motion.span>
                 </motion.div>
             </motion.div>

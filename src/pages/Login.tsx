@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 import ForcePasswordChange from '../components/auth/ForcePasswordChange';
+import { AlertTriangle, Lock, ShieldCheck } from 'lucide-react';
 
 const Login = () => {
     const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
@@ -134,7 +135,7 @@ const Login = () => {
                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <span className="error-icon">⚠️</span>
+                                <span className="error-icon"><AlertTriangle size={16} /></span>
                                 {error}
                             </motion.div>
                         )}
@@ -253,13 +254,13 @@ const Login = () => {
                         className="trust-item"
                         whileHover={{ scale: 1.05 }}
                     >
-                        🔒 Connexion sécurisée
+                        <Lock size={14} className="trust-icon" /> Connexion sécurisée
                     </motion.span>
                     <motion.span 
                         className="trust-item"
                         whileHover={{ scale: 1.05 }}
                     >
-                        🛡️ Données chiffrées
+                        <ShieldCheck size={14} className="trust-icon" /> Données chiffrées
                     </motion.span>
                 </motion.div>
             </motion.div>
