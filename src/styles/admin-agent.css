@@ -2547,3 +2547,352 @@
 .status-history-section {
   margin-bottom: 1rem;
 }
+
+/* ============= Delete Modals (Agent & Client) ============= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 500px;
+  width: 95%;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.2s ease-out;
+}
+
+.modal-content.modal-sm {
+  max-width: 400px;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.modal-header h2.danger {
+  color: #dc2626;
+}
+
+.modal-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.modal-header .close-btn:hover {
+  color: #475569;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body.centered {
+  text-align: center;
+}
+
+.modal-body .warning-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.modal-body .warning-text {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.modal-body .danger-notice {
+  font-size: 0.875rem;
+  color: #dc2626;
+  background: #fef2f2;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Agent/Client info card in delete modals */
+.agent-info,
+.client-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.agent-avatar,
+.client-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.agent-name,
+.client-name {
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.agent-email,
+.client-email {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.modal-footer .delete-btn {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.modal-footer .delete-btn:hover {
+  background: #b91c1c !important;
+}
+
+/* ============= Loan Status Modal ============= */
+.loan-status-modal {
+  max-width: 550px;
+}
+
+.loan-status-modal .loan-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.loan-status-modal .loan-ref {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.loan-status-modal .loan-client {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.loan-status-modal .loan-amount {
+  font-weight: 600;
+  color: #059669;
+  margin-left: auto;
+}
+
+.loan-status-modal form {
+  padding: 1.5rem;
+}
+
+.loan-status-modal .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.loan-status-modal .form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.loan-status-modal .status-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.loan-status-modal .status-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.loan-status-modal .status-option:hover {
+  border-color: var(--status-color, #e2e8f0);
+  background: color-mix(in srgb, var(--status-color, #e2e8f0) 5%, white);
+}
+
+.loan-status-modal .status-option.selected {
+  border-color: var(--status-color, var(--color-primary));
+  background: color-mix(in srgb, var(--status-color, var(--color-primary)) 10%, white);
+  color: var(--status-color, var(--color-primary));
+}
+
+.loan-status-modal .status-icon {
+  font-size: 1rem;
+}
+
+.loan-status-modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.loan-status-modal textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.loan-status-modal textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* ============= Agent Loan Status Modal ============= */
+.agent-loan-status-modal .status-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  width: 100%;
+}
+
+.agent-loan-status-modal .status-option:hover {
+  border-color: var(--status-color, #e2e8f0);
+  background: color-mix(in srgb, var(--status-color, #e2e8f0) 5%, white);
+}
+
+.agent-loan-status-modal .status-option.selected {
+  border-color: var(--status-color, var(--color-primary));
+  background: color-mix(in srgb, var(--status-color, var(--color-primary)) 10%, white);
+}
+
+.agent-loan-status-modal .status-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.agent-loan-status-modal .status-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.agent-loan-status-modal .status-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.agent-loan-status-modal .status-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.agent-loan-status-modal .cancel-btn {
+  padding: 0.625rem 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.agent-loan-status-modal .cancel-btn:hover {
+  background: #f8fafc;
+}
+
+.agent-loan-status-modal .submit-btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.agent-loan-status-modal .submit-btn:hover {
+  opacity: 0.9;
+}
+
+.agent-loan-status-modal .submit-btn:disabled,
+.agent-loan-status-modal .cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

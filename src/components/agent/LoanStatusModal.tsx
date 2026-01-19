@@ -178,7 +178,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl agent-loan-status-modal" style={{ backgroundColor: 'white' }}>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl agent-loan-status-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             📁 Statuer sur le dossier
