@@ -5,6 +5,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { RefreshCw } from 'lucide-react';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
 import type { LoanApplication, Document, Message, Profile } from '@/services/api';
@@ -80,10 +81,15 @@ const LoanDetail: React.FC = () => {
       }
     } catch (err) {
       logger.logError('Error loading loan', err);
-      setError('Impossible de charger ce dossier');
+      setError('Impossible de charger ce dossier. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    loadLoanData();
   };
 
   // Auto-transition hook when documents are complete
@@ -207,9 +213,17 @@ const LoanDetail: React.FC = () => {
           <Card padding="xl">
             <h2>Erreur</h2>
             <p>{error || 'Dossier non trouvé'}</p>
-            <Button variant="primary" onClick={() => navigate('/loans')}>
-              Retour à mes dossiers
-            </Button>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              {error && (
+                <Button variant="secondary" onClick={handleRetry}>
+                  <RefreshCw size={16} style={{ marginRight: '6px' }} />
+                  Réessayer
+                </Button>
+              )}
+              <Button variant="primary" onClick={() => navigate('/loans')}>
+                Retour à mes dossiers
+              </Button>
+            </div>
           </Card>
         </div>
       </PageLayout>
