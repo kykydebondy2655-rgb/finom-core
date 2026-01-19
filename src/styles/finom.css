@@ -351,9 +351,15 @@ input::placeholder {
 }
 
 .feature-card .icon-box {
-  font-size: 3rem;
   margin-bottom: 1.5rem;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(254, 66, 180, 0.1) 0%, rgba(254, 66, 180, 0.05) 100%);
+  color: var(--color-accent);
   animation: bounce-subtle 3s ease-in-out infinite;
 }
 
