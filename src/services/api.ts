@@ -861,9 +861,13 @@ export const adminApi = {
   },
 
   // Update loan status (admin only)
-  async updateLoanStatus(loanId: string, status: string, rejectionReason?: string) {
-    const updates: TablesUpdate<'loan_applications'> = { status };
+  async updateLoanStatus(loanId: string, status: string, rejectionReason?: string, nextAction?: string) {
+    const updates: TablesUpdate<'loan_applications'> = { 
+      status,
+      updated_at: new Date().toISOString()
+    };
     if (rejectionReason) updates.rejection_reason = rejectionReason;
+    if (nextAction !== undefined) updates.next_action = nextAction || null;
     
     const { data, error } = await supabase
       .from('loan_applications')
