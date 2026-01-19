@@ -231,7 +231,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
           type="file"
           accept={accept}
           onChange={handleFileSelect}
-          style={{ display: 'none' }}
+          className="hidden-input"
           disabled={uploading}
         />
 
