@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
+import { List, Home, FileText, Percent, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 
 const Faq = () => {
     const [activeCategory, setActiveCategory] = useState('all');
     const [openQuestion, setOpenQuestion] = useState<string | null>(null);
 
     const categories = [
-        { id: 'all', label: 'Toutes les questions', icon: '📋' },
-        { id: 'credit', label: 'Crédit immobilier', icon: '🏠' },
-        { id: 'dossier', label: 'Constitution du dossier', icon: '📝' },
-        { id: 'conditions', label: 'Conditions & Taux', icon: '💰' },
-        { id: 'securite', label: 'Sécurité', icon: '🔒' }
+        { id: 'all', label: 'Toutes les questions', Icon: List },
+        { id: 'credit', label: 'Crédit immobilier', Icon: Home },
+        { id: 'dossier', label: 'Constitution du dossier', Icon: FileText },
+        { id: 'conditions', label: 'Conditions & Taux', Icon: Percent },
+        { id: 'securite', label: 'Sécurité', Icon: Lock }
     ];
 
     const faqData = [
@@ -106,7 +107,7 @@ const Faq = () => {
                                         className={`category-btn-finom ${activeCategory === cat.id ? 'active' : ''}`}
                                         onClick={() => setActiveCategory(cat.id)}
                                     >
-                                        <span className="cat-icon">{cat.icon}</span>
+                                        <cat.Icon className="cat-icon-lucide" size={18} />
                                         <span>{cat.label}</span>
                                     </button>
                                 ))}
@@ -130,7 +131,7 @@ const Faq = () => {
                                         >
                                             <span>{item.q}</span>
                                             <span className="faq-toggle-finom">
-                                                {openQuestion === `${item.category}-${idx}` ? '−' : '+'}
+                                                {openQuestion === `${item.category}-${idx}` ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </span>
                                         </button>
                                         {openQuestion === `${item.category}-${idx}` && (

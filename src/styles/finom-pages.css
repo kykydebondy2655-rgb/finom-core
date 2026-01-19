@@ -824,6 +824,16 @@
   font-size: 1rem;
 }
 
+.category-btn-finom .cat-icon-lucide {
+  color: hsl(var(--muted-foreground));
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.category-btn-finom.active .cat-icon-lucide {
+  color: hsl(var(--accent));
+}
+
 .faq-content-finom {
   display: flex;
   flex-direction: column;
