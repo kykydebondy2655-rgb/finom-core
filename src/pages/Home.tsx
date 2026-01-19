@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   motion, 
@@ -6,6 +5,16 @@ import {
   scaleIn,
   staggerContainer
 } from '@/components/animations';
+import { 
+  BarChart3, 
+  Percent, 
+  UserCheck, 
+  ShieldCheck, 
+  Globe, 
+  BadgeCheck, 
+  Building2, 
+  Lock 
+} from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import heroImage from '@/assets/hero-mortgage.png';
@@ -40,7 +49,7 @@ const Home = () => {
                 variants={fadeInUp}
                 transition={{ duration: 0.5 }}
               >
-                <span className="lock-icon">🔒</span>
+                <Lock size={14} className="lock-icon" />
                 Connexion sécurisée HTTPS
               </motion.div>
               <motion.h1
@@ -135,7 +144,7 @@ const Home = () => {
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                  📊
+                  <BarChart3 size={32} strokeWidth={1.5} />
                 </motion.div>
                 <h3>Crédit sur mesure</h3>
                 <p>Nous analysons votre situation financière et vous proposons un financement adapté à votre capacité d'emprunt.</p>
@@ -151,7 +160,7 @@ const Home = () => {
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                  💰
+                  <Percent size={32} strokeWidth={1.5} />
                 </motion.div>
                 <h3>Taux compétitifs</h3>
                 <p>Bénéficiez de conditions de financement attractives avec un TAEG transparent dès la simulation.</p>
@@ -167,7 +176,7 @@ const Home = () => {
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                  👨‍💼
+                  <UserCheck size={32} strokeWidth={1.5} />
                 </motion.div>
                 <h3>Conseiller dédié</h3>
                 <p>Un expert bancaire vous accompagne de l'étude de votre dossier jusqu'au déblocage des fonds.</p>
@@ -195,10 +204,10 @@ const Home = () => {
                 variants={staggerContainer}
               >
                 {[
-                  { icon: '🔐', title: 'Sécurité bancaire', desc: 'Toutes vos données transitent via une connexion chiffrée SSL/TLS.' },
-                  { icon: '🇪🇺', title: 'Conformité européenne', desc: 'Respect des directives bancaires européennes et du RGPD.' },
-                  { icon: '✅', title: 'Partenaires agréés', desc: 'Nous travaillons avec Treezor (ACPR) et Solaris (BaFin).' },
-                  { icon: '🏦', title: 'Financement direct', desc: 'FINOM délivre directement votre crédit immobilier, sans intermédiaire.' },
+                  { Icon: ShieldCheck, title: 'Sécurité bancaire', desc: 'Toutes vos données transitent via une connexion chiffrée SSL/TLS.' },
+                  { Icon: Globe, title: 'Conformité européenne', desc: 'Respect des directives bancaires européennes et du RGPD.' },
+                  { Icon: BadgeCheck, title: 'Partenaires agréés', desc: 'Nous travaillons avec Treezor (ACPR) et Solaris (BaFin).' },
+                  { Icon: Building2, title: 'Financement direct', desc: 'FINOM délivre directement votre crédit immobilier, sans intermédiaire.' },
                 ].map((item, index) => (
                   <motion.div 
                     key={index}
@@ -216,7 +225,7 @@ const Home = () => {
                       whileHover={{ scale: 1.2 }}
                       transition={{ type: 'spring', stiffness: 400 }}
                     >
-                      {item.icon}
+                      <item.Icon size={24} strokeWidth={1.5} />
                     </motion.span>
                     <div>
                       <strong>{item.title}</strong>
@@ -239,7 +248,7 @@ const Home = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="domain-lock">🔒</span>
+              <Lock size={14} className="domain-lock" />
               Vous êtes sur <strong>pret-finom.co</strong> — Site officiel FINOM
             </motion.p>
           </div>
