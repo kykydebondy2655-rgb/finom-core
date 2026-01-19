@@ -26,6 +26,7 @@ const STATUS_OPTIONS = [
   { value: 'documents_required', label: 'Documents requis', color: '#7C3AED', icon: '📋' },
   { value: 'under_review', label: 'En analyse', color: 'var(--color-info)', icon: '🔍' },
   { value: 'processing', label: 'En traitement', color: '#0891B2', icon: '⚙️' },
+  { value: 'offer_issued', label: 'Offre émise', color: '#f97316', icon: '📨', description: 'Délai légal de 10 jours de réflexion' },
   { value: 'approved', label: 'Approuvé', color: 'var(--color-success)', icon: '✅' },
   { value: 'rejected', label: 'Refusé', color: 'var(--color-danger)', icon: '❌' },
   { value: 'funded', label: 'Financé', color: 'var(--color-success)', icon: '💰' },

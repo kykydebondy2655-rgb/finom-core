@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@/components/finom/Button';
 import { adminApi } from '@/services/api';
+import { notifyAgentAssignment } from '@/hooks/useAgentAssignmentNotification';
 import logger from '@/lib/logger';
 
 interface AssignmentModalProps {
@@ -76,6 +77,17 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
       setLoading(true);
       setError(null);
       await adminApi.createAssignment(selectedAgent, selectedClient);
+      
+      // Notify the agent of the new assignment
+      const client = clients.find(c => c.id === selectedClient);
+      if (client) {
+        notifyAgentAssignment({
+          agentId: selectedAgent,
+          clientId: selectedClient,
+          clientName: client.label,
+        }).catch(err => logger.logError('Agent notification error', err));
+      }
+      
       onSuccess();
       onClose();
       resetForm();

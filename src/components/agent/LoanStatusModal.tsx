@@ -26,6 +26,7 @@ const LOAN_STATUSES = [
   { value: 'documents_required', label: 'Documents requis', color: '#3b82f6', icon: '📋', description: 'Documents manquants à fournir' },
   { value: 'under_review', label: 'En analyse', color: '#8b5cf6', icon: '🔍', description: 'Analyse du dossier en cours' },
   { value: 'processing', label: 'En traitement', color: '#06b6d4', icon: '⚙️', description: 'Dossier en cours de traitement' },
+  { value: 'offer_issued', label: 'Offre émise', color: '#f97316', icon: '📨', description: 'Offre envoyée, délai légal 10 jours' },
   { value: 'approved', label: 'Approuvé', color: '#10b981', icon: '✅', description: 'Dossier validé et approuvé' },
   { value: 'rejected', label: 'Rejeté', color: '#ef4444', icon: '❌', description: 'Dossier refusé' },
   { value: 'funded', label: 'Financé', color: '#059669', icon: '💰', description: 'Fonds débloqués' },
