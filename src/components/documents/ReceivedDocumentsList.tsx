@@ -137,7 +137,6 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
           <div className="spinner" />
           <span>Chargement des documents...</span>
         </div>
-        <style>{styles}</style>
       </Card>
     );
   }
@@ -190,159 +189,10 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
           </div>
         ))}
       </div>
-
-      <style>{styles}</style>
     </Card>
   );
 });
 
 ReceivedDocumentsList.displayName = 'ReceivedDocumentsList';
-
-const styles = `
-  .received-docs-card {
-    margin-top: 1.5rem;
-  }
-
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .section-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .doc-count {
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    background: #f1f5f9;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-full);
-  }
-
-  .loading-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 2rem;
-    color: var(--color-text-secondary);
-  }
-
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--color-border);
-    border-top-color: var(--color-primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  .documents-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .document-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border: 1px solid #bbf7d0;
-    border-radius: var(--radius-md);
-    transition: all 0.2s;
-  }
-
-  .document-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-  }
-
-  .doc-icon {
-    font-size: 1.75rem;
-    flex-shrink: 0;
-  }
-
-  .doc-content {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .doc-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .doc-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--color-text-primary);
-  }
-
-  .doc-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.5rem;
-  }
-
-  .doc-separator {
-    opacity: 0.5;
-  }
-
-  .doc-category {
-    background: white;
-    padding: 0.125rem 0.5rem;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-  }
-
-  .doc-motif {
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    margin: 0;
-    padding: 0.5rem;
-    background: white;
-    border-radius: var(--radius-sm);
-    border-left: 3px solid #22c55e;
-  }
-
-  .doc-actions {
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 640px) {
-    .document-item {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .doc-actions {
-      width: 100%;
-    }
-
-    .doc-actions button {
-      width: 100%;
-    }
-  }
-`;
 
 export default ReceivedDocumentsList;

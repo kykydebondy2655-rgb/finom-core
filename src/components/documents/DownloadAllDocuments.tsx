@@ -110,11 +110,10 @@ const DownloadAllDocuments: React.FC<DownloadAllDocumentsProps> = ({
       size="sm"
       onClick={handleDownloadAll}
       disabled={downloading}
+      className="btn-icon-text"
     >
       <Download size={16} className={downloading ? 'animate-pulse' : ''} />
-      <span style={{ marginLeft: '6px' }}>
-        {downloading ? 'Téléchargement...' : 'Télécharger tout'}
-      </span>
+      <span>{downloading ? 'Téléchargement...' : 'Télécharger tout'}</span>
     </Button>
   );
 };

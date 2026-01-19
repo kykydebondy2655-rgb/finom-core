@@ -36,7 +36,6 @@ const DocumentExpirationBadge: React.FC<DocumentExpirationBadgeProps> = ({
         <span className="expiration-badge warning" title="Date d'expiration non définie">
           <Clock size={12} />
           <span>Expiration non définie</span>
-          <style>{badgeStyles}</style>
         </span>
       );
     }
@@ -53,7 +52,6 @@ const DocumentExpirationBadge: React.FC<DocumentExpirationBadgeProps> = ({
       <span className="expiration-badge expired" title={`Expiré le ${format(expirationDate, 'dd/MM/yyyy', { locale: fr })}`}>
         <AlertTriangle size={12} />
         <span>Expiré</span>
-        <style>{badgeStyles}</style>
       </span>
     );
   }
@@ -64,7 +62,6 @@ const DocumentExpirationBadge: React.FC<DocumentExpirationBadgeProps> = ({
       <span className="expiration-badge warning" title={`Expire le ${format(expirationDate, 'dd/MM/yyyy', { locale: fr })}`}>
         <Clock size={12} />
         <span>Expire dans {daysUntilExpiry}j</span>
-        <style>{badgeStyles}</style>
       </span>
     );
   }
@@ -74,34 +71,9 @@ const DocumentExpirationBadge: React.FC<DocumentExpirationBadgeProps> = ({
     <span className="expiration-badge valid" title={`Valide jusqu'au ${format(expirationDate, 'dd/MM/yyyy', { locale: fr })}`}>
       <Clock size={12} />
       <span>Valide</span>
-      <style>{badgeStyles}</style>
     </span>
   );
 };
-
-const badgeStyles = `
-  .expiration-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 500;
-  }
-  .expiration-badge.expired {
-    background: #FEE2E2;
-    color: #991B1B;
-  }
-  .expiration-badge.warning {
-    background: #FEF3C7;
-    color: #92400E;
-  }
-  .expiration-badge.valid {
-    background: #D1FAE5;
-    color: #065F46;
-  }
-`;
 
 export default DocumentExpirationBadge;
 
