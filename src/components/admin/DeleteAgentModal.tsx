@@ -38,13 +38,13 @@ const DeleteAgentModal: React.FC<DeleteAgentModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content modal-sm" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Supprimer cet agent ?</h2>
+          <h2 className="danger">Supprimer cet agent ?</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
-        <div className="modal-body">
+        <div className="modal-body centered">
           <div className="warning-icon">⚠️</div>
           <p className="warning-text">
             Cette action est irréversible.
@@ -79,100 +79,6 @@ const DeleteAgentModal: React.FC<DeleteAgentModalProps> = ({
           </Button>
         </div>
 
-        <style>{`
-          .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-          }
-          .modal-content {
-            background: var(--color-bg);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-          }
-          .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .modal-header h2 { margin: 0; font-size: 1.25rem; color: #dc2626; }
-          .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-secondary);
-          }
-          .modal-body { padding: 1.5rem; text-align: center; }
-          .modal-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--color-border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-          }
-          .warning-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-          }
-          .warning-text {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-          }
-          .agent-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--color-muted);
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            text-align: left;
-          }
-          .agent-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--color-agent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
-          }
-          .agent-name { font-weight: 600; margin: 0; }
-          .agent-email { color: var(--color-text-secondary); font-size: 0.875rem; margin: 0; }
-          .danger-notice {
-            color: #dc2626;
-            font-size: 0.875rem;
-            padding: 0.75rem;
-            background: #fef2f2;
-            border-radius: 8px;
-          }
-          .error-message {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            font-size: 0.875rem;
-          }
-          .delete-btn {
-            background: #dc2626 !important;
-          }
-          .delete-btn:hover {
-            background: #b91c1c !important;
-          }
-        `}</style>
       </div>
     </div>
   );

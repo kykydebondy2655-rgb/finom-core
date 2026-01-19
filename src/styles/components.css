@@ -4133,3 +4133,201 @@
     overflow-x: auto;
   }
 }
+
+/* =============================================================================
+   ADMIN MODALS (CreateAgent, DeleteAgent, DeleteClient)
+   ============================================================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-bg);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content.modal-sm {
+  max-width: 420px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.modal-header h2.danger {
+  color: #dc2626;
+}
+
+.modal-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body.centered {
+  text-align: center;
+}
+
+.modal-footer,
+.modal-actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-actions {
+  border-top: none;
+  margin-top: 1.5rem;
+  padding: 0;
+}
+
+/* Form elements in modals */
+.modal-body .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modal-body .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal-body .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.modal-body .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--color-bg);
+}
+
+.modal-body .form-group input:focus {
+  outline: none;
+  border-color: var(--color-admin);
+}
+
+/* Warning/Delete modal elements */
+.modal-body .warning-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.modal-body .warning-text {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-body .agent-info,
+.modal-body .client-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-muted);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.modal-body .agent-avatar,
+.modal-body .client-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.modal-body .agent-avatar {
+  background: var(--color-agent);
+}
+
+.modal-body .client-avatar {
+  background: var(--color-admin);
+}
+
+.modal-body .agent-name,
+.modal-body .client-name {
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-body .agent-email,
+.modal-body .client-email {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.modal-body .danger-notice {
+  color: #dc2626;
+  font-size: 0.875rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border-radius: 8px;
+}
+
+.modal-body .error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.modal-body .error-message:first-child {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Delete button style */
+.delete-btn {
+  background: #dc2626 !important;
+}
+
+.delete-btn:hover {
+  background: #b91c1c !important;
+}
