@@ -669,7 +669,15 @@
 }
 
 .step-icon-finom {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, hsl(var(--accent) / 0.12) 0%, hsl(var(--accent) / 0.06) 100%);
+  color: hsl(var(--accent));
+  flex-shrink: 0;
 }
 
 .step-header-finom h3 {
@@ -680,8 +688,15 @@
 }
 
 .step-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
+}
+
+.step-duration .inline-icon {
+  flex-shrink: 0;
 }
 
 .step-description {
@@ -740,9 +755,15 @@
 }
 
 .advantage-icon-finom {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, hsl(var(--accent) / 0.12) 0%, hsl(var(--accent) / 0.04) 100%);
+  color: hsl(var(--accent));
+  margin: 0 auto 1rem;
 }
 
 .advantage-card-finom h4 {
