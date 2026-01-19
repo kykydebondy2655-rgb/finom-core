@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Card from '@/components/finom/Card';
 import { getDocumentChecklist, DOCUMENT_CATEGORIES, calculateDocumentProgress, type ProjectType, type DocumentRequirement } from '@/lib/documentChecklist';
 import type { Document } from '@/services/api';
+import { ClipboardList, User, Users, CheckCircle2, ArrowUpFromLine, XCircle, Circle, CircleDot, IdCard, BarChart3, Coins, Landmark, Home, ShieldCheck } from 'lucide-react';
 
 interface DocumentChecklistProps {
   projectType: ProjectType;
@@ -55,10 +56,22 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
     return 'uploaded';
   };
 
+  const CategoryIcon = ({ category }: { category: string }) => {
+    const icons: Record<string, React.ReactNode> = {
+      'identite': <IdCard size={16} />,
+      'fiscal': <BarChart3 size={16} />,
+      'revenus': <Coins size={16} />,
+      'bancaire': <Landmark size={16} />,
+      'bien': <Home size={16} />,
+      'assurance': <ShieldCheck size={16} />,
+    };
+    return <>{icons[category] || <ClipboardList size={16} />}</>;
+  };
+
   return (
     <Card className="document-checklist" padding="lg">
       <div className="checklist-header">
-        <h3>📋 Documents requis</h3>
+        <h3><ClipboardList size={18} className="inline-icon" /> Documents requis</h3>
         {!hasCoborrower && (
           <div className="progress-info">
             <div className="progress-bar">
@@ -82,14 +95,14 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
               className={`owner-tab ${activeOwner === 'primary' ? 'active' : ''}`}
               onClick={() => setActiveOwner('primary')}
             >
-              👤 Emprunteur principal
+              <User size={14} className="inline-icon" /> Emprunteur principal
               <span className="tab-progress">{primaryProgress.completed}/{primaryProgress.total}</span>
             </button>
             <button 
               className={`owner-tab ${activeOwner === 'co_borrower' ? 'active' : ''}`}
               onClick={() => setActiveOwner('co_borrower')}
             >
-              👥 Co-emprunteur
+              <Users size={14} className="inline-icon" /> Co-emprunteur
               <span className="tab-progress">{coborrowerProgress.completed}/{coborrowerProgress.total}</span>
             </button>
           </div>
@@ -113,7 +126,7 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
           return (
             <div key={categoryKey} className="category-section">
               <h4 className="category-title">
-                <span className="category-icon">{category?.icon || '📄'}</span>
+                <span className="category-icon"><CategoryIcon category={categoryKey} /></span>
                 {category?.label || categoryKey}
               </h4>
               <div className="documents-list">
@@ -126,10 +139,10 @@ const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
                       onClick={() => status === 'pending' && onUploadClick?.(doc.id)}
                     >
                       <div className="doc-status-icon">
-                        {status === 'validated' && '✅'}
-                        {status === 'uploaded' && '📤'}
-                        {status === 'rejected' && '❌'}
-                        {status === 'pending' && (doc.required ? '⭕' : '⚪')}
+                        {status === 'validated' && <CheckCircle2 size={18} className="status-validated" />}
+                        {status === 'uploaded' && <ArrowUpFromLine size={18} className="status-uploaded" />}
+                        {status === 'rejected' && <XCircle size={18} className="status-rejected" />}
+                        {status === 'pending' && (doc.required ? <CircleDot size={18} className="status-required" /> : <Circle size={18} className="status-optional" />)}
                       </div>
                       <div className="doc-info">
                         <span className="doc-name">

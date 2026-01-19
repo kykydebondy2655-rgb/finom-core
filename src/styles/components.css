@@ -1,3 +1,105 @@
+/* ===== LUCIDE ICON HOVER ANIMATIONS (MODALS) ===== */
+.modal-icon-hover {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.modal-icon-hover:hover {
+  transform: scale(1.15);
+  color: hsl(var(--primary));
+}
+
+/* Modal header icons */
+.dialog-header .lucide,
+.modal-header .lucide,
+[class*="Modal"] h2 .lucide,
+[class*="Modal"] h3 .lucide {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.dialog-header:hover .lucide,
+.modal-header:hover .lucide {
+  transform: scale(1.1);
+}
+
+/* Modal action button icons */
+.modal-actions .lucide,
+.dialog-footer .lucide,
+[class*="Modal"] button .lucide {
+  transition: transform 0.2s ease;
+}
+
+.modal-actions button:hover .lucide,
+.dialog-footer button:hover .lucide,
+[class*="Modal"] button:hover .lucide {
+  transform: scale(1.15);
+}
+
+/* Inline icons */
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.35rem;
+}
+
+.btn-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* Empty state icons */
+.empty-icon-lucide {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+/* Document status icons */
+.doc-status-icon .status-validated {
+  color: hsl(var(--success, 142 76% 36%));
+}
+
+.doc-status-icon .status-uploaded {
+  color: hsl(var(--primary));
+}
+
+.doc-status-icon .status-rejected {
+  color: hsl(var(--destructive));
+}
+
+.doc-status-icon .status-required {
+  color: hsl(var(--warning, 38 92% 50%));
+}
+
+.doc-status-icon .status-optional {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+}
+
+/* Reject icon in doc list */
+.reject-icon {
+  color: hsl(var(--destructive));
+}
+
+/* Timeline icons */
+.timeline-icon .lucide {
+  transition: transform 0.2s ease;
+}
+
+.timeline-item:hover .timeline-icon .lucide {
+  transform: scale(1.2);
+}
+
+/* Category icons in checklist */
+.category-icon .lucide {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.category-section:hover .category-icon .lucide {
+  transform: scale(1.1);
+  color: hsl(var(--primary));
+}
+
 /* ============================================
    LOAN PAGES STYLES 
    ============================================ */
