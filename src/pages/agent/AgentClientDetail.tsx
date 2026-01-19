@@ -17,6 +17,7 @@ import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModa
 import DeleteClientModal from '@/components/admin/DeleteClientModal';
 import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
+import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
@@ -160,7 +161,7 @@ const AgentClientDetail: React.FC = () => {
             )}
           </div>
 
-          {/* Client Status Selector */}
+          {/* Client Status Selector with History */}
           <div className="status-selector-row fade-in">
             <span className="status-label">Statut client :</span>
             <ClientStatusSelect 
@@ -168,6 +169,11 @@ const AgentClientDetail: React.FC = () => {
               currentStatus={client.pipeline_stage} 
               onStatusChange={(newStatus) => setClient(prev => prev ? {...prev, pipeline_stage: newStatus} : null)}
             />
+          </div>
+          
+          {/* Status History */}
+          <div className="status-history-section fade-in" style={{ marginBottom: '1rem' }}>
+            <ClientStatusHistory clientId={id || ''} />
           </div>
 
           {/* Tabs */}
