@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
-import processImage from '@/assets/process-digital.jpg';
+import processVideo from '@/assets/process-digital-video.mp4';
 import { 
     motion,
     fadeInUp,
@@ -116,7 +116,14 @@ const HowItWorks = () => {
                             </p>
                         </div>
                         <div className="how-hero-image">
-                            <img src={processImage} alt="Processus digital FINOM" />
+                            <video 
+                                src={processVideo} 
+                                autoPlay 
+                                loop 
+                                muted 
+                                playsInline
+                                className="w-full h-full object-cover rounded-2xl"
+                            />
                         </div>
                     </div>
                 </section>
