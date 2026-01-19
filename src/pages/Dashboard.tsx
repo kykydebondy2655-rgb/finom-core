@@ -12,6 +12,7 @@ import Button from '../components/finom/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, LoanApplication } from '../services/api';
 import logger from '../lib/logger';
+import { BarChart3, FileText, FolderOpen, Landmark, User, Calculator } from 'lucide-react';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -66,12 +67,14 @@ const Dashboard = () => {
                 >
                     <motion.div variants={fadeInUp} transition={{ duration: 0.4 }}>
                         <Button onClick={() => navigate('/simulator')} variant="primary" size="lg">
-                            📊 Nouvelle simulation
+                            <Calculator size={18} style={{ marginRight: '8px' }} />
+                            Nouvelle simulation
                         </Button>
                     </motion.div>
                     <motion.div variants={fadeInUp} transition={{ duration: 0.4 }}>
                         <Button onClick={() => navigate('/loans/new')} variant="secondary" size="lg">
-                            📝 Nouvelle demande
+                            <FileText size={18} style={{ marginRight: '8px' }} />
+                            Nouvelle demande
                         </Button>
                     </motion.div>
                 </motion.div>
@@ -100,7 +103,9 @@ const Dashboard = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.4 }}
                             >
-                                <div className="empty-icon">📁</div>
+                                <div className="empty-icon">
+                                    <FolderOpen size={48} />
+                                </div>
                                 <h3>Aucune demande de prêt</h3>
                                 <p>Commencez par une simulation gratuite pour estimer votre capacité d'emprunt.</p>
                                 <Button onClick={() => navigate('/simulator')} variant="primary" size="md">
@@ -164,7 +169,7 @@ const Dashboard = () => {
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ type: 'spring', stiffness: 300 }}
                             >
-                                🏦
+                                <Landmark size={28} />
                             </motion.div>
                             <div className="banking-info">
                                 <h4>Compte bancaire</h4>
@@ -180,7 +185,7 @@ const Dashboard = () => {
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ type: 'spring', stiffness: 300 }}
                             >
-                                📄
+                                <FileText size={28} />
                             </motion.div>
                             <div className="banking-info">
                                 <h4>Mes dossiers</h4>
@@ -196,7 +201,7 @@ const Dashboard = () => {
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ type: 'spring', stiffness: 300 }}
                             >
-                                👤
+                                <User size={28} />
                             </motion.div>
                             <div className="banking-info">
                                 <h4>Mon profil</h4>

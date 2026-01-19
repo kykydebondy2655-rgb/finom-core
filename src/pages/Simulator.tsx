@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
+import { FileText, Wallet, ShieldCheck, Calculator, CreditCard, PiggyBank, TrendingUp, Home } from 'lucide-react';
 
 interface FormData {
   propertyPrice: number;
@@ -276,8 +277,10 @@ const Simulator = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
+                  className="form-section-title"
                 >
-                  📝 Votre projet
+                  <Home className="section-icon" size={24} />
+                  Votre projet
                 </motion.h2>
                 
                 <motion.div 
@@ -360,8 +363,10 @@ const Simulator = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
+                  className="form-section-title"
                 >
-                  💰 Votre financement
+                  <Wallet className="section-icon" size={24} />
+                  Votre financement
                 </motion.h2>
 
                 <motion.div 
@@ -415,7 +420,7 @@ const Simulator = () => {
                     className="insurance-notice"
                     variants={fadeInUp}
                   >
-                    <span className="insurance-icon">🛡️</span>
+                    <ShieldCheck className="insurance-icon-lucide" size={24} />
                     <div className="insurance-text">
                       <strong>Assurance emprunteur incluse</strong>
                       <span>Taux fixe : {INSURANCE_RATE}% par an (obligatoire)</span>

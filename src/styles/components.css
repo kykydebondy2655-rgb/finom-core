@@ -558,6 +558,10 @@
 .dashboard-page .empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
+  color: hsl(var(--muted-foreground));
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dashboard-page .empty-state h3 {
@@ -651,8 +655,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: hsl(var(--accent) / 0.1);
   border-radius: var(--radius-md);
+  color: hsl(var(--accent));
 }
 
 .dashboard-page .banking-info {
@@ -2676,6 +2681,26 @@
 
 .insurance-icon {
   font-size: 1.5rem;
+}
+
+.insurance-icon-lucide {
+  color: hsl(var(--accent));
+  flex-shrink: 0;
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.form-section-title .section-icon {
+  color: hsl(var(--accent));
+  flex-shrink: 0;
 }
 
 .insurance-text {
