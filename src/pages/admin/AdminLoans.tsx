@@ -167,35 +167,6 @@ const AdminLoans: React.FC = () => {
             loan={selectedLoan}
           />
         </div>
-
-        <style>{`
-          .admin-loans-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
-          .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.25rem; }
-          .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-          .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-          .filter-btn { padding: 0.625rem 1rem; border: none; background: white; border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem; color: var(--color-text-secondary); cursor: pointer; }
-          .filter-btn:hover { background: #f1f5f9; }
-          .filter-btn.active { background: var(--color-admin); color: white; }
-          .table-wrapper { overflow-x: auto; }
-          .data-table { width: 100%; border-collapse: collapse; }
-          .data-table th { text-align: left; padding: 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-tertiary); border-bottom: 1px solid var(--color-border); }
-          .data-table td { padding: 1rem; border-bottom: 1px solid var(--color-border); }
-          .data-table tbody tr { cursor: pointer; transition: background 0.15s; }
-          .data-table tbody tr:hover { background: #f8fafc; }
-          .ref-badge { background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.8rem; color: var(--color-admin); font-family: monospace; }
-          .user-cell { display: flex; align-items: center; gap: 0.75rem; }
-          .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
-          .amount { font-weight: 600; }
-          .date { color: var(--color-text-tertiary); font-size: 0.9rem; }
-          .actions-cell { display: flex; gap: 0.5rem; }
-          .coborrower-badge { font-size: 1.1rem; cursor: help; }
-          .no-coborrower { color: var(--color-text-tertiary); }
-          .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 3rem; }
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        `}</style>
       </div>
     </PageLayout>
   );

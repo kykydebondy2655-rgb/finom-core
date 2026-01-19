@@ -464,59 +464,6 @@ const AgentClientDetail: React.FC = () => {
           clientEmail={client.email || ''}
           clientFirstName={client.first_name || ''}
         />
-
-        <style>{`
-          .client-detail-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .docs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-          .docs-header h3 { margin: 0; }
-          .sent-docs-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
-          .sent-docs-section h4 { margin: 0 0 1rem 0; color: var(--color-text-secondary); }
-          .doc-item.sent { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; }
-          .page-header { color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
-          .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
-          .header-content { display: flex; justify-content: space-between; align-items: flex-start; }
-          .client-header { display: flex; align-items: center; gap: 1rem; }
-          .client-avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: white; color: ${themeColor}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; }
-          .page-header h1 { color: white; font-size: 1.75rem; margin: 0; }
-          .page-header p { opacity: 0.9; margin: 0.25rem 0 0; }
-          .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
-          .quick-actions { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
-          .status-selector-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
-          .status-label { font-weight: 500; color: var(--color-text-secondary); }
-          .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
-          .tab { padding: 0.75rem 1.25rem; border: none; background: white; border-radius: var(--radius-full); font-weight: 600; color: var(--color-text-secondary); cursor: pointer; }
-          .tab.active { background: ${themeColor}; color: white; }
-          .info-grid { display: grid; gap: 1rem; }
-          .info-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); }
-          .info-row:last-child { border-bottom: none; }
-          .info-row span:first-child { color: var(--color-text-secondary); }
-          .loans-list, .docs-list { display: flex; flex-direction: column; gap: 0.75rem; }
-          .loan-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8fafc; border-radius: var(--radius-md); cursor: pointer; }
-          .loan-item:hover { background: #f1f5f9; }
-          .loan-ref { font-family: monospace; color: var(--color-text-tertiary); }
-          .loan-amount { font-weight: 700; margin-left: 1rem; }
-          .loan-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--color-text-secondary); }
-          .doc-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f8fafc; border-radius: var(--radius-md); }
-          .doc-icon { font-size: 1.5rem; }
-          .doc-info { flex: 1; }
-          .doc-name { font-weight: 600; display: block; }
-          .doc-meta { font-size: 0.8rem; color: var(--color-text-tertiary); }
-          .download-btn, .status-btn { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s; }
-          .download-btn:hover, .status-btn:hover { background: #e2e8f0; }
-          .loan-main { cursor: pointer; flex: 1; display: flex; align-items: center; }
-          .empty-text { text-align: center; color: var(--color-text-tertiary); padding: 2rem; }
-          .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          
-          /* Bank account section styles */
-          .bank-card-wrapper { margin-top: 1rem; }
-          .bank-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-          .bank-header h3 { margin: 0; }
-          .balance-value { color: var(--color-success); font-size: 1.1rem; }
-          .iban-value { font-family: monospace; letter-spacing: 0.05em; }
-          .admin-notice { margin-top: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: var(--radius-sm); font-size: 0.85rem; color: #92400e; }
-        `}</style>
       </div>
     </PageLayout>
   );

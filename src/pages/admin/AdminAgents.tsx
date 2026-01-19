@@ -199,39 +199,6 @@ const AdminAgents: React.FC = () => {
             agent={selectedAgent}
           />
         )}
-
-        <style>{`
-          .admin-agents-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
-          .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
-          .header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.25rem; }
-          .container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
-          .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-          .agent-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
-          .agent-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--color-agent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; margin-bottom: 1rem; }
-          .agent-info { margin-bottom: 1rem; }
-          .agent-name { font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 0.25rem; }
-          .agent-email { color: var(--color-text-secondary); font-size: 0.9rem; display: block; }
-          .agent-stats { 
-            display: inline-block; 
-            margin-top: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            background: #dcfce7;
-            color: #16a34a;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-          }
-          .agent-date { color: var(--color-text-tertiary); font-size: 0.8rem; display: block; margin-top: 0.5rem; }
-          .agent-actions { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
-          .empty-state { text-align: center; padding: 3rem; }
-          .empty-text { color: var(--color-text-tertiary); margin-bottom: 1.5rem; }
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          .delete-agent-btn { color: #dc2626 !important; }
-          .delete-agent-btn:hover { background: #fef2f2 !important; }
-        `}</style>
       </div>
     </PageLayout>
   );

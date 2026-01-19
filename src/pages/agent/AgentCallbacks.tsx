@@ -306,68 +306,6 @@ const AgentCallbacks: React.FC = () => {
           onSuccess={loadCallbacks}
           callback={selectedCallback}
         />
-
-        <style>{`
-          .agent-callbacks-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-agent) 0%, #047857 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
-          .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
-          .header-content { display: flex; justify-content: space-between; align-items: center; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.25rem; }
-          .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-          
-          .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; }
-          .callbacks-section { min-width: 0; }
-          
-          .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-          .filter-btn { padding: 0.75rem 1.25rem; border: none; background: white; border-radius: var(--radius-full); font-weight: 600; color: var(--color-text-secondary); cursor: pointer; transition: all 0.2s; }
-          .filter-btn:hover { background: #f1f5f9; }
-          .filter-btn.active { background: var(--color-agent); color: white; }
-          
-          .callbacks-grouped { display: flex; flex-direction: column; gap: 1.5rem; }
-          .date-header { font-size: 0.85rem; text-transform: capitalize; color: var(--color-text-secondary); margin: 0 0 0.75rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-border); }
-          
-          .callbacks-list { display: flex; flex-direction: column; gap: 0.75rem; }
-          .callback-item { display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: flex-start; padding: 1.25rem; background: white; border-radius: var(--radius-md); border: 1px solid var(--color-border); transition: box-shadow 0.2s; }
-          .callback-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-          .callback-item.completed { opacity: 0.7; background: #f8fafc; }
-          
-          .callback-main { display: flex; align-items: flex-start; gap: 1rem; }
-          .callback-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--color-agent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
-          .callback-info { display: flex; flex-direction: column; gap: 0.25rem; }
-          .callback-client { font-weight: 600; }
-          .callback-phone { font-size: 0.9rem; color: var(--color-text-secondary); }
-          .callback-reason { font-size: 0.85rem; color: var(--color-text-tertiary); }
-          .callback-notes { font-size: 0.85rem; color: var(--color-agent); cursor: pointer; padding: 0.25rem 0.5rem; background: #ecfdf5; border-radius: var(--radius-sm); display: inline-block; margin-top: 0.25rem; }
-          .callback-notes:hover { background: #d1fae5; }
-          
-          .notes-edit { margin-top: 0.5rem; }
-          .notes-edit textarea { width: 100%; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.9rem; resize: vertical; }
-          .notes-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-          
-          .callback-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
-          .callback-time { font-size: 0.9rem; color: var(--color-text-secondary); font-weight: 500; }
-          
-          .callback-actions { display: flex; gap: 0.5rem; align-items: center; }
-          .completed-at { font-size: 0.8rem; color: var(--color-text-tertiary); }
-          
-          .empty-state { text-align: center; padding: 3rem; }
-          .empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
-          .empty-text { color: var(--color-text-tertiary); margin-bottom: 1rem; }
-          
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          
-          @media (max-width: 1024px) { 
-            .main-grid { grid-template-columns: 1fr; }
-            .history-section { order: -1; }
-          }
-          @media (max-width: 768px) { 
-            .callback-item { grid-template-columns: 1fr; }
-            .callback-meta { flex-direction: row; align-items: center; }
-            .callback-actions { flex-wrap: wrap; }
-            .header-content { flex-direction: column; gap: 1rem; align-items: flex-start; }
-          }
-        `}</style>
       </div>
     </PageLayout>
   );

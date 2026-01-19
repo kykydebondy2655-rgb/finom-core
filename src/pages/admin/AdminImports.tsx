@@ -398,55 +398,6 @@ const AdminImports: React.FC = () => {
             </div>
           </div>
         )}
-
-        <style>{`
-          .admin-imports-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-          .page-header { background: linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%); color: white; padding: 2rem 1.5rem; margin-bottom: 2rem; }
-          .back-btn { background: transparent; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
-          .header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
-          .page-header h1 { color: white; font-size: 2rem; margin-bottom: 0.25rem; }
-          .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-          
-          .table-wrapper { overflow-x: auto; }
-          .data-table { width: 100%; border-collapse: collapse; }
-          .data-table th { text-align: left; padding: 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-tertiary); border-bottom: 1px solid var(--color-border); }
-          .data-table td { padding: 1rem; border-bottom: 1px solid var(--color-border); }
-          .date { color: var(--color-text-tertiary); font-size: 0.9rem; }
-          .action-btns { display: flex; gap: 0.5rem; }
-          
-          .empty-state { text-align: center; padding: 4rem 2rem; color: var(--color-text-tertiary); }
-          .empty-state p { margin-top: 1rem; }
-          
-          .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
-          .modal-content { background: white; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow: auto; }
-          .modal-content.large { max-width: 900px; }
-          .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--color-border); }
-          .modal-header h3 { font-size: 1.25rem; font-weight: 600; }
-          .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-tertiary); }
-          .modal-body { padding: 1.5rem; }
-          .modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.5rem; border-top: 1px solid var(--color-border); }
-          
-          .stats-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-          .stat-box { flex: 1; padding: 1rem; border-radius: 8px; background: #f8fafc; text-align: center; }
-          .stat-box.success { background: #d1fae5; }
-          .stat-box.error { background: #fee2e2; }
-          .stat-value { display: block; font-size: 1.5rem; font-weight: 700; }
-          .stat-label { font-size: 0.75rem; color: var(--color-text-tertiary); text-transform: uppercase; }
-          
-          .preview-table-wrapper { max-height: 300px; overflow: auto; border: 1px solid var(--color-border); border-radius: 8px; margin-bottom: 1rem; }
-          .preview-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-          .preview-table th { position: sticky; top: 0; background: #f8fafc; padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--color-border); }
-          .preview-table td { padding: 0.75rem; border-bottom: 1px solid var(--color-border); }
-          .more-rows { text-align: center; padding: 0.5rem; color: var(--color-text-tertiary); font-size: 0.85rem; }
-          
-          .errors-list { max-height: 150px; overflow: auto; }
-          .error-item { padding: 0.5rem; background: #fee2e2; border-radius: 4px; margin-bottom: 0.5rem; font-size: 0.85rem; color: #991b1b; }
-          
-          .rejection-reason { padding: 1rem; background: #fee2e2; border-radius: 8px; margin-top: 1rem; color: #991b1b; }
-          
-          .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        `}</style>
       </div>
     </PageLayout>
   );
