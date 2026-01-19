@@ -5,7 +5,11 @@ import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
-import { RefreshCw } from 'lucide-react';
+import { 
+  RefreshCw, FileText, Search, CheckCircle2, XCircle, Coins, 
+  Clock, ClipboardList, Cog, Mail, Users, User, ArrowUpFromLine,
+  ArrowDownToLine, X, Plus, FileStack, MessageCircle
+} from 'lucide-react';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
 import type { LoanApplication, Document, Message, Profile } from '@/services/api';
@@ -148,54 +152,69 @@ const LoanDetail: React.FC = () => {
 
   const getTimelineEvents = () => {
     const events = [
-      { date: loan?.created_at, label: 'Demande créée', icon: '📝', status: 'completed' },
+      { date: loan?.created_at, label: 'Demande créée', icon: 'FileText', status: 'completed' },
     ];
 
     if (loan?.status !== 'draft' && loan?.status !== 'pending') {
-      events.push({ date: loan?.updated_at, label: 'Dossier en cours d\'analyse', icon: '🔍', status: 'completed' });
+      events.push({ date: loan?.updated_at, label: 'Dossier en cours d\'analyse', icon: 'Search', status: 'completed' });
     }
 
     if (loan?.status === 'approved' || loan?.status === 'funded') {
-      events.push({ date: loan?.updated_at, label: 'Dossier approuvé', icon: '✅', status: 'completed' });
+      events.push({ date: loan?.updated_at, label: 'Dossier approuvé', icon: 'CheckCircle2', status: 'completed' });
     }
 
     if (loan?.status === 'funded') {
-      events.push({ date: loan?.updated_at, label: 'Financement effectué', icon: '💰', status: 'completed' });
+      events.push({ date: loan?.updated_at, label: 'Financement effectué', icon: 'Coins', status: 'completed' });
     }
 
     if (loan?.status === 'rejected') {
-      events.push({ date: loan?.updated_at, label: 'Dossier refusé', icon: '❌', status: 'completed' });
+      events.push({ date: loan?.updated_at, label: 'Dossier refusé', icon: 'XCircle', status: 'completed' });
     }
 
     // Add pending steps
     if (loan?.status === 'pending') {
-      events.push({ date: null, label: 'Analyse du dossier', icon: '🔍', status: 'pending' });
-      events.push({ date: null, label: 'Décision', icon: '📋', status: 'upcoming' });
+      events.push({ date: null, label: 'Analyse du dossier', icon: 'Search', status: 'pending' });
+      events.push({ date: null, label: 'Décision', icon: 'ClipboardList', status: 'upcoming' });
     }
 
     if (loan?.status === 'in_review' || loan?.status === 'under_review') {
-      events.push({ date: null, label: 'Décision', icon: '📋', status: 'pending' });
+      events.push({ date: null, label: 'Décision', icon: 'ClipboardList', status: 'pending' });
     }
 
     if (loan?.status === 'documents_required') {
-      events.push({ date: null, label: 'Documents en attente', icon: '📋', status: 'pending' });
-      events.push({ date: null, label: 'Analyse', icon: '🔍', status: 'upcoming' });
+      events.push({ date: null, label: 'Documents en attente', icon: 'ClipboardList', status: 'pending' });
+      events.push({ date: null, label: 'Analyse', icon: 'Search', status: 'upcoming' });
     }
 
     if (loan?.status === 'processing') {
-      events.push({ date: null, label: 'Finalisation', icon: '⚙️', status: 'pending' });
+      events.push({ date: null, label: 'Finalisation', icon: 'Cog', status: 'pending' });
     }
 
     if (loan?.status === 'offer_issued') {
-      events.push({ date: loan?.updated_at, label: 'Offre émise', icon: '📨', status: 'completed' });
-      events.push({ date: null, label: 'Acceptation (10 jours)', icon: '⏳', status: 'pending' });
+      events.push({ date: loan?.updated_at, label: 'Offre émise', icon: 'Mail', status: 'completed' });
+      events.push({ date: null, label: 'Acceptation (10 jours)', icon: 'Clock', status: 'pending' });
     }
 
     if (loan?.status === 'approved') {
-      events.push({ date: null, label: 'Financement', icon: '💰', status: 'pending' });
+      events.push({ date: null, label: 'Financement', icon: 'Coins', status: 'pending' });
     }
 
     return events;
+  };
+
+  const TimelineIcon = ({ name }: { name: string }) => {
+    const icons: Record<string, React.ReactNode> = {
+      'FileText': <FileText size={16} />,
+      'Search': <Search size={16} />,
+      'CheckCircle2': <CheckCircle2 size={16} />,
+      'Coins': <Coins size={16} />,
+      'XCircle': <XCircle size={16} />,
+      'ClipboardList': <ClipboardList size={16} />,
+      'Cog': <Cog size={16} />,
+      'Mail': <Mail size={16} />,
+      'Clock': <Clock size={16} />,
+    };
+    return <>{icons[name] || <FileText size={16} />}</>;
   };
 
   if (loading) {
@@ -244,7 +263,7 @@ const LoanDetail: React.FC = () => {
                 <h1>{formatCurrency(loan.amount)}</h1>
                 <p>
                   {loan.duration} ans • {loan.rate}%
-                  {loan.has_coborrower && <span className="coborrower-indicator">👥 Co-emprunteur</span>}
+                  {loan.has_coborrower && <span className="coborrower-indicator"><Users size={14} className="inline-icon" /> Co-emprunteur</span>}
                 </p>
               </div>
               <StatusBadge status={loan.status} />
@@ -394,7 +413,7 @@ const LoanDetail: React.FC = () => {
                 {/* Co-borrower Info Card */}
                 {loan.has_coborrower && (loan as any).coborrower_data && (
                   <Card className="coborrower-card" padding="lg">
-                    <h3>👥 Informations Co-emprunteur</h3>
+                    <h3><Users size={18} className="inline-icon" /> Informations Co-emprunteur</h3>
                     <div className="coborrower-info">
                       {(() => {
                         const coData = (loan as any).coborrower_data as Record<string, unknown>;
@@ -462,7 +481,7 @@ const LoanDetail: React.FC = () => {
               {/* Client-uploaded Documents */}
               <Card padding="lg">
                 <div className="documents-header">
-                  <h3>📤 Documents envoyés</h3>
+                  <h3><ArrowUpFromLine size={18} className="inline-icon" /> Documents envoyés</h3>
                   <div className="documents-actions">
                     {(isAdmin || isAgent) && loan && id && (
                       <DownloadAllDocuments loanId={id} loanRef={loan.id.slice(0, 8)} />
@@ -473,7 +492,7 @@ const LoanDetail: React.FC = () => {
                         size="sm"
                         onClick={() => setShowAdminUploadModal(true)}
                       >
-                        📥 Envoyer au client
+                        <ArrowDownToLine size={14} className="btn-icon" /> Envoyer au client
                       </Button>
                     )}
                     <Button 
@@ -481,7 +500,7 @@ const LoanDetail: React.FC = () => {
                       size="sm"
                       onClick={() => setShowUploadSection(!showUploadSection)}
                     >
-                      {showUploadSection ? '✕ Fermer' : '+ Ajouter un document'}
+                      {showUploadSection ? <><X size={14} className="btn-icon" /> Fermer</> : <><Plus size={14} className="btn-icon" /> Ajouter un document</>}
                     </Button>
                   </div>
                 </div>
@@ -514,23 +533,24 @@ const LoanDetail: React.FC = () => {
                       className={`doc-owner-tab ${activeDocOwner === 'primary' ? 'active' : ''}`}
                       onClick={() => setActiveDocOwner('primary')}
                     >
-                      👤 Emprunteur ({documents.filter(d => !d.document_owner || d.document_owner === 'primary').length})
+                      <User size={14} className="inline-icon" /> Emprunteur ({documents.filter(d => !d.document_owner || d.document_owner === 'primary').length})
                     </button>
                     <button 
                       className={`doc-owner-tab ${activeDocOwner === 'co_borrower' ? 'active' : ''}`}
                       onClick={() => setActiveDocOwner('co_borrower')}
                     >
-                      👥 Co-emprunteur ({documents.filter(d => d.document_owner === 'co_borrower').length})
+                      <Users size={14} className="inline-icon" /> Co-emprunteur ({documents.filter(d => d.document_owner === 'co_borrower').length})
+                      
                     </button>
                   </div>
                 )}
 
                 {documents.length === 0 && !showUploadSection ? (
                   <div className="empty-docs">
-                    <span className="empty-icon">📄</span>
+                    <FileStack size={48} className="empty-icon-lucide" />
                     <p>Aucun document envoyé dans ce dossier</p>
                     <Button variant="primary" size="sm" onClick={() => setShowUploadSection(true)}>
-                      Ajouter un document
+                      <Plus size={14} className="btn-icon" /> Ajouter un document
                     </Button>
                   </div>
                 ) : documents.length > 0 && (
@@ -543,20 +563,20 @@ const LoanDetail: React.FC = () => {
                       })
                       .map(doc => (
                         <div key={doc.id} className={`document-item outgoing ${doc.document_owner === 'co_borrower' ? 'coborrower-doc' : ''}`}>
-                          <div className="doc-icon">📄</div>
+                          <div className="doc-icon"><FileText size={20} /></div>
                           <div className="doc-info">
                             <span className="doc-name">{doc.file_name}</span>
                             <span className="doc-meta">
                               {doc.category} • {formatDate(doc.uploaded_at)}
                               {loan?.has_coborrower && (
                                 <span className="doc-owner-badge">
-                                  {doc.document_owner === 'co_borrower' ? ' • 👥 Co-emprunteur' : ' • 👤 Emprunteur'}
+                                  {doc.document_owner === 'co_borrower' ? <> • <Users size={12} className="inline-icon" /> Co-emprunteur</> : <> • <User size={12} className="inline-icon" /> Emprunteur</>}
                                 </span>
                               )}
                             </span>
                             {doc.status === 'rejected' && doc.rejection_reason && (
                               <span className="doc-rejection-reason">
-                                ❌ {doc.rejection_reason}
+                                <XCircle size={12} className="inline-icon reject-icon" /> {doc.rejection_reason}
                               </span>
                             )}
                           </div>
@@ -601,7 +621,7 @@ const LoanDetail: React.FC = () => {
                 
                 {messages.length === 0 ? (
                   <div className="empty-messages">
-                    <span className="empty-icon">💬</span>
+                    <MessageCircle size={48} className="empty-icon-lucide" />
                     <p>Aucun message pour ce dossier</p>
                   </div>
                 ) : (
@@ -651,7 +671,7 @@ const LoanDetail: React.FC = () => {
                   {getTimelineEvents().map((event, index) => (
                     <div key={index} className={`timeline-item ${event.status}`}>
                       <div className="timeline-marker">
-                        <span className="timeline-icon">{event.icon}</span>
+                        <span className="timeline-icon"><TimelineIcon name={event.icon} /></span>
                       </div>
                       <div className="timeline-content">
                         <span className="timeline-label">{event.label}</span>

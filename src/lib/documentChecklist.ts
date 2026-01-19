@@ -73,12 +73,12 @@ export const getDocumentChecklist = (projectType: ProjectType): DocumentRequirem
  * Get document categories
  */
 export const DOCUMENT_CATEGORIES = {
-  identite: { label: 'Identité', icon: '🪪' },
-  fiscal: { label: 'Fiscal', icon: '📊' },
-  revenus: { label: 'Revenus', icon: '💰' },
-  bancaire: { label: 'Bancaire', icon: '🏦' },
-  bien: { label: 'Bien immobilier', icon: '🏠' },
-  assurance: { label: 'Assurance', icon: '🛡️' },
+  identite: { label: 'Identité', icon: 'IdCard' },
+  fiscal: { label: 'Fiscal', icon: 'BarChart3' },
+  revenus: { label: 'Revenus', icon: 'Coins' },
+  bancaire: { label: 'Bancaire', icon: 'Landmark' },
+  bien: { label: 'Bien immobilier', icon: 'Home' },
+  assurance: { label: 'Assurance', icon: 'ShieldCheck' },
 } as const;
 
 /**
