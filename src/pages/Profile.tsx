@@ -341,7 +341,6 @@ const Profile = () => {
                         <Card className="profile-card security-card" padding="xl">
                             <h2><Lock size={20} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Sécurité</h2>
                             <p className="security-subtitle">Modifiez votre mot de passe</p>
-                            <p className="security-subtitle">Modifiez votre mot de passe</p>
 
                             <form onSubmit={handlePasswordSubmit}>
                                 <div className="form-group">

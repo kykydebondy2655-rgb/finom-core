@@ -24,15 +24,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return (
       <div className="protected-route-loading">
         <LoadingSpinner />
-        <style>{`
-          .protected-route-loading {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-bg);
-          }
-        `}</style>
       </div>
     );
   }

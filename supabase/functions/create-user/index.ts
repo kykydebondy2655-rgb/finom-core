@@ -46,19 +46,18 @@ serve(async (req: Request): Promise<Response> => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    // Verify the JWT and get claims
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    // Verify the user session
+    const { data: userData, error: userError } = await userClient.auth.getUser();
 
-    if (claimsError || !claimsData?.claims) {
-      console.error("JWT verification failed:", claimsError);
+    if (userError || !userData?.user) {
+      console.error("JWT verification failed:", userError);
       return new Response(
         JSON.stringify({ error: "Session invalide" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const callerUserId = claimsData.claims.sub;
+    const callerUserId = userData.user.id;
     console.log("Request from user:", callerUserId);
 
     // Create admin client with service role key
