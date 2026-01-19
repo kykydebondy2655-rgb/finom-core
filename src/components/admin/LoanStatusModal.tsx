@@ -192,8 +192,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
                 <button
                   key={option.value}
                   type="button"
-                  className={`status-option ${selectedStatus === option.value ? 'selected' : ''}`}
-                  style={{ '--status-color': option.color } as React.CSSProperties}
+                  className={`status-option ${selectedStatus === option.value ? 'selected' : ''} status-${option.value}`}
                   onClick={() => setSelectedStatus(option.value)}
                 >
                   <span className="status-icon">{option.icon}</span>
