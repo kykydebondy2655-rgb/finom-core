@@ -114,32 +114,6 @@ const NotaryPanel: React.FC<NotaryPanelProps> = ({
           <p>Aucune information notaire renseignée</p>
         </div>
       )}
-
-      <style>{`
-        .notary-panel { margin-bottom: 1.5rem; }
-        .notary-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .notary-header h3 { margin: 0; font-size: 1.1rem; }
-        
-        .notary-info { display: flex; flex-direction: column; gap: 0.75rem; }
-        .info-row { display: flex; flex-direction: column; gap: 0.1rem; }
-        .info-label { font-size: 0.8rem; color: #6b7280; }
-        .info-value { font-size: 1rem; font-weight: 600; color: #374151; }
-        .info-value.iban { font-family: monospace; letter-spacing: 1px; font-size: 0.95rem; }
-        
-        .empty-state { text-align: center; padding: 1rem; color: #9ca3af; }
-        
-        .edit-form { display: flex; flex-direction: column; gap: 1rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
-        .form-group label { font-size: 0.85rem; font-weight: 500; color: #374151; }
-        .form-group input {
-          padding: 0.5rem 0.75rem;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          font-size: 0.9rem;
-        }
-        .input-hint { font-size: 0.75rem; color: #9ca3af; }
-        .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }
-      `}</style>
     </Card>
   );
 };

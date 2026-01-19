@@ -212,7 +212,7 @@ const Profile = () => {
             <div className="profile-page">
                 <div className="container">
                     <header className="profile-header">
-                        <h1><User size={28} style={{ marginRight: '12px', display: 'inline', verticalAlign: 'middle' }} />Mon Profil</h1>
+                        <h1 className="sidebar-card-title"><User size={28} />Mon Profil</h1>
                         <p>Gérez vos informations personnelles et vos préférences de sécurité.</p>
                     </header>
 
@@ -339,7 +339,7 @@ const Profile = () => {
 
                         {/* Security Card */}
                         <Card className="profile-card security-card" padding="xl">
-                            <h2><Lock size={20} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Sécurité</h2>
+                            <h2 className="sidebar-card-title"><Lock size={20} />Sécurité</h2>
                             <p className="security-subtitle">Modifiez votre mot de passe</p>
 
                             <form onSubmit={handlePasswordSubmit}>
@@ -413,7 +413,7 @@ const Profile = () => {
                             </Card>
 
                             <Card padding="lg">
-                                <h3><BarChart3 size={18} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Statut KYC</h3>
+                                <h3 className="sidebar-card-title"><BarChart3 size={18} />Statut KYC</h3>
                                 <div className="kyc-status">
                                     <span className={`kyc-badge ${kycStatus === 'validated' ? 'validated' : kycStatus === 'rejected' ? 'rejected' : 'pending'}`}>
                                         {kycStatus === 'validated' ? 'Validé' : kycStatus === 'rejected' ? 'Refusé' : 'En attente'}
@@ -429,8 +429,8 @@ const Profile = () => {
                             </Card>
 
                             <Card padding="lg">
-                                <h3><Download size={18} style={{ marginRight: '8px', display: 'inline', verticalAlign: 'middle' }} />Mes données (RGPD)</h3>
-                                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+                                <h3 className="sidebar-card-title"><Download size={18} />Mes données (RGPD)</h3>
+                                <p className="rgpd-text">
                                     Téléchargez l'ensemble de vos données personnelles au format JSON.
                                 </p>
                                 <Button 
@@ -439,142 +439,20 @@ const Profile = () => {
                                     size="sm"
                                     isLoading={exporting}
                                     disabled={exporting}
-                                    className="full-width"
+                                    className="full-width btn-icon-text"
                                 >
-                                    <Download size={16} style={{ marginRight: '6px' }} />
+                                    <Download size={16} />
                                     Exporter mes données
                                 </Button>
                             </Card>
 
-                            <Button onClick={handleLogout} variant="danger" className="full-width">
-                                <LogOut size={18} style={{ marginRight: '8px' }} />
+                            <Button onClick={handleLogout} variant="danger" className="full-width btn-icon-text">
+                                <LogOut size={18} />
                                 Se déconnecter
                             </Button>
                         </div>
                     </div>
                 </div>
-
-                <style>{`
-                    .profile-page { min-height: 100vh; background: var(--color-bg); padding-bottom: 4rem; }
-                    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-                    .profile-header { text-align: center; padding: 3rem 0 2rem; }
-                    .profile-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-                    .profile-header p { color: var(--color-text-secondary); }
-                    
-                    .profile-grid { 
-                        display: grid; 
-                        grid-template-columns: 1fr 1fr 280px; 
-                        gap: 1.5rem; 
-                        align-items: start; 
-                    }
-                    
-                    @media (max-width: 1024px) {
-                        .profile-grid { grid-template-columns: 1fr 1fr; }
-                        .profile-sidebar { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-                    }
-                    
-                    @media (max-width: 640px) {
-                        .profile-grid { grid-template-columns: 1fr; }
-                        .profile-sidebar { display: flex; flex-direction: column; }
-                    }
-                    
-                    .profile-card h2 { font-size: 1.25rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--color-border); }
-                    .security-subtitle { color: var(--color-text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem; }
-                    
-                    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-                    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
-                    
-                    .form-group { margin-bottom: 1.25rem; }
-                    .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
-                    .form-group small { color: var(--color-text-tertiary); font-size: 0.8rem; margin-top: 0.25rem; display: block; }
-                    
-                    .form-input { 
-                        width: 100%; 
-                        padding: 0.75rem 1rem; 
-                        border: 1px solid var(--color-border); 
-                        border-radius: 8px; 
-                        font-size: 1rem;
-                        transition: border-color 0.2s, box-shadow 0.2s;
-                    }
-                    .form-input:focus { 
-                        outline: none; 
-                        border-color: var(--color-primary); 
-                        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
-                    }
-                    .form-input.disabled { background: var(--color-bg-secondary); color: var(--color-text-tertiary); cursor: not-allowed; }
-                    
-                    .success-message { 
-                        background: #dcfce7; 
-                        color: #166534; 
-                        padding: 1rem; 
-                        border-radius: 8px; 
-                        margin-bottom: 1.5rem; 
-                        font-weight: 500; 
-                    }
-                    
-                    .password-errors { 
-                        background: #fef2f2; 
-                        border: 1px solid #fecaca; 
-                        border-radius: 8px; 
-                        padding: 0.75rem 1rem; 
-                        margin-bottom: 1rem; 
-                    }
-                    .error-text { color: #dc2626; margin: 0.25rem 0; font-size: 0.9rem; }
-                    
-                    .password-requirements { 
-                        background: var(--color-bg-secondary); 
-                        border-radius: 8px; 
-                        padding: 1rem; 
-                        margin-bottom: 1.5rem; 
-                        font-size: 0.85rem; 
-                    }
-                    .password-requirements p { font-weight: 500; margin-bottom: 0.5rem; }
-                    .password-requirements ul { margin: 0; padding-left: 1.25rem; color: var(--color-text-secondary); }
-                    .password-requirements li { margin: 0.25rem 0; }
-                    
-                    .profile-sidebar { display: flex; flex-direction: column; gap: 1rem; }
-                    
-                    .user-info { text-align: center; }
-                    .avatar { 
-                        width: 72px; 
-                        height: 72px; 
-                        border-radius: 50%; 
-                        background: var(--color-primary); 
-                        color: white; 
-                        display: flex; 
-                        align-items: center; 
-                        justify-content: center; 
-                        font-size: 1.75rem; 
-                        font-weight: 700; 
-                        margin: 0 auto 1rem; 
-                    }
-                    .user-info h3 { margin-bottom: 0.25rem; }
-                    .user-info p { color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem; }
-                    .role-badge { 
-                        display: inline-block; 
-                        padding: 0.25rem 0.75rem; 
-                        background: var(--color-primary); 
-                        color: white; 
-                        border-radius: 12px; 
-                        font-size: 0.8rem; 
-                        text-transform: capitalize; 
-                    }
-                    
-                    .kyc-status { margin-top: 0.75rem; }
-                    .kyc-badge { 
-                        display: inline-block; 
-                        padding: 0.25rem 0.75rem; 
-                        border-radius: 12px; 
-                        font-size: 0.8rem; 
-                        font-weight: 500; 
-                    }
-                    .kyc-badge.validated { background: #dcfce7; color: #166534; }
-                    .kyc-badge.rejected { background: #fef2f2; color: #dc2626; }
-                    .kyc-badge.pending { background: #fef9c3; color: #854d0e; }
-                    .kyc-status p { color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.5rem; }
-                    
-                    .full-width { width: 100%; }
-                `}</style>
             </div>
         </PageLayout>
     );

@@ -153,48 +153,6 @@ const SequestrePanel: React.FC<SequestrePanelProps> = ({
           )}
         </div>
       )}
-
-      <style>{`
-        .sequestre-panel { margin-bottom: 1.5rem; }
-        .sequestre-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .sequestre-header h3 { margin: 0; font-size: 1.1rem; }
-        
-        .status-row { margin-bottom: 1rem; }
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.4rem 0.75rem;
-          background: color-mix(in srgb, var(--status-color) 15%, white);
-          color: var(--status-color);
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.9rem;
-        }
-        
-        .amounts-row { display: flex; gap: 2rem; margin-bottom: 1rem; }
-        .amount-item { display: flex; flex-direction: column; }
-        .amount-label { font-size: 0.8rem; color: #6b7280; }
-        .amount-value { font-size: 1.25rem; font-weight: 700; color: #374151; }
-        .amount-value.received { color: #10b981; }
-        
-        .progress-section { display: flex; align-items: center; gap: 1rem; }
-        .progress-bar { flex: 1; height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #059669); transition: width 0.3s; }
-        .progress-text { font-weight: 600; color: #374151; min-width: 3rem; }
-        
-        .edit-form { display: flex; flex-direction: column; gap: 1rem; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
-        .form-group label { font-size: 0.85rem; font-weight: 500; color: #374151; }
-        .form-group input, .form-group select {
-          padding: 0.5rem 0.75rem;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          font-size: 0.9rem;
-        }
-        .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }
-      `}</style>
     </Card>
   );
 };

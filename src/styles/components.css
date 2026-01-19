@@ -4987,3 +4987,702 @@
   align-items: center;
   gap: 0.375rem;
 }
+
+/* =============================================================================
+   LOAN PANELS (NotaryPanel, SequestrePanel, CoborrowerSection)
+   ============================================================================= */
+
+/* --- NotaryPanel --- */
+.notary-panel {
+  margin-bottom: 1.5rem;
+}
+
+.notary-panel .notary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.notary-panel .notary-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.notary-panel .notary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notary-panel .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.notary-panel .info-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.notary-panel .info-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.notary-panel .info-value.iban {
+  font-family: monospace;
+  letter-spacing: 1px;
+  font-size: 0.95rem;
+}
+
+.notary-panel .empty-state {
+  text-align: center;
+  padding: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.notary-panel .edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notary-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.notary-panel .form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.notary-panel .form-group input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.notary-panel .input-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.notary-panel .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* --- SequestrePanel --- */
+.sequestre-panel {
+  margin-bottom: 1.5rem;
+}
+
+.sequestre-panel .sequestre-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sequestre-panel .sequestre-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.sequestre-panel .status-row {
+  margin-bottom: 1rem;
+}
+
+.sequestre-panel .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: color-mix(in srgb, var(--status-color) 15%, white);
+  color: var(--status-color);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.sequestre-panel .amounts-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.sequestre-panel .amount-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.sequestre-panel .amount-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.sequestre-panel .amount-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.sequestre-panel .amount-value.received {
+  color: hsl(142 71% 45%);
+}
+
+.sequestre-panel .progress-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sequestre-panel .progress-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--color-border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.sequestre-panel .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, hsl(142 71% 45%), hsl(158 64% 32%));
+  transition: width 0.3s;
+}
+
+.sequestre-panel .progress-text {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  min-width: 3rem;
+}
+
+.sequestre-panel .edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sequestre-panel .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.sequestre-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sequestre-panel .form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.sequestre-panel .form-group input,
+.sequestre-panel .form-group select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.sequestre-panel .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* --- CoborrowerSection --- */
+.coborrower-section {
+  margin: 1.5rem 0;
+}
+
+.coborrower-section .coborrower-toggle {
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.coborrower-section .coborrower-toggle:has(input:checked) {
+  border-color: var(--color-primary);
+  background: hsl(214 95% 93%);
+}
+
+.coborrower-section .toggle-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.coborrower-section .toggle-label input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.coborrower-section .toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.coborrower-section .toggle-text strong {
+  font-size: 1rem;
+}
+
+.coborrower-section .toggle-text small {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.coborrower-section .coborrower-form {
+  margin-top: 1rem;
+}
+
+.coborrower-section .coborrower-form h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.coborrower-section .form-section {
+  margin-bottom: 1.5rem;
+}
+
+.coborrower-section .form-section h4 {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.coborrower-section .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .coborrower-section .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coborrower-section .form-group {
+  margin-bottom: 1rem;
+}
+
+.coborrower-section .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.coborrower-section .form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.coborrower-section .form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.coborrower-section .form-input:disabled {
+  background: var(--color-bg-secondary);
+  cursor: not-allowed;
+}
+
+.coborrower-section .fade-in {
+  animation: fadeInCoborrower 0.3s ease-out;
+}
+
+@keyframes fadeInCoborrower {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- AdminDocumentUploadModal --- */
+.admin-doc-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 1rem;
+}
+
+.admin-doc-upload-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-doc-upload-form .form-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+
+.admin-doc-upload-form .form-group input[type="text"],
+.admin-doc-upload-form .form-group input[type="file"],
+.admin-doc-upload-form .form-group select,
+.admin-doc-upload-form .form-group textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-doc-upload-form .form-group input:focus,
+.admin-doc-upload-form .form-group select:focus,
+.admin-doc-upload-form .form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px hsla(var(--primary) / 0.1);
+}
+
+.admin-doc-upload-form .form-group input:disabled,
+.admin-doc-upload-form .form-group select:disabled,
+.admin-doc-upload-form .form-group textarea:disabled {
+  background: hsl(var(--muted));
+  cursor: not-allowed;
+}
+
+.admin-doc-upload-form .form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.admin-doc-upload-form .file-info {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.admin-doc-upload-form .upload-progress {
+  padding: 1rem;
+  background: hsl(var(--muted));
+  border-radius: var(--radius-md);
+}
+
+.admin-doc-upload-form .progress-bar {
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.admin-doc-upload-form .progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, hsl(328 83% 56%) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.admin-doc-upload-form .progress-text {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.admin-doc-upload-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* =============================================================================
+   PROFILE PAGE STYLES
+   ============================================================================= */
+.profile-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding-bottom: 4rem;
+}
+
+.profile-page .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.profile-page .profile-header {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+
+.profile-page .profile-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-page .profile-header p {
+  color: var(--color-text-secondary);
+}
+
+.profile-page .profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .profile-page .profile-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .profile-page .profile-sidebar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-page .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-page .profile-sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.profile-page .profile-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profile-page .security-subtitle {
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.profile-page .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .profile-page .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-page .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.profile-page .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.profile-page .form-group small {
+  color: var(--color-text-tertiary);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.profile-page .form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-page .form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px hsla(var(--primary) / 0.1);
+}
+
+.profile-page .form-input.disabled {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.profile-page .success-message {
+  background: hsl(142 76% 92%);
+  color: hsl(143 64% 24%);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.profile-page .password-errors {
+  background: hsl(0 86% 97%);
+  border: 1px solid hsl(0 84% 89%);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-page .error-text {
+  color: hsl(0 72% 51%);
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.profile-page .password-requirements {
+  background: var(--color-bg-secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.profile-page .password-requirements p {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.profile-page .password-requirements ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-secondary);
+}
+
+.profile-page .password-requirements li {
+  margin: 0.25rem 0;
+}
+
+.profile-page .profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-page .user-info {
+  text-align: center;
+}
+
+.profile-page .avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.profile-page .user-info h3 {
+  margin-bottom: 0.25rem;
+}
+
+.profile-page .user-info p {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.profile-page .role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.profile-page .kyc-status {
+  margin-top: 0.75rem;
+}
+
+.profile-page .kyc-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.profile-page .kyc-badge.validated {
+  background: hsl(142 76% 92%);
+  color: hsl(143 64% 24%);
+}
+
+.profile-page .kyc-badge.rejected {
+  background: hsl(0 86% 97%);
+  color: hsl(0 72% 51%);
+}
+
+.profile-page .kyc-badge.pending {
+  background: hsl(48 96% 89%);
+  color: hsl(32 95% 26%);
+}
+
+.profile-page .kyc-status p {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.profile-page .full-width {
+  width: 100%;
+}
+
+.profile-page .sidebar-card-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-page .rgpd-text {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+}

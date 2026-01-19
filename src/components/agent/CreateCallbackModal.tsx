@@ -147,7 +147,7 @@ const CreateCallbackModal: React.FC<CreateCallbackModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl"  style={{ backgroundColor: 'white' }}>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             📞 Planifier un rappel
