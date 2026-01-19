@@ -128,7 +128,7 @@ const AgentCallbacks: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="agent-callbacks-page">
         <div className="page-header">
           <div className="container">

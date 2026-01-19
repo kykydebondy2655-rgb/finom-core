@@ -50,7 +50,7 @@ const AdminAssignments: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-assignments-page">
         <div className="page-header">
           <div className="container">

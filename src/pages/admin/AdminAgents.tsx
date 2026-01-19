@@ -78,7 +78,7 @@ const AdminAgents: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-agents-page">
         <div className="page-header">
           <div className="container">

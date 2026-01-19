@@ -89,7 +89,7 @@ const AdminLoginHistory: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout showAnimatedBackground={false}>
       <div className="admin-login-history">
         <div className="page-header">
           <div className="container">
