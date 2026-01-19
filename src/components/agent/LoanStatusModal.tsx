@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
+import { useAuth } from '@/context/AuthContext';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
 import { Clock, ClipboardList, Search, Settings, Send, CheckCircle2, XCircle, Wallet, FolderOpen } from 'lucide-react';
@@ -45,6 +46,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
   const [rejectionReason, setRejectionReason] = useState('');
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { user } = useAuth();
 
   React.useEffect(() => {
     if (loan) {
@@ -64,6 +66,9 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
 
     setLoading(true);
     try {
+      // Get old status for history
+      const oldStatus = loan.status;
+
       // Update loan status
       const updateData: Record<string, unknown> = {
         status: selectedStatus,
@@ -81,6 +86,22 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
         .eq('id', loan.id);
 
       if (updateError) throw updateError;
+
+      // Log status change to history
+      const { error: historyError } = await supabase
+        .from('loan_status_history')
+        .insert({
+          loan_id: loan.id,
+          old_status: oldStatus,
+          new_status: selectedStatus,
+          changed_by: user?.id || null,
+          next_action: nextAction || null,
+          rejection_reason: selectedStatus === 'rejected' ? rejectionReason : null,
+        });
+
+      if (historyError) {
+        logger.warn('Failed to log status history', { error: historyError.message });
+      }
 
       // Create notification for client
       const statusLabel = LOAN_STATUSES.find(s => s.value === selectedStatus)?.label || selectedStatus;
@@ -157,6 +178,24 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
               clientProfile.first_name || 'Client',
               loan.id,
               ['Veuillez consulter votre espace client pour voir les documents requis']
+            ).catch(err => logger.logError('Email send error', err));
+          } else if (selectedStatus === 'under_review') {
+            emailService.sendNotification(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              'Votre dossier est en cours d\'analyse 🔍',
+              'Notre équipe analyse actuellement votre dossier de prêt. Nous vous tiendrons informé de l\'avancement.',
+              'Voir mon dossier',
+              'https://pret-finom.co/loans'
+            ).catch(err => logger.logError('Email send error', err));
+          } else if (selectedStatus === 'processing') {
+            emailService.sendNotification(
+              clientProfile.email,
+              clientProfile.first_name || 'Client',
+              'Votre dossier est en traitement ⚙️',
+              'Votre demande de prêt est en cours de traitement par notre service. Une réponse vous sera communiquée très prochainement.',
+              'Suivre mon dossier',
+              'https://pret-finom.co/loans'
             ).catch(err => logger.logError('Email send error', err));
           }
         }

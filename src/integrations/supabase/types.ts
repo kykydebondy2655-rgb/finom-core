@@ -692,6 +692,57 @@ export type Database = {
           },
         ]
       }
+      loan_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          loan_id: string
+          new_status: string
+          next_action: string | null
+          notes: string | null
+          old_status: string | null
+          rejection_reason: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          loan_id: string
+          new_status: string
+          next_action?: string | null
+          notes?: string | null
+          old_status?: string | null
+          rejection_reason?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          loan_id?: string
+          new_status?: string
+          next_action?: string | null
+          notes?: string | null
+          old_status?: string | null
+          rejection_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loan_status_history_loan_id_fkey"
+            columns: ["loan_id"]
+            isOneToOne: false
+            referencedRelation: "loan_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_history: {
         Row: {
           browser: string | null

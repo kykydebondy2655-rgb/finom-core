@@ -4,6 +4,7 @@ import { adminApi } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 import { emailService } from '@/services/emailService';
 import { useToast } from '@/components/finom/Toast';
+import { useAuth } from '@/context/AuthContext';
 import logger from '@/lib/logger';
 import '@/styles/components.css';
 
@@ -41,14 +42,17 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
 }) => {
   const [selectedStatus, setSelectedStatus] = useState(loan?.status || 'pending');
   const [rejectionReason, setRejectionReason] = useState('');
+  const [nextAction, setNextAction] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+  const { user } = useAuth();
 
   React.useEffect(() => {
     if (loan) {
       setSelectedStatus(loan.status || 'pending');
       setRejectionReason('');
+      setNextAction('');
     }
   }, [loan]);
 
@@ -64,12 +68,32 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
     try {
       setLoading(true);
       setError(null);
+
+      // Get old status for history
+      const oldStatus = loan.status;
       
       await adminApi.updateLoanStatus(
         loan.id, 
         selectedStatus, 
-        selectedStatus === 'rejected' ? rejectionReason.trim() : undefined
+        selectedStatus === 'rejected' ? rejectionReason.trim() : undefined,
+        nextAction.trim() || undefined
       );
+
+      // Log status change to history
+      const { error: historyError } = await supabase
+        .from('loan_status_history')
+        .insert({
+          loan_id: loan.id,
+          old_status: oldStatus,
+          new_status: selectedStatus,
+          changed_by: user?.id || null,
+          next_action: nextAction.trim() || null,
+          rejection_reason: selectedStatus === 'rejected' ? rejectionReason.trim() : null,
+        });
+
+      if (historyError) {
+        logger.warn('Failed to log status history', { error: historyError.message });
+      }
 
       // Get the user_id to create notification
       const userId = loan.user_id;
@@ -80,6 +104,9 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
         let notificationMessage = `Votre dossier de prêt est maintenant: ${statusLabel}.`;
         if (selectedStatus === 'rejected') {
           notificationMessage = `Votre demande de prêt a été refusée. Raison: ${rejectionReason}`;
+        }
+        if (nextAction.trim()) {
+          notificationMessage += ` Prochaine étape: ${nextAction.trim()}`;
         }
 
         const { error: notifError } = await supabase
@@ -145,6 +172,24 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
                 clientProfile.first_name || 'Client',
                 loan.id,
                 ['Veuillez consulter votre espace client pour voir les documents requis']
+              ).catch(err => logger.logError('Email send error', err));
+            } else if (selectedStatus === 'under_review') {
+              emailService.sendNotification(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                'Votre dossier est en cours d\'analyse 🔍',
+                'Notre équipe analyse actuellement votre dossier de prêt. Nous vous tiendrons informé de l\'avancement.',
+                'Voir mon dossier',
+                'https://pret-finom.co/loans'
+              ).catch(err => logger.logError('Email send error', err));
+            } else if (selectedStatus === 'processing') {
+              emailService.sendNotification(
+                clientProfile.email,
+                clientProfile.first_name || 'Client',
+                'Votre dossier est en traitement ⚙️',
+                'Votre demande de prêt est en cours de traitement par notre service. Une réponse vous sera communiquée très prochainement.',
+                'Suivre mon dossier',
+                'https://pret-finom.co/loans'
               ).catch(err => logger.logError('Email send error', err));
             }
           }
@@ -214,6 +259,16 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
               />
             </div>
           )}
+
+          <div className="form-group">
+            <label>Prochaine action (optionnel)</label>
+            <textarea
+              value={nextAction}
+              onChange={(e) => setNextAction(e.target.value)}
+              placeholder="Ex: Attente de la signature du compromis..."
+              rows={2}
+            />
+          </div>
 
           <div className="modal-actions">
             <Button variant="ghost" type="button" onClick={onClose}>
