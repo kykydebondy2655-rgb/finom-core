@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import { agentApi } from '@/services/api';
 import logger from '@/lib/logger';
+import '@/styles/components.css';
 
 interface CallModalProps {
   isOpen: boolean;
@@ -133,7 +134,7 @@ const CallModal: React.FC<CallModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content call-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>📞 Appel en cours</h2>
           <button className="close-btn" onClick={onClose}>×</button>
@@ -236,146 +237,6 @@ const CallModal: React.FC<CallModalProps> = ({
             </Button>
           </div>
         </form>
-
-        <style>{`
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-          }
-          .modal-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-          }
-          .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .modal-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-          }
-          .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-tertiary);
-          }
-          .call-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: #f8fafc;
-          }
-          .client-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--color-agent);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.25rem;
-          }
-          .client-details {
-            display: flex;
-            flex-direction: column;
-          }
-          .client-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-          }
-          .client-phone {
-            color: var(--color-text-secondary);
-          }
-          .timer-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: #f1f5f9;
-            border-bottom: 1px solid var(--color-border);
-          }
-          .timer-display {
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: monospace;
-            color: var(--color-agent);
-          }
-          form {
-            padding: 1.5rem;
-          }
-          .form-group {
-            margin-bottom: 1.25rem;
-          }
-          .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-          }
-          .form-group input,
-          .form-group select,
-          .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-          }
-          .form-group textarea {
-            resize: vertical;
-          }
-          .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-          }
-          .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-          }
-          .checkbox-group input[type="checkbox"] {
-            width: auto;
-          }
-          .reschedule-section {
-            background: #fefce8;
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            margin-bottom: 1.25rem;
-          }
-          .reschedule-label {
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-          }
-          .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-border);
-          }
-        `}</style>
       </div>
     </div>
   );

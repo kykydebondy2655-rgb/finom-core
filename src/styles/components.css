@@ -4535,3 +4535,239 @@
   font-size: 1rem;
   resize: vertical;
 }
+
+/* =============================================================================
+   CALL MODAL STYLES (Agent)
+   ============================================================================= */
+
+.call-modal .call-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+}
+
+.call-modal .client-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--color-agent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.call-modal .client-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.call-modal .client-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.call-modal .client-phone {
+  color: var(--color-text-secondary);
+}
+
+.call-modal .timer-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f1f5f9;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.call-modal .timer-display {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--color-agent);
+}
+
+.call-modal form {
+  padding: 1.5rem;
+}
+
+.call-modal .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.call-modal .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.call-modal .form-group input,
+.call-modal .form-group select,
+.call-modal .form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+}
+
+.call-modal .form-group textarea {
+  resize: vertical;
+}
+
+.call-modal .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.call-modal .checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.call-modal .checkbox-group input[type="checkbox"] {
+  width: auto;
+}
+
+.call-modal .reschedule-section {
+  background: #fefce8;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.25rem;
+}
+
+.call-modal .reschedule-label {
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* =============================================================================
+   DOCUMENT STATUS MODAL STYLES (Agent)
+   ============================================================================= */
+
+.document-status-modal .status-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.document-status-modal .status-option:hover {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 5%, white);
+}
+
+.document-status-modal .status-option.selected {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 10%, white);
+}
+
+.document-status-modal .status-icon {
+  font-size: 1.25rem;
+}
+
+.document-status-modal .status-label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.document-status-modal .cancel-btn,
+.agent-loan-status-modal .cancel-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.document-status-modal .cancel-btn:hover,
+.agent-loan-status-modal .cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.document-status-modal .submit-btn,
+.agent-loan-status-modal .submit-btn {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background: #10b981;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.document-status-modal .submit-btn:hover,
+.agent-loan-status-modal .submit-btn:hover {
+  background: #059669;
+}
+
+.document-status-modal .submit-btn:disabled,
+.agent-loan-status-modal .submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   AGENT LOAN STATUS MODAL STYLES
+   ============================================================================= */
+
+.agent-loan-status-modal .status-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.agent-loan-status-modal .status-option:hover {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 5%, white);
+}
+
+.agent-loan-status-modal .status-option.selected {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 10%, white);
+}
+
+.agent-loan-status-modal .status-icon {
+  font-size: 1.25rem;
+  margin-top: 0.1rem;
+}
+
+.agent-loan-status-modal .status-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-loan-status-modal .status-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.agent-loan-status-modal .status-desc {
+  font-size: 0.8rem;
+  color: #6b7280;
+}

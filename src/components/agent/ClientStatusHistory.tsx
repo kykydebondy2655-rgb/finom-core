@@ -8,6 +8,7 @@ import { formatDateTime } from '@/services/api';
 import { getClientStatusLabel } from '@/lib/validators';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, History } from 'lucide-react';
+import logger from '@/lib/logger';
 
 interface StatusHistoryEntry {
   id: string;
@@ -77,7 +78,7 @@ const ClientStatusHistory: React.FC<ClientStatusHistoryProps> = ({ clientId }) =
         setHistory([]);
       }
     } catch (err) {
-      console.error('Error loading status history:', err);
+      logger.logError('Error loading status history', err);
     } finally {
       setLoading(false);
     }
