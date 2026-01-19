@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import PageLayout from '../components/layout/PageLayout';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, LoanApplication } from '../services/api';
 import logger from '../lib/logger';
 import { BarChart3, FileText, FolderOpen, Landmark, User, Calculator } from 'lucide-react';
@@ -39,7 +39,44 @@ const Dashboard = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    // Skeleton loading component
+    const DashboardSkeleton = () => (
+        <PageLayout>
+            <div className="dashboard-page">
+                <div className="page-header">
+                    <div className="page-header-content">
+                        <Skeleton className="h-10 w-64 mb-4" />
+                        <Skeleton className="h-5 w-96" />
+                    </div>
+                </div>
+                <div className="container">
+                    <div className="quick-actions">
+                        <Skeleton className="h-12 w-48" />
+                        <Skeleton className="h-12 w-48" />
+                    </div>
+                    <Card className="loans-card" padding="xl">
+                        <div className="section-header">
+                            <Skeleton className="h-7 w-48" />
+                            <Skeleton className="h-5 w-24" />
+                        </div>
+                        <div className="space-y-4 mt-6">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex items-center gap-4 p-4 border-b">
+                                    <Skeleton className="h-6 w-24" />
+                                    <Skeleton className="h-6 w-32" />
+                                    <Skeleton className="h-6 w-28" />
+                                    <Skeleton className="h-6 w-20" />
+                                    <Skeleton className="h-6 w-32" />
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                </div>
+            </div>
+        </PageLayout>
+    );
+
+    if (loading) return <DashboardSkeleton />;
 
     return (
         <PageLayout>
