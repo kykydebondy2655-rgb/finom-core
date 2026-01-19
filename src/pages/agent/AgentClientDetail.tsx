@@ -89,10 +89,6 @@ const AgentClientDetail: React.FC = () => {
 
   // Dynamic back navigation based on route
   const backPath = isAdminRoute ? '/admin/clients' : '/agent/clients';
-  const themeColor = isAdminRoute ? 'var(--color-admin)' : 'var(--color-agent)';
-  const themeGradient = isAdminRoute 
-    ? 'linear-gradient(135deg, var(--color-admin) 0%, #5b21b6 100%)' 
-    : 'linear-gradient(135deg, var(--color-agent) 0%, #047857 100%)';
 
   if (loading) {
     return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
@@ -113,8 +109,8 @@ const AgentClientDetail: React.FC = () => {
 
   return (
     <PageLayout>
-      <div className="client-detail-page">
-        <div className="page-header" style={{ background: themeGradient }}>
+      <div className={`client-detail-page ${isAdminRoute ? 'admin-theme' : 'agent-theme'}`}>
+        <div className="page-header">
           <div className="container">
             <button className="back-btn" onClick={() => navigate(backPath)}>← Retour aux clients</button>
             <div className="header-content">
@@ -172,7 +168,7 @@ const AgentClientDetail: React.FC = () => {
           </div>
           
           {/* Status History */}
-          <div className="status-history-section fade-in" style={{ marginBottom: '1rem' }}>
+          <div className="status-history-section fade-in">
             <ClientStatusHistory clientId={id || ''} />
           </div>
 

@@ -94,11 +94,11 @@ const AgentDashboard: React.FC = () => {
           {/* Quick Actions */}
           <div className="quick-actions fade-in">
             <Button variant="primary" onClick={() => navigate('/agent/clients')}>
-              <Users size={18} style={{ marginRight: '8px' }} />
+              <Users size={18} className="btn-icon-text" />
               Voir mes clients
             </Button>
             <Button variant="secondary" onClick={() => navigate('/agent/callbacks')}>
-              <Phone size={18} style={{ marginRight: '8px' }} />
+              <Phone size={18} className="btn-icon-text" />
               Gérer les rappels
             </Button>
           </div>
@@ -106,7 +106,7 @@ const AgentDashboard: React.FC = () => {
           {/* Today's Callbacks */}
           <Card className="callbacks-card fade-in" padding="lg">
             <div className="card-header">
-              <h3><Phone size={20} style={{ marginRight: '8px', display: 'inline' }} />Rappels du jour</h3>
+              <h3><Phone size={20} className="inline-icon" />Rappels du jour</h3>
               <Button variant="ghost" size="sm" onClick={() => navigate('/agent/callbacks')}>
                 Voir tout →
               </Button>
@@ -144,7 +144,7 @@ const AgentDashboard: React.FC = () => {
           {/* Recent Clients */}
           <Card className="clients-card fade-in" padding="lg">
             <div className="card-header">
-              <h3><Users size={20} style={{ marginRight: '8px', display: 'inline' }} />Derniers clients</h3>
+              <h3><Users size={20} className="inline-icon" />Derniers clients</h3>
               <Button variant="ghost" size="sm" onClick={() => navigate('/agent/clients')}>
                 Voir tout →
               </Button>

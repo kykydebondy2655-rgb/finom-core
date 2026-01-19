@@ -2527,3 +2527,23 @@
     padding: 0.75rem 0.5rem;
   }
 }
+
+/* ============= Utility Classes ============= */
+.inline-icon {
+  display: inline;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* ============= Client Detail Page Themes ============= */
+.client-detail-page.admin-theme .page-header {
+  background: linear-gradient(135deg, var(--admin-primary) 0%, #5b21b6 100%);
+}
+
+.client-detail-page.agent-theme .page-header {
+  background: linear-gradient(135deg, var(--agent-primary) 0%, #047857 100%);
+}
+
+.status-history-section {
+  margin-bottom: 1rem;
+}
