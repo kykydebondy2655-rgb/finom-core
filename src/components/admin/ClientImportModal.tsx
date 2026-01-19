@@ -4,6 +4,7 @@ import { X, Upload, AlertCircle, CheckCircle, Download, Mail } from 'lucide-reac
 import { adminApi, importsApi } from '../../services/api';
 import { emailService } from '../../services/emailService';
 import { useAuth } from '../../context/AuthContext';
+import { isValidEmail, parseAndValidatePhone } from '@/lib/validators';
 
 interface ClientImportModalProps {
   isOpen: boolean;
@@ -82,39 +83,8 @@ const formatDownPayment = (value: string | undefined): string | undefined => {
   return numericValue !== undefined ? numericValue.toString() : undefined;
 };
 
-// Validation functions
-const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const isValidPhone = (phone: string): { valid: boolean; formatted: string | undefined } => {
-  if (!phone) return { valid: true, formatted: undefined };
-  
-  // Remove all non-digit characters except +
-  const cleaned = phone.replace(/[^\d+]/g, '');
-  
-  // French phone formats: 0612345678, +33612345678, 0033612345678
-  if (/^0[1-9]\d{8}$/.test(cleaned)) {
-    return { valid: true, formatted: cleaned };
-  }
-  if (/^\+33[1-9]\d{8}$/.test(cleaned)) {
-    return { valid: true, formatted: cleaned };
-  }
-  if (/^0033[1-9]\d{8}$/.test(cleaned)) {
-    return { valid: true, formatted: '+33' + cleaned.slice(4) };
-  }
-  // International format (at least 8 digits with +)
-  if (/^\+\d{8,15}$/.test(cleaned)) {
-    return { valid: true, formatted: cleaned };
-  }
-  // Just digits, at least 8
-  if (/^\d{8,15}$/.test(cleaned)) {
-    return { valid: true, formatted: cleaned };
-  }
-  
-  return { valid: false, formatted: undefined };
-};
+// Note: Validation functions imported from @/lib/validators
+// isValidEmail and parseAndValidatePhone are used instead of local definitions
 
 interface ValidationWarning {
   line: number;
@@ -228,7 +198,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             
             // Validate and format phone
             const rawPhone = phoneIdx !== -1 ? cleanValue(phoneIdx) : '';
-            const phoneValidation = isValidPhone(rawPhone);
+            const phoneValidation = parseAndValidatePhone(rawPhone);
             
             if (rawPhone && !phoneValidation.valid) {
               lineWarnings.push({

@@ -4,6 +4,7 @@ import Card from '@/components/finom/Card';
 import StatusBadge from '@/components/common/StatusBadge';
 import { agentApi, formatDateTime } from '@/services/api';
 import logger from '@/lib/logger';
+import { Phone, PhoneIncoming, PhoneOutgoing } from 'lucide-react';
 
 const CallHistoryPanel: React.FC = () => {
   const { user } = useAuth();
@@ -34,113 +35,71 @@ const CallHistoryPanel: React.FC = () => {
     return `${mins}m ${secs}s`;
   };
 
-  const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      answered: 'Répondu',
-      no_answer: 'Pas de réponse',
-      busy: 'Occupé',
-      voicemail: 'Messagerie'
-    };
-    return labels[status] || status;
-  };
-
-  const getCallTypeIcon = (type: string) => {
-    return type === 'inbound' ? '📥' : '📤';
+  const CallTypeIcon = ({ type }: { type: string }) => {
+    return type === 'inbound' ? (
+      <PhoneIncoming size={18} className="text-green-600" />
+    ) : (
+      <PhoneOutgoing size={18} className="text-blue-600" />
+    );
   };
 
   if (loading) {
     return (
       <Card className="call-history-panel" padding="lg">
-        <h3>📋 Historique des appels</h3>
-        <p className="loading-text">Chargement...</p>
+        <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+          <Phone size={20} />
+          Historique des appels
+        </h3>
+        <p className="text-center text-muted-foreground py-8">Chargement...</p>
       </Card>
     );
   }
 
   return (
     <Card className="call-history-panel" padding="lg">
-      <h3>📋 Historique des appels</h3>
+      <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+        <Phone size={20} />
+        Historique des appels
+      </h3>
       
       {callLogs.length === 0 ? (
-        <p className="empty-text">Aucun appel enregistré</p>
+        <p className="text-center text-muted-foreground py-8">Aucun appel enregistré</p>
       ) : (
-        <div className="call-logs-list">
+        <div className="flex flex-col gap-3">
           {callLogs.slice(0, 10).map((log) => (
-            <div key={log.id} className="call-log-item">
-              <div className="call-log-icon">
-                {getCallTypeIcon(log.call_type)}
+            <div 
+              key={log.id} 
+              className="flex items-start gap-3 p-4 rounded-lg bg-muted/50"
+            >
+              <div className="mt-0.5">
+                <CallTypeIcon type={log.call_type} />
               </div>
-              <div className="call-log-info">
-                <span className="call-log-client">
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold block">
                   {log.client?.first_name} {log.client?.last_name}
                 </span>
-                <span className="call-log-time">{formatDateTime(log.created_at)}</span>
-                {log.notes && <span className="call-log-notes">{log.notes}</span>}
+                <span className="text-sm text-muted-foreground block">
+                  {formatDateTime(log.created_at)}
+                </span>
+                {log.notes && (
+                  <span className="text-sm text-muted-foreground italic block mt-1">
+                    {log.notes}
+                  </span>
+                )}
               </div>
-              <div className="call-log-meta">
-                <StatusBadge status={log.call_status === 'answered' ? 'completed' : 'pending'} size="sm" />
-                <span className="call-log-duration">{formatDuration(log.duration_seconds)}</span>
+              <div className="flex flex-col items-end gap-1">
+                <StatusBadge 
+                  status={log.call_status === 'answered' ? 'completed' : 'pending'} 
+                  size="sm" 
+                />
+                <span className="text-sm text-muted-foreground font-mono">
+                  {formatDuration(log.duration_seconds)}
+                </span>
               </div>
             </div>
           ))}
         </div>
       )}
-
-      <style>{`
-        .call-history-panel h3 {
-          margin: 0 0 1rem 0;
-        }
-        .loading-text, .empty-text {
-          color: var(--color-text-tertiary);
-          text-align: center;
-          padding: 2rem;
-        }
-        .call-logs-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        .call-log-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.75rem;
-          padding: 1rem;
-          background: #f8fafc;
-          border-radius: var(--radius-md);
-        }
-        .call-log-icon {
-          font-size: 1.25rem;
-        }
-        .call-log-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-        .call-log-client {
-          font-weight: 600;
-        }
-        .call-log-time {
-          font-size: 0.85rem;
-          color: var(--color-text-secondary);
-        }
-        .call-log-notes {
-          font-size: 0.85rem;
-          color: var(--color-text-tertiary);
-          font-style: italic;
-        }
-        .call-log-meta {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 0.25rem;
-        }
-        .call-log-duration {
-          font-size: 0.85rem;
-          color: var(--color-text-secondary);
-          font-family: monospace;
-        }
-      `}</style>
     </Card>
   );
 };
