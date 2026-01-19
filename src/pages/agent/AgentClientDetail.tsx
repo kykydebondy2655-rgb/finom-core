@@ -18,6 +18,7 @@ import DeleteClientModal from '@/components/admin/DeleteClientModal';
 import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
+import ClientNotesPanel from '@/components/agent/ClientNotesPanel';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle } from 'lucide-react';
@@ -193,6 +194,11 @@ const AgentClientDetail: React.FC = () => {
                   <div className="info-row"><span>Niveau KYC</span><strong>{client.kyc_level || 1}</strong></div>
                   <div className="info-row"><span>Inscrit le</span><strong>{formatDate(client.created_at)}</strong></div>
                 </div>
+              </Card>
+
+              {/* Internal Notes Panel */}
+              <Card className="notes-card fade-in" padding="lg">
+                <ClientNotesPanel clientId={id || ''} />
               </Card>
 
               {/* Admin-only: Bank Account Section */}

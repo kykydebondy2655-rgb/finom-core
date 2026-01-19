@@ -359,6 +359,33 @@ export type Database = {
           },
         ]
       }
+      client_notes: {
+        Row: {
+          agent_id: string
+          client_id: string
+          created_at: string
+          id: string
+          note: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          client_id: string
+          created_at?: string
+          id?: string
+          note: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       client_status_history: {
         Row: {
           changed_by: string | null
