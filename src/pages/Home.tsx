@@ -15,12 +15,14 @@ import {
   Globe, 
   BadgeCheck, 
   Building2, 
-  Lock 
+  Lock,
+  ArrowRight
 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import heroImage from '@/assets/hero-mortgage.png';
 import securityImage from '@/assets/security-trust.jpg';
+import ctaBackground from '@/assets/cta-background.jpg';
 
 // Custom stagger variant for Home page
 const staggerHome = {
@@ -196,6 +198,69 @@ const Home = () => {
                 </motion.div>
                 <h3>Conseiller dédié</h3>
                 <p>Un expert bancaire vous accompagne de l'étude de votre dossier jusqu'au déblocage des fonds.</p>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* CTA Section with Background Image */}
+        <section className="section-cta-image">
+          <div className="cta-background-wrapper">
+            <img src={ctaBackground} alt="" className="cta-bg-image" aria-hidden="true" />
+            <div className="cta-overlay"></div>
+          </div>
+          <div className="container">
+            <motion.div 
+              className="cta-content"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.6 }}
+            >
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                Prêt à concrétiser votre projet immobilier ?
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                Obtenez une estimation personnalisée en quelques minutes. 
+                Simulation gratuite, sans engagement.
+              </motion.p>
+              <motion.div
+                className="cta-buttons"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Link to="/simulator">
+                  <motion.button 
+                    className="btn-accent btn-pill cta-button-large"
+                    whileHover={{ scale: 1.05, boxShadow: '0 10px 30px rgba(254, 66, 180, 0.4)' }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    Simuler mon crédit <ArrowRight size={18} className="ml-2" />
+                  </motion.button>
+                </Link>
+                <Link to="/contact">
+                  <motion.button 
+                    className="btn-outline-light btn-pill"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    Nous contacter
+                  </motion.button>
+                </Link>
               </motion.div>
             </motion.div>
           </div>
