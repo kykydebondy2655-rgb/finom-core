@@ -103,14 +103,14 @@ const Dashboard = () => {
                     variants={staggerContainer}
                 >
                     <motion.div variants={fadeInUp} transition={{ duration: 0.4 }}>
-                        <Button onClick={() => navigate('/simulator')} variant="primary" size="lg">
-                            <Calculator size={18} style={{ marginRight: '8px' }} />
+                        <Button onClick={() => navigate('/simulator')} variant="primary" size="lg" className="btn-icon-text">
+                            <Calculator size={18} />
                             Nouvelle simulation
                         </Button>
                     </motion.div>
                     <motion.div variants={fadeInUp} transition={{ duration: 0.4 }}>
-                        <Button onClick={() => navigate('/loans/new')} variant="secondary" size="lg">
-                            <FileText size={18} style={{ marginRight: '8px' }} />
+                        <Button onClick={() => navigate('/loans/new')} variant="secondary" size="lg" className="btn-icon-text">
+                            <FileText size={18} />
                             Nouvelle demande
                         </Button>
                     </motion.div>

@@ -5,6 +5,7 @@ import { adminApi, importsApi } from '../../services/api';
 import { emailService } from '../../services/emailService';
 import { useAuth } from '../../context/AuthContext';
 import { isValidEmail, parseAndValidatePhone } from '@/lib/validators';
+import logger from '@/lib/logger';
 
 interface ClientImportModalProps {
   isOpen: boolean;
@@ -159,8 +160,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
         const sourceIdx = findIndex(['source', 'origine']);
         const pipelineIdx = findIndex(['pipeline', 'stage', 'étape']);
 
-        console.log('CSV Headers found:', headerValues);
-        console.log('Column indices:', { emailIdx, firstNameIdx, lastNameIdx, phoneIdx, propertyPriceIdx, downPaymentIdx, purchaseTypeIdx, sourceIdx, pipelineIdx });
+        logger.debug('CSV Headers found', { headers: headerValues });
+        logger.debug('Column indices', { emailIdx, firstNameIdx, lastNameIdx, phoneIdx, propertyPriceIdx, downPaymentIdx, purchaseTypeIdx, sourceIdx, pipelineIdx });
 
         if (emailIdx === -1 || firstNameIdx === -1 || lastNameIdx === -1) {
           setError('Le CSV doit contenir: email, prénom/first_name, nom/last_name. Colonnes trouvées: ' + headerValues.join(', '));
@@ -274,7 +275,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
             allWarnings.push(...lineWarnings);
           } catch (lineErr) {
             skipped.push({ line: i + 1, reason: 'Erreur de parsing de la ligne' });
-            console.error(`Error parsing line ${i + 1}:`, lineErr);
+            logger.warn('Error parsing CSV line', { line: i + 1, error: lineErr });
           }
         }
 
@@ -284,8 +285,8 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           return;
         }
 
-        console.log(`Successfully parsed ${leads.length} leads from ${lines.length - 1} data lines`);
-        console.log(`Skipped ${skipped.length} lines, ${allWarnings.length} warnings`);
+        logger.info('CSV parsing complete', { leadsCount: leads.length, totalLines: lines.length - 1 });
+        logger.debug('CSV parsing details', { skippedCount: skipped.length, warningsCount: allWarnings.length });
 
         setParsedLeads(leads);
         setValidationWarnings(allWarnings);
@@ -293,7 +294,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
         setError(null);
         setStep('preview');
       } catch (err) {
-        console.error('File parsing error:', err);
+        logger.logError('File parsing error', err);
         setError('Erreur lors de la lecture du fichier: ' + (err instanceof Error ? err.message : 'Erreur inconnue'));
       }
     };
@@ -359,7 +360,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
               );
               importResults.emailsSent++;
             } catch (emailErr) {
-              console.warn('Email send failed for', lead.email, emailErr);
+              logger.warn('Email send failed', { email: lead.email, error: emailErr });
               // Don't fail the import if email fails
             }
           }
