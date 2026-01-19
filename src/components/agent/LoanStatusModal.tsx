@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
+import { Clock, ClipboardList, Search, Settings, Send, CheckCircle2, XCircle, Wallet, FolderOpen } from 'lucide-react';
 import '@/styles/components.css';
 
 interface LoanStatusModalProps {
@@ -23,14 +24,14 @@ interface LoanStatusModalProps {
 }
 
 const LOAN_STATUSES = [
-  { value: 'pending', label: 'En attente', color: '#f59e0b', icon: '⏳', description: 'Dossier reçu, en attente de traitement' },
-  { value: 'documents_required', label: 'Documents requis', color: '#3b82f6', icon: '📋', description: 'Documents manquants à fournir' },
-  { value: 'under_review', label: 'En analyse', color: '#8b5cf6', icon: '🔍', description: 'Analyse du dossier en cours' },
-  { value: 'processing', label: 'En traitement', color: '#06b6d4', icon: '⚙️', description: 'Dossier en cours de traitement' },
-  { value: 'offer_issued', label: 'Offre émise', color: '#f97316', icon: '📨', description: 'Offre envoyée, délai légal 10 jours' },
-  { value: 'approved', label: 'Approuvé', color: '#10b981', icon: '✅', description: 'Dossier validé et approuvé' },
-  { value: 'rejected', label: 'Rejeté', color: '#ef4444', icon: '❌', description: 'Dossier refusé' },
-  { value: 'funded', label: 'Financé', color: '#059669', icon: '💰', description: 'Fonds débloqués' },
+  { value: 'pending', label: 'En attente', color: '#f59e0b', Icon: Clock, description: 'Dossier reçu, en attente de traitement' },
+  { value: 'documents_required', label: 'Documents requis', color: '#3b82f6', Icon: ClipboardList, description: 'Documents manquants à fournir' },
+  { value: 'under_review', label: 'En analyse', color: '#8b5cf6', Icon: Search, description: 'Analyse du dossier en cours' },
+  { value: 'processing', label: 'En traitement', color: '#06b6d4', Icon: Settings, description: 'Dossier en cours de traitement' },
+  { value: 'offer_issued', label: 'Offre émise', color: '#f97316', Icon: Send, description: 'Offre envoyée, délai légal 10 jours' },
+  { value: 'approved', label: 'Approuvé', color: '#10b981', Icon: CheckCircle2, description: 'Dossier validé et approuvé' },
+  { value: 'rejected', label: 'Rejeté', color: '#ef4444', Icon: XCircle, description: 'Dossier refusé' },
+  { value: 'funded', label: 'Financé', color: '#059669', Icon: Wallet, description: 'Fonds débloqués' },
 ];
 
 const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
@@ -181,7 +182,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl agent-loan-status-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            📁 Statuer sur le dossier
+            <FolderOpen size={20} /> Statuer sur le dossier
           </DialogTitle>
           <DialogDescription>
             Dossier #{loan.id.slice(0, 8)} - {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(loan.amount)}
@@ -202,7 +203,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
                     '--status-color': status.color,
                   } as React.CSSProperties}
                 >
-                  <span className="status-icon">{status.icon}</span>
+                  <span className="status-icon"><status.Icon size={16} /></span>
                   <div className="status-content">
                     <span className="status-label">{status.label}</span>
                     <span className="status-desc">{status.description}</span>

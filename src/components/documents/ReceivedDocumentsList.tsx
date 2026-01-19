@@ -13,6 +13,7 @@ import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { formatDate } from '@/services/api';
 import logger from '@/lib/logger';
+import { ClipboardList, FileText, PenLine, BarChart3, FileStack, Mail, Download, Loader2, Inbox } from 'lucide-react';
 
 interface ReceivedDocument {
   id: string;
@@ -39,14 +40,17 @@ const CATEGORY_LABELS: Record<string, string> = {
   autre: 'Autre document',
 };
 
-const CATEGORY_ICONS: Record<string, string> = {
-  offre_pret: '📋',
-  attestation: '📜',
-  contrat: '📝',
-  echeancier: '📊',
-  avenant: '📑',
-  courrier: '✉️',
-  autre: '📄',
+const getCategoryIcon = (category: string | null): React.ReactNode => {
+  const iconProps = { size: 18, className: 'doc-category-icon' };
+  switch (category) {
+    case 'offre_pret': return <ClipboardList {...iconProps} />;
+    case 'attestation': return <FileText {...iconProps} />;
+    case 'contrat': return <PenLine {...iconProps} />;
+    case 'echeancier': return <BarChart3 {...iconProps} />;
+    case 'avenant': return <FileStack {...iconProps} />;
+    case 'courrier': return <Mail {...iconProps} />;
+    default: return <FileText {...iconProps} />;
+  }
 };
 
 const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListProps>(({ 
@@ -149,7 +153,7 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
     <Card padding="lg" className="received-docs-card">
       {showTitle && (
         <div className="section-header">
-          <h3>📥 Documents reçus</h3>
+          <h3><Inbox size={18} className="inline mr-2" />Documents reçus</h3>
           <span className="doc-count">{documents.length} document{documents.length > 1 ? 's' : ''}</span>
         </div>
       )}
@@ -158,7 +162,7 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
         {documents.map(doc => (
           <div key={doc.id} className="document-item received">
             <div className="doc-icon">
-              {CATEGORY_ICONS[doc.category || 'autre'] || '📄'}
+              {getCategoryIcon(doc.category)}
             </div>
             <div className="doc-content">
               <div className="doc-header">
@@ -183,7 +187,8 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
                 onClick={() => handleDownload(doc)}
                 disabled={downloading === doc.id}
               >
-                {downloading === doc.id ? '⏳' : '⬇️'} Télécharger
+                {downloading === doc.id ? <Loader2 size={14} className="animate-spin mr-1" /> : <Download size={14} className="mr-1" />}
+                Télécharger
               </Button>
             </div>
           </div>

@@ -12,6 +12,7 @@ import CallHistoryPanel from '@/components/agent/CallHistoryPanel';
 import { agentApi, formatDateTime } from '@/services/api';
 import type { Callback, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+import { CalendarDays, CheckCircle2, Phone, Smartphone, MessageCircle, StickyNote, Clock } from 'lucide-react';
 
 // Extended type for callbacks with client profile
 interface CallbackWithClient extends Callback {
@@ -153,13 +154,13 @@ const AgentCallbacks: React.FC = () => {
                   className={`filter-btn ${filter === 'planned' ? 'active' : ''}`} 
                   onClick={() => setFilter('planned')}
                 >
-                  📅 En attente ({callbacks.filter(c => c.status === 'planned').length})
+                  <CalendarDays size={14} className="mr-1" /> En attente ({callbacks.filter(c => c.status === 'planned').length})
                 </button>
                 <button 
                   className={`filter-btn ${filter === 'completed' ? 'active' : ''}`} 
                   onClick={() => setFilter('completed')}
                 >
-                  ✓ Terminés ({callbacks.filter(c => c.status === 'done').length})
+                  <CheckCircle2 size={14} className="mr-1" /> Terminés ({callbacks.filter(c => c.status === 'done').length})
                 </button>
                 <button 
                   className={`filter-btn ${filter === 'all' ? 'active' : ''}`} 
@@ -173,7 +174,7 @@ const AgentCallbacks: React.FC = () => {
               <Card className="callbacks-card fade-in" padding="lg">
                 {filteredCallbacks.length === 0 ? (
                   <div className="empty-state">
-                    <span className="empty-icon">📞</span>
+                    <span className="empty-icon"><Phone size={32} /></span>
                     <p className="empty-text">Aucun rappel {filter === 'planned' ? 'en attente' : ''}</p>
                     <Button variant="secondary" size="sm" onClick={() => setShowCreateModal(true)}>
                       Planifier un rappel
@@ -196,10 +197,10 @@ const AgentCallbacks: React.FC = () => {
                                     {callback.client?.first_name} {callback.client?.last_name}
                                   </span>
                                   <span className="callback-phone">
-                                    📱 {callback.client?.phone || 'Pas de téléphone'}
+                                    <Smartphone size={12} className="inline mr-1" /> {callback.client?.phone || 'Pas de téléphone'}
                                   </span>
                                   {callback.reason && (
-                                    <span className="callback-reason">💬 {callback.reason}</span>
+                                    <span className="callback-reason"><MessageCircle size={12} className="inline mr-1" /> {callback.reason}</span>
                                   )}
                                   
                                   {/* Notes section */}
@@ -226,7 +227,7 @@ const AgentCallbacks: React.FC = () => {
                                       onClick={() => startEditNotes(callback)}
                                       title="Cliquer pour modifier"
                                     >
-                                      📝 {callback.notes}
+                                      <StickyNote size={12} className="inline mr-1" /> {callback.notes}
                                     </span>
                                   ) : null}
                                 </div>
@@ -234,7 +235,7 @@ const AgentCallbacks: React.FC = () => {
 
                               <div className="callback-meta">
                                 <span className="callback-time">
-                                  🕐 {new Date(callback.scheduled_at).toLocaleTimeString('fr-FR', { 
+                                  <Clock size={12} className="inline mr-1" /> {new Date(callback.scheduled_at).toLocaleTimeString('fr-FR', { 
                                     hour: '2-digit', 
                                     minute: '2-digit' 
                                   })}
@@ -250,21 +251,21 @@ const AgentCallbacks: React.FC = () => {
                                       size="sm" 
                                       onClick={() => handleCall(callback)}
                                     >
-                                      📞 Appeler
+                                      <Phone size={14} className="mr-1" /> Appeler
                                     </Button>
                                     <Button 
                                       variant="ghost" 
                                       size="sm" 
                                       onClick={() => startEditNotes(callback)}
                                     >
-                                      📝 Notes
+                                      <StickyNote size={14} className="mr-1" /> Notes
                                     </Button>
                                     <Button 
                                       variant="ghost" 
                                       size="sm" 
                                       onClick={() => markAsCompleted(callback.id)}
                                     >
-                                      ✓
+                                      <CheckCircle2 size={14} />
                                     </Button>
                                   </>
                                 )}
