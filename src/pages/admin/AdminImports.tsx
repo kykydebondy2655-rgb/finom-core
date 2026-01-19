@@ -99,26 +99,21 @@ const AdminImports: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const styles: Record<string, { bg: string; color: string; icon: React.ReactNode; label: string }> = {
-      pending: { bg: '#fef3c7', color: '#92400e', icon: <Clock size={14} />, label: 'En attente' },
-      approved: { bg: '#d1fae5', color: '#065f46', icon: <CheckCircle size={14} />, label: 'Approuvé' },
-      rejected: { bg: '#fee2e2', color: '#991b1b', icon: <XCircle size={14} />, label: 'Rejeté' },
-      processed: { bg: '#dbeafe', color: '#1e40af', icon: <CheckCircle size={14} />, label: 'Traité' }
+    const iconMap: Record<string, React.ReactNode> = {
+      pending: <Clock size={14} />,
+      approved: <CheckCircle size={14} />,
+      rejected: <XCircle size={14} />,
+      processed: <CheckCircle size={14} />
     };
-    const style = styles[status] || styles.pending;
+    const labelMap: Record<string, string> = {
+      pending: 'En attente',
+      approved: 'Approuvé',
+      rejected: 'Rejeté',
+      processed: 'Traité'
+    };
     return (
-      <span style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '4px 8px',
-        borderRadius: '6px',
-        fontSize: '12px',
-        fontWeight: 500,
-        backgroundColor: style.bg,
-        color: style.color
-      }}>
-        {style.icon} {style.label}
+      <span className={`status-badge ${status}`}>
+        {iconMap[status] || iconMap.pending} {labelMap[status] || labelMap.pending}
       </span>
     );
   };
@@ -167,14 +162,14 @@ const AdminImports: React.FC = () => {
                     {imports.map(item => (
                       <tr key={item.id}>
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FileText size={16} color="#64748b" />
+                          <div className="file-cell">
+                            <FileText size={16} />
                             <span>{item.file_name}</span>
                           </div>
                         </td>
                         <td>{item.total_rows}</td>
-                        <td style={{ color: '#059669' }}>{item.valid_rows}</td>
-                        <td style={{ color: item.invalid_rows > 0 ? '#dc2626' : '#64748b' }}>{item.invalid_rows}</td>
+                        <td className="valid-count">{item.valid_rows}</td>
+                        <td className={`invalid-count ${item.invalid_rows > 0 ? 'has-errors' : ''}`}>{item.invalid_rows}</td>
                         <td>{getStatusBadge(item.status)}</td>
                         <td className="date">{formatDate(item.created_at)}</td>
                         <td>
@@ -302,7 +297,7 @@ const AdminImports: React.FC = () => {
 
                 {selectedImport.validation_errors.length > 0 && (
                   <>
-                    <h4 style={{ color: '#dc2626' }}>Erreurs de validation ({selectedImport.validation_errors.length})</h4>
+                    <h4 className="errors-title">Erreurs de validation ({selectedImport.validation_errors.length})</h4>
                     <div className="errors-list">
                       {selectedImport.validation_errors.slice(0, 10).map((err: any, idx: number) => (
                         <div key={idx} className="error-item">
@@ -378,7 +373,7 @@ const AdminImports: React.FC = () => {
                     onChange={(e) => setRejectReason(e.target.value)}
                     placeholder="Indiquez la raison du rejet..."
                     rows={4}
-                    style={{ width: '100%', marginTop: '8px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                    className="reject-textarea"
                   />
                 </label>
               </div>
