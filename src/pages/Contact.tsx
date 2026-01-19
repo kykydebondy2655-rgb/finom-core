@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
-import contactBuildingImage from '@/assets/contact-building.jpg';
+import contactBuildingVideo from '@/assets/contact-building-video.mp4';
 import { MapPin, Phone, Mail, Lock, CheckCircle2 } from 'lucide-react';
 
 const companyInfo = {
@@ -60,7 +60,14 @@ const Contact = () => {
                             </p>
                         </div>
                         <div className="contact-hero-image">
-                            <img src={contactBuildingImage} alt="Siège FINOM Paris" />
+                            <video 
+                                src={contactBuildingVideo} 
+                                autoPlay 
+                                loop 
+                                muted 
+                                playsInline
+                                aria-label="Siège FINOM Paris"
+                            />
                         </div>
                     </div>
                 </section>
