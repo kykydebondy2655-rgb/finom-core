@@ -99,7 +99,7 @@ const ReplaceDocumentButton: React.FC<ReplaceDocumentButtonProps> = ({
         type="file"
         accept=".pdf,.jpg,.jpeg,.png,.webp"
         onChange={handleFileSelect}
-        style={{ display: 'none' }}
+        className="hidden-input"
         disabled={uploading}
       />
       <Button
