@@ -45,7 +45,7 @@ const legalFooter = `
     <p>Établissement secondaire : 75008 Paris, France</p>
     <p><a href="${BASE_URL}">pret-finom.co</a> | <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a></p>
     <div class="footer-legal">
-      <p>FINOM Payments B.V. est enregistrée sous le n° KVK 75aboratoire849584 auprès du registre du commerce néerlandais.</p>
+      <p>FINOM Payments B.V. est enregistrée sous le n° KVK 75849584 auprès du registre du commerce néerlandais.</p>
       <p>Établissement de monnaie électronique agréé par De Nederlandsche Bank (DNB).</p>
       <p><a href="${BASE_URL}/legal">Mentions légales</a> | <a href="${BASE_URL}/privacy">Confidentialité</a> | <a href="${BASE_URL}/terms">CGU</a></p>
     </div>

@@ -3913,3 +3913,223 @@
   font-weight: 600;
   color: var(--color-primary);
 }
+
+/* =============================================================================
+   DOCUMENT CHECKLIST
+   ============================================================================= */
+.document-checklist {
+  margin-bottom: 1.5rem;
+}
+
+.document-checklist .checklist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.document-checklist .checklist-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.document-checklist .progress-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.document-checklist .progress-bar {
+  width: 100px;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.document-checklist .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  transition: width 0.3s;
+}
+
+.document-checklist .progress-text {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.document-checklist .owner-tabs-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.document-checklist .owner-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.document-checklist .owner-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+
+.document-checklist .owner-tab:hover {
+  color: #374151;
+}
+
+.document-checklist .owner-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.document-checklist .tab-progress {
+  font-size: 0.75rem;
+  background: #f3f4f6;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  color: #6b7280;
+}
+
+.document-checklist .owner-tab.active .tab-progress {
+  background: var(--color-primary);
+  color: white;
+}
+
+.document-checklist .category-section {
+  margin-bottom: 1.5rem;
+}
+
+.document-checklist .category-section:last-child {
+  margin-bottom: 0;
+}
+
+.document-checklist .category-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #374151;
+}
+
+.document-checklist .category-icon {
+  font-size: 1.1rem;
+}
+
+.document-checklist .documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.document-checklist .document-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.document-checklist .document-item.status-pending {
+  cursor: pointer;
+}
+
+.document-checklist .document-item.status-pending:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.document-checklist .document-item.status-validated {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.document-checklist .document-item.status-uploaded {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.document-checklist .document-item.status-rejected {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.document-checklist .doc-status-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.document-checklist .doc-info {
+  flex: 1;
+}
+
+.document-checklist .doc-name {
+  display: block;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.document-checklist .required-badge {
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+.document-checklist .doc-description {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.1rem;
+}
+
+.document-checklist .upload-btn {
+  padding: 0.4rem 0.75rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.document-checklist .upload-btn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+  .document-checklist .owner-tabs-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .document-checklist .owner-tabs {
+    overflow-x: auto;
+  }
+}
