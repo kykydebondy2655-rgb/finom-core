@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 
 const HowItWorks = () => {
     const navigate = useNavigate();
-    const [openFaq, setOpenFaq] = useState<number | null>(null);
 
     const steps = [
         {
@@ -70,79 +70,102 @@ const HowItWorks = () => {
         }
     ];
 
+    const advantages = [
+        { icon: '⚡', title: 'Rapidité', desc: 'Réponse sous 7 jours ouvrés' },
+        { icon: '🔒', title: 'Sécurité', desc: 'Données chiffrées' },
+        { icon: '👤', title: 'Accompagnement', desc: 'Un conseiller dédié' },
+        { icon: '💰', title: 'Transparence', desc: 'Aucun frais caché' },
+        { icon: '📱', title: '100% en ligne', desc: 'Gérez où vous voulez' },
+        { icon: '🎯', title: 'Sur-mesure', desc: 'Solutions adaptées' }
+    ];
+
     return (
         <>
             <Header />
-            <div className="how-it-works-page">
-                <div className="container">
-                    <header className="how-header">
-                        <h1>🚀 Comment ça marche ?</h1>
-                        <p className="how-subtitle">
+            <div className="how-page-finom">
+                {/* Hero */}
+                <section className="how-hero fade-in">
+                    <div className="container">
+                        <span className="badge-finom">PROCESSUS</span>
+                        <h1>Comment ça marche ?</h1>
+                        <p className="hero-subtitle">
                             Obtenez votre crédit immobilier en 5 étapes simples.
                             Un parcours 100% en ligne, transparent et sécurisé.
                         </p>
-                    </header>
-
-                    <div className="timeline">
-                        {steps.map((step, idx) => (
-                            <div key={idx} className="timeline-step fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                                <div className="step-number">{step.number}</div>
-                                <div className="step-content">
-                                    <div className="step-header">
-                                        <div className="step-icon">{step.icon}</div>
-                                        <div className="step-title-group">
-                                            <h2>{step.title}</h2>
-                                            <span className="step-duration">⏱️ {step.duration}</span>
-                                        </div>
-                                    </div>
-                                    <p className="step-description">{step.description}</p>
-                                    <ul className="step-details">
-                                        {step.details.map((detail, dIdx) => (
-                                            <li key={dIdx}>{detail}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        ))}
                     </div>
+                </section>
 
-                    <section className="how-advantages">
-                        <h2>✨ Les avantages FINOM</h2>
-                        <div className="advantages-grid">
-                            {[
-                                { icon: '⚡', title: 'Rapidité', desc: 'Réponse sous 7 jours ouvrés' },
-                                { icon: '🔒', title: 'Sécurité', desc: 'Données chiffrées' },
-                                { icon: '👤', title: 'Accompagnement', desc: 'Un conseiller dédié' },
-                                { icon: '💰', title: 'Transparence', desc: 'Aucun frais caché' },
-                                { icon: '📱', title: '100% en ligne', desc: 'Gérez où vous voulez' },
-                                { icon: '🎯', title: 'Sur-mesure', desc: 'Solutions adaptées' }
-                            ].map((adv, idx) => (
-                                <div key={idx} className="advantage-card fade-in">
-                                    <div className="advantage-icon">{adv.icon}</div>
-                                    <h3>{adv.title}</h3>
+                {/* Timeline */}
+                <section className="timeline-section">
+                    <div className="container">
+                        <div className="timeline-finom">
+                            {steps.map((step, idx) => (
+                                <div 
+                                    key={idx} 
+                                    className="timeline-step fade-in" 
+                                    style={{ animationDelay: `${idx * 150}ms` }}
+                                >
+                                    <div className="step-number-finom">{step.number}</div>
+                                    <div className="step-content-finom">
+                                        <div className="step-header-finom">
+                                            <span className="step-icon-finom">{step.icon}</span>
+                                            <div>
+                                                <h3>{step.title}</h3>
+                                                <span className="step-duration">⏱️ {step.duration}</span>
+                                            </div>
+                                        </div>
+                                        <p className="step-description">{step.description}</p>
+                                        <ul className="step-details-finom">
+                                            {step.details.map((detail, dIdx) => (
+                                                <li key={dIdx}>{detail}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Advantages */}
+                <section className="advantages-section-finom">
+                    <div className="container">
+                        <h2 className="section-title">Les avantages FINOM</h2>
+                        <div className="advantages-grid-finom">
+                            {advantages.map((adv, idx) => (
+                                <div 
+                                    key={idx} 
+                                    className="advantage-card-finom fade-in"
+                                    style={{ animationDelay: `${idx * 100}ms` }}
+                                >
+                                    <span className="advantage-icon-finom">{adv.icon}</span>
+                                    <h4>{adv.title}</h4>
                                     <p>{adv.desc}</p>
                                 </div>
                             ))}
                         </div>
-                    </section>
+                    </div>
+                </section>
 
-                    <section className="how-cta">
-                        <div className="cta-card">
+                {/* CTA */}
+                <section className="cta-section-finom">
+                    <div className="container">
+                        <div className="cta-content">
                             <h2>Prêt à démarrer votre projet ?</h2>
                             <p>Commencez par une simulation gratuite et sans engagement.</p>
                             <div className="cta-buttons">
-                                <Button onClick={() => navigate('/simulator')} variant="secondary" size="lg">
+                                <Button onClick={() => navigate('/simulator')} variant="primary" size="lg">
                                     Faire une simulation
                                 </Button>
-                                <Button onClick={() => navigate('/contact')} variant="ghost" size="lg">
+                                <Button onClick={() => navigate('/contact')} variant="secondary" size="lg">
                                     Poser une question
                                 </Button>
                             </div>
                         </div>
-                    </section>
-                </div>
-
+                    </div>
+                </section>
             </div>
+            <Footer />
         </>
     );
 };
