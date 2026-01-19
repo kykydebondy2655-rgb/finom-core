@@ -3190,6 +3190,123 @@
   color: #f1f5f9;
 }
 
+/* ============= Client Status Stats Panel ============= */
+.status-stats-panel {
+  width: 100%;
+}
+
+.status-stats-panel .stats-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-stats-panel .stats-chart {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.status-stats-panel .chart-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.status-stats-panel .chart-total {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.status-stats-panel .chart-total-label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.status-stats-panel .status-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-stats-panel .status-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-stats-panel .status-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-stats-panel .status-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.status-stats-panel .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-stats-panel .status-bar-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.status-stats-panel .status-bar-track {
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.status-stats-panel .status-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease-out;
+}
+
+.stats-panel-card {
+  margin-bottom: 20px;
+}
+
+/* Dark mode support */
+.dark .status-stats-panel .stats-title {
+  color: #94a3b8;
+}
+
+.dark .status-stats-panel .chart-total {
+  color: #f1f5f9;
+}
+
+.dark .status-stats-panel .status-bar-label {
+  color: #cbd5e1;
+}
+
+.dark .status-stats-panel .status-bar-count {
+  color: #f1f5f9;
+}
+
+.dark .status-stats-panel .status-bar-track {
+  background-color: #334155;
+}
+
 .dark .client-notes-panel .notes-header h3 {
   color: #f1f5f9;
 }
