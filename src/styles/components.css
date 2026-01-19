@@ -367,6 +367,109 @@
   background: white;
 }
 
+/* CTA Section with Background Image */
+.home-page .section-cta-image {
+  position: relative;
+  padding: 6rem 0;
+  overflow: hidden;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+}
+
+.home-page .cta-background-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.home-page .cta-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.home-page .cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.92) 0%,
+    rgba(30, 41, 59, 0.88) 50%,
+    rgba(254, 66, 180, 0.25) 100%
+  );
+  backdrop-filter: blur(2px);
+}
+
+.home-page .section-cta-image .container {
+  position: relative;
+  z-index: 1;
+}
+
+.home-page .cta-content {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.home-page .cta-content h2 {
+  color: white;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.home-page .cta-content p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.home-page .cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.home-page .btn-outline-light {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 0.875rem 1.75rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all var(--transition-fast);
+}
+
+.home-page .btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 768px) {
+  .home-page .section-cta-image {
+    padding: 4rem 0;
+    min-height: 350px;
+  }
+  
+  .home-page .cta-content h2 {
+    font-size: 1.75rem;
+  }
+  
+  .home-page .cta-content p {
+    font-size: 1rem;
+  }
+  
+  .home-page .cta-buttons {
+    flex-direction: column;
+  }
+}
+
 .home-page .bento-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
