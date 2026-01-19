@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import heroImage from '@/assets/hero-mortgage.png';
+import heroVideo from '@/assets/hero-mortgage-video.mp4';
 import securityImage from '@/assets/security-trust.jpg';
 import ctaBackground from '@/assets/cta-background.jpg';
 
@@ -127,7 +127,14 @@ const Home = () => {
                 opacity: imageOpacity 
               }}
             >
-              <img src={heroImage} alt="Financement immobilier FINOM" />
+              <video 
+                src={heroVideo} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="hero-video"
+              />
             </motion.div>
           </div>
         </section>
