@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import '../../styles/Button.css';
 
 interface ButtonProps {
@@ -13,7 +14,13 @@ interface ButtonProps {
     type?: 'button' | 'submit' | 'reset';
     to?: string;
     outline?: boolean;
+    animate?: boolean;
 }
+
+const buttonVariants = {
+  tap: { scale: 0.98 },
+  hover: { scale: 1.02 },
+};
 
 const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(({
     children,
@@ -26,6 +33,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     type = 'button',
     to,
     outline = false,
+    animate = true,
 }, ref) => {
     const baseClass = 'btn';
     const variantClass = `btn-${variant}`;
@@ -33,6 +41,13 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     const outlineClass = outline ? 'btn-outline' : '';
     const loadingClass = isLoading ? 'btn-loading' : '';
     const fullClass = `${baseClass} ${variantClass} ${sizeClass} ${outlineClass} ${loadingClass} ${className}`;
+
+    const motionProps: Partial<HTMLMotionProps<'button'>> = animate ? {
+        whileHover: 'hover',
+        whileTap: 'tap',
+        variants: buttonVariants,
+        transition: { type: 'spring', stiffness: 400, damping: 17 },
+    } : {};
 
     if (to) {
         return (
@@ -49,16 +64,17 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     }
 
     return (
-        <button
+        <motion.button
             ref={ref as React.Ref<HTMLButtonElement>}
             type={type}
             className={fullClass}
             disabled={disabled || isLoading}
             onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+            {...motionProps}
         >
             {isLoading && <span className="spinner"></span>}
             <span className="content">{children}</span>
-        </button>
+        </motion.button>
     );
 });
 
