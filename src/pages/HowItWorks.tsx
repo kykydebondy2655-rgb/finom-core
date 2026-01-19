@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
+import processImage from '@/assets/process-digital.jpg';
 
 const HowItWorks = () => {
     const navigate = useNavigate();
@@ -83,15 +84,20 @@ const HowItWorks = () => {
         <>
             <Header />
             <div className="how-page-finom">
-                {/* Hero */}
+                {/* Hero with Image */}
                 <section className="how-hero fade-in">
-                    <div className="container">
-                        <span className="badge-finom">PROCESSUS</span>
-                        <h1>Comment ça marche ?</h1>
-                        <p className="hero-subtitle">
-                            Obtenez votre crédit immobilier en 5 étapes simples.
-                            Un parcours 100% en ligne, transparent et sécurisé.
-                        </p>
+                    <div className="container how-hero-grid">
+                        <div className="how-hero-content">
+                            <span className="badge-finom">PROCESSUS</span>
+                            <h1>Comment ça marche ?</h1>
+                            <p className="hero-subtitle">
+                                Obtenez votre crédit immobilier en 5 étapes simples.
+                                Un parcours 100% en ligne, transparent et sécurisé.
+                            </p>
+                        </div>
+                        <div className="how-hero-image">
+                            <img src={processImage} alt="Processus digital FINOM" />
+                        </div>
                     </div>
                 </section>
 

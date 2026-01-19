@@ -20,6 +20,7 @@ import {
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import heroImage from '@/assets/hero-mortgage.png';
+import securityImage from '@/assets/security-trust.jpg';
 
 // Custom stagger variant for Home page
 const staggerHome = {
@@ -204,50 +205,61 @@ const Home = () => {
         <section className="section-security">
           <div className="container">
             <motion.div 
-              className="security-content"
+              className="security-content security-with-image"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.5 }}
             >
-              <h2>Un établissement bancaire fiable</h2>
-              <motion.div 
-                className="security-grid"
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true, margin: '-50px' }}
-                variants={staggerContainer}
-              >
-                {[
-                  { Icon: ShieldCheck, title: 'Sécurité bancaire', desc: 'Toutes vos données transitent via une connexion chiffrée SSL/TLS.' },
-                  { Icon: Globe, title: 'Conformité européenne', desc: 'Respect des directives bancaires européennes et du RGPD.' },
-                  { Icon: BadgeCheck, title: 'Partenaires agréés', desc: 'Nous travaillons avec Treezor (ACPR) et Solaris (BaFin).' },
-                  { Icon: Building2, title: 'Financement direct', desc: 'FINOM délivre directement votre crédit immobilier, sans intermédiaire.' },
-                ].map((item, index) => (
-                  <motion.div 
-                    key={index}
-                    className="security-item"
-                    variants={fadeInUp}
-                    transition={{ duration: 0.4 }}
-                    whileHover={{ 
-                      y: -4, 
-                      boxShadow: '0 12px 30px rgba(0, 0, 0, 0.08)',
-                      transition: { duration: 0.2 }
-                    }}
-                  >
-                    <motion.span 
-                      className="security-icon"
-                      whileHover={{ scale: 1.2 }}
-                      transition={{ type: 'spring', stiffness: 400 }}
+              <div className="security-text-content">
+                <h2>Un établissement bancaire fiable</h2>
+                <motion.div 
+                  className="security-grid"
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true, margin: '-50px' }}
+                  variants={staggerContainer}
+                >
+                  {[
+                    { Icon: ShieldCheck, title: 'Sécurité bancaire', desc: 'Toutes vos données transitent via une connexion chiffrée SSL/TLS.' },
+                    { Icon: Globe, title: 'Conformité européenne', desc: 'Respect des directives bancaires européennes et du RGPD.' },
+                    { Icon: BadgeCheck, title: 'Partenaires agréés', desc: 'Nous travaillons avec Treezor (ACPR) et Solaris (BaFin).' },
+                    { Icon: Building2, title: 'Financement direct', desc: 'FINOM délivre directement votre crédit immobilier, sans intermédiaire.' },
+                  ].map((item, index) => (
+                    <motion.div 
+                      key={index}
+                      className="security-item"
+                      variants={fadeInUp}
+                      transition={{ duration: 0.4 }}
+                      whileHover={{ 
+                        y: -4, 
+                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.08)',
+                        transition: { duration: 0.2 }
+                      }}
                     >
-                      <item.Icon size={24} strokeWidth={1.5} />
-                    </motion.span>
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                      <motion.span 
+                        className="security-icon"
+                        whileHover={{ scale: 1.2 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                      >
+                        <item.Icon size={24} strokeWidth={1.5} />
+                      </motion.span>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <p>{item.desc}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+              <motion.div 
+                className="security-image"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <img src={securityImage} alt="Sécurité FINOM" />
               </motion.div>
             </motion.div>
           </div>
