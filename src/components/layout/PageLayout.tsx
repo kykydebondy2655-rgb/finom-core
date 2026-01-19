@@ -1,23 +1,65 @@
 import React, { forwardRef } from 'react';
+import { motion } from 'framer-motion';
 import Header from './Header';
 
 interface PageLayoutProps {
   children: React.ReactNode;
   showHeader?: boolean;
   className?: string;
+  animate?: boolean;
 }
+
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+  },
+};
+
+const pageTransition = {
+  type: 'tween' as const,
+  ease: 'easeOut' as const,
+  duration: 0.3,
+};
 
 const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({ 
   children, 
   showHeader = true,
-  className = ''
+  className = '',
+  animate = true
 }, ref) => {
+  if (!animate) {
+    return (
+      <div ref={ref} className={`page-layout ${className}`}>
+        {showHeader && <Header />}
+        <main className="page-content">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className={`page-layout ${className}`}>
       {showHeader && <Header />}
-      <main className="page-content">
+      <motion.main 
+        className="page-content"
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={pageVariants}
+        transition={pageTransition}
+      >
         {children}
-      </main>
+      </motion.main>
     </div>
   );
 });
