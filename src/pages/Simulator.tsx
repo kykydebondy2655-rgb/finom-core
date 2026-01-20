@@ -26,6 +26,7 @@ import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
 import { loanApplicationSchema, coborrowerSchema } from '@/lib/validations/loanSchemas';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import { FileText, Wallet, ShieldCheck, Calculator, CreditCard, PiggyBank, TrendingUp, Home } from 'lucide-react';
 
 interface FormData {
@@ -42,6 +43,9 @@ interface FormData {
 }
 
 const Simulator = () => {
+  // SEO anti-phishing: signaux de confiance pour Google/navigateurs
+  useSEO(SEO_CONFIGS.simulator);
+  
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const toast = useToast();
