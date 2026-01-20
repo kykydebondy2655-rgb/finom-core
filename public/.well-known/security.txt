@@ -1,0 +1,29 @@
+# FINOM Security Contact Information
+# RFC 9116 Compliant - https://www.rfc-editor.org/rfc/rfc9116
+# Last Updated: 2026-01-20
+
+# Contact for security vulnerability reports
+Contact: mailto:security@pret-finom.co
+Contact: mailto:webmaster@pret-finom.co
+Contact: https://pret-finom.co/contact
+
+# Preferred languages for security reports
+Preferred-Languages: fr, en, nl
+
+# Canonical URL for this security.txt file
+Canonical: https://pret-finom.co/.well-known/security.txt
+
+# Encryption key for secure communications (optional)
+# Encryption: https://pret-finom.co/.well-known/pgp-key.txt
+
+# Policy for security researchers
+Policy: https://pret-finom.co/security
+
+# Acknowledgments page for security researchers
+# Acknowledgments: https://pret-finom.co/security/thanks
+
+# Hiring security professionals
+Hiring: https://pret-finom.co/about
+
+# Expiration date - security.txt should be renewed annually
+Expires: 2027-01-20T23:59:59.000Z

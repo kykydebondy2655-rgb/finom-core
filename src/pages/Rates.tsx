@@ -6,8 +6,11 @@ import Button from '../components/finom/Button';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, DollarSign, Briefcase, BarChart3, Clock, Building2, Home, AlertTriangle } from 'lucide-react';
 import { RATE_TABLE, PROFILE_LABELS, PROFILE_COLORS, PROFILE_CRITERIA, getAllDurations, getAllProfiles } from '@/lib/rates';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 
 const Rates: React.FC = () => {
+  // SEO anti-phishing: signaux de confiance
+  useSEO(SEO_CONFIGS.rates);
   const navigate = useNavigate();
   const durations = getAllDurations();
   const profiles = getAllProfiles();

@@ -4,6 +4,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 import contactBuildingVideo from '@/assets/contact-building-video.mp4';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import { MapPin, Phone, Mail, Lock, CheckCircle2 } from 'lucide-react';
 
 const companyInfo = {
@@ -19,6 +20,8 @@ const companyInfo = {
 };
 
 const Contact = () => {
+    // SEO anti-phishing: signaux de confiance
+    useSEO(SEO_CONFIGS.contact);
     const [formData, setFormData] = useState({
         name: '',
         email: '',

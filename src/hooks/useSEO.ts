@@ -203,6 +203,146 @@ export const SEO_CONFIGS = {
         'url': 'https://pret-finom.co'
       }
     }
+  },
+  rates: {
+    title: 'Taux de Crédit Immobilier - FINOM | Barème Actuel',
+    description: 'Consultez les taux de crédit immobilier actuels chez FINOM. Taux fixes compétitifs selon votre profil et la durée de votre prêt.',
+    canonical: 'https://pret-finom.co/rates',
+    ogTitle: 'Taux de Crédit Immobilier - FINOM',
+    ogDescription: 'Découvrez nos taux de prêt immobilier actualisés selon votre profil.',
+    ogType: 'website',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      'name': 'Taux de Crédit Immobilier FINOM',
+      'description': 'Barème des taux de crédit immobilier actuels',
+      'url': 'https://pret-finom.co/rates',
+      'isPartOf': {
+        '@type': 'WebSite',
+        'name': 'FINOM',
+        'url': 'https://pret-finom.co'
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'FINOM Payments B.V.',
+        'url': 'https://pret-finom.co',
+        'logo': 'https://pret-finom.co/icons/icon-512x512.png'
+      }
+    }
+  },
+  contact: {
+    title: 'Contact - FINOM | Service Client Prêt Immobilier',
+    description: 'Contactez FINOM pour toute question sur votre prêt immobilier. Notre équipe est disponible du lundi au samedi pour vous accompagner.',
+    canonical: 'https://pret-finom.co/contact',
+    ogTitle: 'Contactez FINOM',
+    ogDescription: 'Notre équipe est à votre disposition pour répondre à vos questions.',
+    ogType: 'website',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      'name': 'Contact FINOM',
+      'description': 'Page de contact du service client FINOM',
+      'url': 'https://pret-finom.co/contact',
+      'mainEntity': {
+        '@type': 'Organization',
+        'name': 'FINOM Payments B.V.',
+        'url': 'https://pret-finom.co',
+        'logo': 'https://pret-finom.co/icons/icon-512x512.png',
+        'contactPoint': {
+          '@type': 'ContactPoint',
+          'telephone': '+33-1-87-68-08-90',
+          'contactType': 'customer service',
+          'availableLanguage': ['French', 'English'],
+          'areaServed': 'FR'
+        },
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': '9 Rue du Quatre Septembre',
+          'addressLocality': 'Paris',
+          'postalCode': '75002',
+          'addressCountry': 'FR'
+        }
+      }
+    }
+  },
+  howItWorks: {
+    title: 'Comment ça marche - FINOM | Processus de Prêt Simplifié',
+    description: 'Découvrez comment obtenir votre prêt immobilier avec FINOM en 4 étapes simples. Simulation, dossier, validation et déblocage des fonds.',
+    canonical: 'https://pret-finom.co/how-it-works',
+    ogTitle: 'Comment fonctionne FINOM',
+    ogDescription: 'Obtenez votre prêt immobilier en 4 étapes simples.',
+    ogType: 'website',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      'name': 'Comment obtenir un prêt immobilier avec FINOM',
+      'description': 'Guide étape par étape pour obtenir votre financement immobilier',
+      'url': 'https://pret-finom.co/how-it-works',
+      'step': [
+        {
+          '@type': 'HowToStep',
+          'name': 'Simulation',
+          'text': 'Simulez votre prêt en quelques clics'
+        },
+        {
+          '@type': 'HowToStep',
+          'name': 'Constitution du dossier',
+          'text': 'Téléchargez vos documents justificatifs'
+        },
+        {
+          '@type': 'HowToStep',
+          'name': 'Analyse et validation',
+          'text': 'Notre équipe étudie votre dossier'
+        },
+        {
+          '@type': 'HowToStep',
+          'name': 'Déblocage des fonds',
+          'text': 'Signature chez le notaire et versement'
+        }
+      ]
+    }
+  },
+  faq: {
+    title: 'FAQ - FINOM | Questions Fréquentes Prêt Immobilier',
+    description: 'Trouvez les réponses à vos questions sur le prêt immobilier avec FINOM. Taux, durée, apport, assurance et conditions expliqués.',
+    canonical: 'https://pret-finom.co/faq',
+    ogTitle: 'FAQ Prêt Immobilier - FINOM',
+    ogDescription: 'Réponses aux questions fréquentes sur le crédit immobilier.',
+    ogType: 'website',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'name': 'FAQ FINOM',
+      'description': 'Questions fréquentes sur le prêt immobilier',
+      'url': 'https://pret-finom.co/faq',
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'FINOM Payments B.V.',
+        'url': 'https://pret-finom.co'
+      }
+    }
+  },
+  about: {
+    title: 'À Propos - FINOM | Notre Mission et Équipe',
+    description: 'Découvrez FINOM, votre partenaire de confiance pour le financement immobilier. Notre histoire, nos valeurs et notre engagement qualité.',
+    canonical: 'https://pret-finom.co/about',
+    ogTitle: 'À Propos de FINOM',
+    ogDescription: 'Découvrez notre mission et notre équipe dédiée au financement immobilier.',
+    ogType: 'website',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      'name': 'À Propos de FINOM',
+      'description': 'Présentation de FINOM et de son équipe',
+      'url': 'https://pret-finom.co/about',
+      'mainEntity': {
+        '@type': 'Organization',
+        'name': 'FINOM Payments B.V.',
+        'url': 'https://pret-finom.co',
+        'foundingDate': '2019',
+        'foundingLocation': 'Amsterdam, Netherlands'
+      }
+    }
   }
 };
 
