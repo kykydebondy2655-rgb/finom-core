@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 import ForcePasswordChange from '../components/auth/ForcePasswordChange';
+import LoginLoadingOverlay from '../components/auth/LoginLoadingOverlay';
 import AnimatedBackground from '../components/common/AnimatedBackground';
 import { AlertTriangle, Lock, ShieldCheck } from 'lucide-react';
 
@@ -91,14 +92,16 @@ const Login = () => {
     }
 
     return (
-        <div className="auth-page-finom">
-            <AnimatedBackground variant="auth" />
-            <motion.div 
-                className="auth-container-finom"
-                initial="initial"
-                animate="animate"
-                variants={staggerContainer}
-            >
+        <>
+            <LoginLoadingOverlay isVisible={loading} />
+            <div className="auth-page-finom">
+                <AnimatedBackground variant="auth" />
+                <motion.div 
+                    className="auth-container-finom"
+                    initial="initial"
+                    animate="animate"
+                    variants={staggerContainer}
+                >
                 {/* Logo */}
                 <motion.div 
                     className="auth-logo"
@@ -266,7 +269,8 @@ const Login = () => {
                     </motion.span>
                 </motion.div>
             </motion.div>
-        </div>
+            </div>
+        </>
     );
 };
 
