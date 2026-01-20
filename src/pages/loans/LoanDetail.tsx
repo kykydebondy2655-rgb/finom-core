@@ -122,7 +122,7 @@ const LoanDetail: React.FC = () => {
   useDocumentProgress({
     loanId: id || '',
     userId: loan?.user_id || '',
-    projectType: ((loan as any)?.project_type as ProjectType) || 'achat_residence_principale',
+    projectType: (loan?.project_type as ProjectType) || 'achat_residence_principale',
     currentStatus: loan?.status || null,
     hasCoborrower: loan?.has_coborrower || false,
     onStatusChange: loadLoanData,
@@ -440,12 +440,12 @@ const LoanDetail: React.FC = () => {
                 />
 
                 {/* Co-borrower Info Card */}
-                {loan.has_coborrower && (loan as any).coborrower_data && (
+                {loan.has_coborrower && loan.coborrower_data && (
                   <Card className="coborrower-card" padding="lg">
                     <h3><Users size={18} className="inline-icon" /> Informations Co-emprunteur</h3>
                     <div className="coborrower-info">
                       {(() => {
-                        const coData = (loan as any).coborrower_data as Record<string, unknown>;
+                        const coData = loan.coborrower_data as Record<string, unknown>;
                         return (
                           <div className="summary-rows">
                             {coData.firstName && (
@@ -492,9 +492,9 @@ const LoanDetail: React.FC = () => {
                 )}
 
                 {/* Document Checklist based on project type */}
-                {(loan as any).project_type && (
+                {loan.project_type && (
                   <DocumentChecklist
-                    projectType={(loan as any).project_type as ProjectType}
+                    projectType={loan.project_type as ProjectType}
                     uploadedDocuments={documents}
                     hasCoborrower={loan.has_coborrower || false}
                     onUploadClick={() => setActiveTab('documents')}
