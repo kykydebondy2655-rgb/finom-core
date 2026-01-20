@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,9 @@ import Button from '@/components/finom/Button';
 import { emailService } from '@/services/emailService';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
-import { generateTempPassword } from '@/lib/securePassword';
+
+// Mot de passe temporaire défini - correspond à celui utilisé pour les leads importés
+const DEFAULT_TEMP_PASSWORD = 'TempPass123!';
 
 interface SendAccountEmailModalProps {
   isOpen: boolean;
@@ -27,9 +29,6 @@ const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
 }) => {
   const [sending, setSending] = useState(false);
   const toast = useToast();
-  
-  // Generate a secure password for this session
-  const tempPassword = useMemo(() => generateTempPassword(), [isOpen]);
 
   const handleSendEmail = async () => {
     if (!clientEmail) {
@@ -42,7 +41,7 @@ const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
       const result = await emailService.sendAccountOpening(
         clientEmail,
         clientFirstName || 'Client',
-        tempPassword
+        DEFAULT_TEMP_PASSWORD
       );
 
       if (result.success) {
@@ -82,14 +81,20 @@ const SendAccountEmailModal: React.FC<SendAccountEmailModalProps> = ({
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Mot de passe temporaire</span>
               <code className="bg-background px-2 py-1 rounded text-sm font-mono">
-                {tempPassword}
+                {DEFAULT_TEMP_PASSWORD}
               </code>
             </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-            <p className="text-sm text-amber-800">
-              ⚠️ Le client devra changer ce mot de passe lors de sa première connexion.
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              ⚠️ Ce mot de passe est le même pour tous les nouveaux comptes. Le client devra le changer lors de sa première connexion.
+            </p>
+          </div>
+          
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              ℹ️ <strong>Note:</strong> Cet email rappelle les identifiants de connexion au client. Le compte doit avoir été créé au préalable (via import ou inscription).
             </p>
           </div>
         </div>
