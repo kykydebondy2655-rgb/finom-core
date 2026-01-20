@@ -10,9 +10,7 @@ import Button from '@/components/finom/Button';
 import { emailService } from '@/services/emailService';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
-
-// Mot de passe temporaire défini - correspond à celui utilisé pour les leads importés
-const DEFAULT_TEMP_PASSWORD = 'TempPass123!';
+import { DEFAULT_TEMP_PASSWORD } from '@/lib/constants';
 
 interface SendAccountEmailModalProps {
   isOpen: boolean;
