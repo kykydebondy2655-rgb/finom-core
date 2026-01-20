@@ -9,10 +9,12 @@ import StatusBadge from '@/components/common/StatusBadge';
 import CallModal from '@/components/agent/CallModal';
 import ClientStatusStats from '@/components/agent/ClientStatusStats';
 import RecentActivityWidget from '@/components/agent/RecentActivityWidget';
+import PushNotificationPrompt from '@/components/notifications/PushNotificationPrompt';
+import { useAgentPushNotifications } from '@/hooks/useAgentPushNotifications';
 import { agentApi, formatDateTime } from '@/services/api';
 import type { ClientAssignment, Callback, Profile } from '@/services/api';
 import { logger } from '@/lib/logger';
-import { Users, Phone, ClipboardList, Calendar, BarChart3 } from 'lucide-react';
+import { Users, Phone, Calendar, BarChart3 } from 'lucide-react';
 
 // Extended types for joined data
 interface ClientAssignmentWithProfile extends ClientAssignment {
@@ -65,6 +67,13 @@ const AgentDashboard: React.FC = () => {
     [clients]
   );
 
+  // Initialize push notifications for agent
+  const { isSupported, permission, requestPermission } = useAgentPushNotifications({
+    agentId: user?.id || '',
+    assignedClientIds,
+    enabled: !!user && assignedClientIds.length > 0,
+  });
+
   if (loading) {
     return <PageLayout showAnimatedBackground={false}><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
   }
@@ -80,6 +89,13 @@ const AgentDashboard: React.FC = () => {
         </div>
 
         <div className="container">
+          {/* Push Notification Prompt */}
+          <PushNotificationPrompt
+            onEnable={requestPermission}
+            permission={permission}
+            isSupported={isSupported}
+          />
+
           {/* Stats Cards */}
           <div className="stats-grid fade-in">
             <Card className="stat-card" padding="lg">
