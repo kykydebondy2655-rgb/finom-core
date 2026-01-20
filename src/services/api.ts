@@ -779,6 +779,14 @@ export const adminApi = {
     return data;
   },
 
+  // Delete a loan application and ALL associated data (admin only)
+  async deleteLoan(loanId: string) {
+    const { data, error } = await supabase
+      .rpc('admin_delete_loan' as any, { _loan_id: loanId });
+    if (error) throw error;
+    return data;
+  },
+
   // Get agent's assigned clients count
   async getAgentClientCount(agentId: string): Promise<number> {
     const { count, error } = await supabase

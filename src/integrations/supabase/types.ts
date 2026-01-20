@@ -1401,6 +1401,7 @@ export type Database = {
     Functions: {
       admin_delete_agent: { Args: { _agent_id: string }; Returns: Json }
       admin_delete_client: { Args: { _client_id: string }; Returns: Json }
+      admin_delete_loan: { Args: { _loan_id: string }; Returns: Json }
       assign_leads_to_agent: {
         Args: { _agent_id: string; _count: number }
         Returns: number

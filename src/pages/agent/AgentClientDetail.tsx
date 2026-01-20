@@ -15,6 +15,7 @@ import LoanStatusModal from '@/components/agent/LoanStatusModal';
 import ClientBankModal from '@/components/admin/ClientBankModal';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
 import DeleteClientModal from '@/components/admin/DeleteClientModal';
+import DeleteLoanModal from '@/components/admin/DeleteLoanModal';
 import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
@@ -47,9 +48,11 @@ const AgentClientDetail: React.FC = () => {
   const [showBankModal, setShowBankModal] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
   const [showAccountEmailModal, setShowAccountEmailModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
+  const [loanToDelete, setLoanToDelete] = useState<LoanApplication | null>(null);
   const toast = useToast();
 
   // Detect if accessed from admin or agent route
@@ -328,6 +331,19 @@ const AgentClientDetail: React.FC = () => {
                           >
                             <Pencil size={14} />
                           </button>
+                          {isAdmin && (
+                            <button 
+                              className="status-btn text-destructive hover:text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLoanToDelete(loan);
+                                setShowDeleteLoanModal(true);
+                              }}
+                              title="Supprimer le dossier"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </div>
                       {/* Loan Status History */}
@@ -553,6 +569,19 @@ const AgentClientDetail: React.FC = () => {
           clientEmail={client.email || ''}
           clientFirstName={client.first_name || ''}
         />
+
+        {/* Delete Loan Modal (Admin only) */}
+        {isAdmin && (
+          <DeleteLoanModal
+            isOpen={showDeleteLoanModal}
+            onClose={() => {
+              setShowDeleteLoanModal(false);
+              setLoanToDelete(null);
+            }}
+            onSuccess={loadClientData}
+            loan={loanToDelete}
+          />
+        )}
       </div>
     </PageLayout>
   );
