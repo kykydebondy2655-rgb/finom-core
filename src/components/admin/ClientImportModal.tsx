@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Upload, AlertCircle, CheckCircle, Download, Mail } from 'lucide-react';
+import { X, Upload, AlertCircle, CheckCircle, Download, Mail, Info, ChevronRight } from 'lucide-react';
 import { adminApi, importsApi } from '../../services/api';
 import { emailService } from '../../services/emailService';
 import { useAuth } from '../../context/AuthContext';
@@ -23,6 +23,18 @@ interface ParsedLead {
   purchaseType?: string;
   source?: string;
   pipelineStage?: string;
+}
+
+interface ColumnMapping {
+  firstName: number | null;
+  lastName: number | null;
+  email: number | null;
+  phone: number | null;
+  propertyPrice: number | null;
+  downPayment: number | null;
+  purchaseType: number | null;
+  source: number | null;
+  pipelineStage: number | null;
 }
 
 // Function to parse CSV line properly, handling quoted fields
@@ -84,6 +96,11 @@ const formatDownPayment = (value: string | undefined): string | undefined => {
   return numericValue !== undefined ? numericValue.toString() : undefined;
 };
 
+// Clean phone number (remove spaces, dashes, dots)
+const cleanPhoneNumber = (phone: string): string => {
+  return phone.replace(/[\s\-.()]/g, '').trim();
+};
+
 interface ValidationWarning {
   line: number;
   field: string;
@@ -96,19 +113,105 @@ interface ParsedLeadWithWarnings extends ParsedLead {
   warnings: ValidationWarning[];
 }
 
+// Auto-detect column mapping based on header names
+const autoDetectMapping = (headers: string[]): ColumnMapping => {
+  const lowerHeaders = headers.map(h => h.toLowerCase().trim());
+  
+  const findIndex = (patterns: string[]): number | null => {
+    const idx = lowerHeaders.findIndex(h => 
+      patterns.some(p => h.includes(p))
+    );
+    return idx !== -1 ? idx : null;
+  };
+  
+  return {
+    firstName: findIndex(['prenom', 'prénom', 'first_name', 'firstname', 'first name']),
+    lastName: lowerHeaders.findIndex(h => 
+      (h.includes('nom') && !h.includes('prenom') && !h.includes('prénom')) || 
+      h.includes('last_name') || 
+      h.includes('lastname') ||
+      h.includes('last name')
+    ) !== -1 ? lowerHeaders.findIndex(h => 
+      (h.includes('nom') && !h.includes('prenom') && !h.includes('prénom')) || 
+      h.includes('last_name') || 
+      h.includes('lastname') ||
+      h.includes('last name')
+    ) : null,
+    email: findIndex(['email', 'mail', 'e-mail', 'courriel']),
+    phone: findIndex(['phone', 'tel', 'téléphone', 'telephone', 'mobile', 'portable']),
+    propertyPrice: findIndex(['property_price', 'prix', 'prix_bien', 'prix du bien', 'montant', 'prix bien']),
+    downPayment: findIndex(['down_payment', 'apport', 'apport_personnel', 'apport personnel']),
+    purchaseType: findIndex(['purchase_type', 'type', 'type_achat', 'type achat']),
+    source: findIndex(['source', 'origine', 'provenance']),
+    pipelineStage: findIndex(['pipeline', 'stage', 'étape', 'etape', 'pipeline_stage']),
+  };
+};
+
+// Generate display name for a column
+const getColumnDisplayName = (header: string, index: number): string => {
+  const cleaned = header.trim();
+  if (cleaned && cleaned.length > 0 && !/^column\s*\d*$/i.test(cleaned)) {
+    return cleaned;
+  }
+  return `Colonne ${index + 1}`;
+};
+
 export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload');
+  const [step, setStep] = useState<'upload' | 'mapping' | 'preview' | 'result'>('upload');
+  const [rawData, setRawData] = useState<string[][]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [columnMapping, setColumnMapping] = useState<ColumnMapping>({
+    firstName: null,
+    lastName: null,
+    email: null,
+    phone: null,
+    propertyPrice: null,
+    downPayment: null,
+    purchaseType: null,
+    source: null,
+    pipelineStage: null,
+  });
+  const [autoDetected, setAutoDetected] = useState(false);
   const [parsedLeads, setParsedLeads] = useState<ParsedLeadWithWarnings[]>([]);
   const [validationWarnings, setValidationWarnings] = useState<ValidationWarning[]>([]);
   const [skippedLines, setSkippedLines] = useState<{ line: number; reason: string }[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [mappingInfo, setMappingInfo] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const [importMode, setImportMode] = useState<'direct' | 'pending'>('direct');
   const [sendWelcomeEmails, setSendWelcomeEmails] = useState(true);
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[]; emailsSent: number }>({ success: 0, failed: 0, errors: [], emailsSent: 0 });
+
+  // Column options for dropdown
+  const columnOptions = useMemo(() => {
+    const options: { value: number | null; label: string }[] = [
+      { value: null, label: '— Ignorer —' }
+    ];
+    headers.forEach((header, idx) => {
+      options.push({
+        value: idx,
+        label: getColumnDisplayName(header, idx)
+      });
+    });
+    return options;
+  }, [headers]);
+
+  // Mapping validation
+  const mappingValidation = useMemo(() => {
+    const hasEmail = columnMapping.email !== null;
+    const hasPhone = columnMapping.phone !== null;
+    const isValid = hasEmail || hasPhone;
+    
+    return {
+      isValid,
+      message: isValid 
+        ? null 
+        : 'Vous devez mapper au moins le champ Email ou Téléphone pour continuer.'
+    };
+  }, [columnMapping]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -133,169 +236,197 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           return;
         }
 
-        // Parse header line
-        const headerValues = parseCSVLine(lines[0].toLowerCase());
+        // Parse all lines
+        const allRows = lines.map(line => parseCSVLine(line));
+        const headerRow = allRows[0];
+        const dataRows = allRows.slice(1);
+
+        setHeaders(headerRow);
+        setRawData(dataRows);
+
+        // Try auto-detection
+        const detectedMapping = autoDetectMapping(headerRow);
+        const hasAnyDetection = Object.values(detectedMapping).some(v => v !== null);
         
-        // Find column indices (more flexible matching)
-        const findIndex = (patterns: string[]): number => {
-          return headerValues.findIndex(h => 
-            patterns.some(p => h.includes(p))
-          );
-        };
-
-        const emailIdx = findIndex(['email', 'mail', 'e-mail']);
-        const firstNameIdx = findIndex(['prenom', 'prénom', 'first_name', 'firstname']);
-        const lastNameIdx = headerValues.findIndex(h => 
-          (h.includes('nom') && !h.includes('prenom') && !h.includes('prénom')) || 
-          h.includes('last_name') || 
-          h.includes('lastname')
-        );
-        const phoneIdx = findIndex(['phone', 'tel', 'téléphone', 'telephone', 'mobile']);
-        const propertyPriceIdx = findIndex(['property_price', 'prix', 'prix_bien', 'prix du bien', 'montant']);
-        const downPaymentIdx = findIndex(['down_payment', 'apport', 'apport_personnel']);
-        const purchaseTypeIdx = findIndex(['purchase_type', 'type', 'type_achat']);
-        const sourceIdx = findIndex(['source', 'origine']);
-        const pipelineIdx = findIndex(['pipeline', 'stage', 'étape']);
-
-        logger.debug('CSV Headers found', { headers: headerValues });
-        logger.debug('Column indices', { emailIdx, firstNameIdx, lastNameIdx, phoneIdx, propertyPriceIdx, downPaymentIdx, purchaseTypeIdx, sourceIdx, pipelineIdx });
-
-        if (emailIdx === -1 || firstNameIdx === -1 || lastNameIdx === -1) {
-          setError('Le CSV doit contenir: email, prénom/first_name, nom/last_name. Colonnes trouvées: ' + headerValues.join(', '));
-          return;
-        }
-
-        const leads: ParsedLeadWithWarnings[] = [];
-        const skipped: { line: number; reason: string }[] = [];
-        const allWarnings: ValidationWarning[] = [];
+        setColumnMapping(detectedMapping);
+        setAutoDetected(hasAnyDetection);
         
-        for (let i = 1; i < lines.length; i++) {
-          try {
-            const values = parseCSVLine(lines[i]);
-            const lineWarnings: ValidationWarning[] = [];
-            
-            // Clean values - remove surrounding quotes
-            const cleanValue = (idx: number): string => {
-              if (idx === -1 || idx >= values.length) return '';
-              return values[idx].replace(/^"|"$/g, '').trim();
-            };
-            
-            const rawEmail = cleanValue(emailIdx);
-            const email = rawEmail.toLowerCase();
-            
-            // Skip empty lines
-            if (!rawEmail) {
-              continue;
-            }
-            
-            // Validate email
-            if (!isValidEmail(email)) {
-              skipped.push({ line: i + 1, reason: `Email invalide: "${rawEmail}"` });
-              continue;
-            }
-            
-            // Validate and format phone
-            const rawPhone = phoneIdx !== -1 ? cleanValue(phoneIdx) : '';
-            const phoneValidation = parseAndValidatePhone(rawPhone);
-            
-            if (rawPhone && !phoneValidation.valid) {
-              lineWarnings.push({
-                line: i + 1,
-                field: 'Téléphone',
-                value: rawPhone,
-                message: 'Format de téléphone non reconnu'
-              });
-            }
-            
-            // Validate required fields
-            const firstName = cleanValue(firstNameIdx);
-            const lastName = cleanValue(lastNameIdx);
-            
-            if (!firstName) {
-              lineWarnings.push({
-                line: i + 1,
-                field: 'Prénom',
-                value: '',
-                message: 'Prénom manquant'
-              });
-            }
-            
-            if (!lastName) {
-              lineWarnings.push({
-                line: i + 1,
-                field: 'Nom',
-                value: '',
-                message: 'Nom manquant'
-              });
-            }
-            
-            // Parse numeric values with validation
-            const rawPropertyPrice = propertyPriceIdx !== -1 ? cleanValue(propertyPriceIdx) : '';
-            const propertyPrice = parseNumericValue(rawPropertyPrice);
-            
-            if (rawPropertyPrice && propertyPrice === undefined) {
-              lineWarnings.push({
-                line: i + 1,
-                field: 'Prix du bien',
-                value: rawPropertyPrice,
-                message: 'Format numérique invalide'
-              });
-            }
-            
-            const rawDownPayment = downPaymentIdx !== -1 ? cleanValue(downPaymentIdx) : '';
-            const downPayment = formatDownPayment(rawDownPayment);
-            
-            if (rawDownPayment && downPayment === undefined) {
-              lineWarnings.push({
-                line: i + 1,
-                field: 'Apport',
-                value: rawDownPayment,
-                message: 'Format numérique invalide'
-              });
-            }
-            
-            const lead: ParsedLeadWithWarnings = {
-              email,
-              firstName: firstName || 'Non renseigné',
-              lastName: lastName || 'Non renseigné',
-              phone: phoneValidation.formatted,
-              propertyPrice,
-              downPayment,
-              purchaseType: purchaseTypeIdx !== -1 ? cleanValue(purchaseTypeIdx) || undefined : undefined,
-              source: sourceIdx !== -1 ? cleanValue(sourceIdx) || undefined : undefined,
-              pipelineStage: pipelineIdx !== -1 ? cleanValue(pipelineIdx) || undefined : undefined,
-              lineNumber: i + 1,
-              warnings: lineWarnings
-            };
-            
-            leads.push(lead);
-            allWarnings.push(...lineWarnings);
-          } catch (lineErr) {
-            skipped.push({ line: i + 1, reason: 'Erreur de parsing de la ligne' });
-            logger.warn('Error parsing CSV line', { line: i + 1, error: lineErr });
-          }
+        if (!hasAnyDetection) {
+          setMappingInfo('Colonnes non détectées automatiquement. Veuillez les sélectionner manuellement.');
+        } else {
+          const detectedFields = [];
+          if (detectedMapping.firstName !== null) detectedFields.push('Prénom');
+          if (detectedMapping.lastName !== null) detectedFields.push('Nom');
+          if (detectedMapping.email !== null) detectedFields.push('Email');
+          if (detectedMapping.phone !== null) detectedFields.push('Téléphone');
+          setMappingInfo(`Détection automatique: ${detectedFields.join(', ')}. Vérifiez et ajustez si nécessaire.`);
         }
 
-        if (leads.length === 0) {
-          const reasons = skipped.slice(0, 5).map(s => `Ligne ${s.line}: ${s.reason}`).join('; ');
-          setError('Aucun lead valide trouvé. ' + (reasons || 'Vérifiez le format du fichier.'));
-          return;
-        }
+        logger.debug('CSV Headers found', { headers: headerRow, rowCount: dataRows.length });
 
-        logger.info('CSV parsing complete', { leadsCount: leads.length, totalLines: lines.length - 1 });
-        logger.debug('CSV parsing details', { skippedCount: skipped.length, warningsCount: allWarnings.length });
-
-        setParsedLeads(leads);
-        setValidationWarnings(allWarnings);
-        setSkippedLines(skipped);
         setError(null);
-        setStep('preview');
+        setStep('mapping');
       } catch (err) {
         logger.logError('File parsing error', err);
         setError('Erreur lors de la lecture du fichier: ' + (err instanceof Error ? err.message : 'Erreur inconnue'));
       }
     };
     reader.readAsText(file, 'UTF-8');
+  };
+
+  const handleMappingChange = (field: keyof ColumnMapping, value: number | null) => {
+    setColumnMapping(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const processDataWithMapping = () => {
+    const leads: ParsedLeadWithWarnings[] = [];
+    const skipped: { line: number; reason: string }[] = [];
+    const allWarnings: ValidationWarning[] = [];
+
+    const getValue = (row: string[], colIndex: number | null): string => {
+      if (colIndex === null || colIndex >= row.length) return '';
+      return row[colIndex].replace(/^"|"$/g, '').trim();
+    };
+
+    for (let i = 0; i < rawData.length; i++) {
+      const row = rawData[i];
+      const lineNumber = i + 2; // +2 because line 1 is header, and arrays are 0-indexed
+      const lineWarnings: ValidationWarning[] = [];
+
+      try {
+        const rawEmail = getValue(row, columnMapping.email);
+        const email = rawEmail.toLowerCase();
+        const rawPhone = getValue(row, columnMapping.phone);
+        const phone = cleanPhoneNumber(rawPhone);
+
+        // Skip completely empty rows
+        if (!rawEmail && !rawPhone) {
+          continue;
+        }
+
+        // Validate: need at least email OR phone
+        const hasValidEmail = rawEmail && isValidEmail(email);
+        const phoneValidation = parseAndValidatePhone(phone);
+        const hasValidPhone = phone && phoneValidation.valid;
+
+        if (!hasValidEmail && !hasValidPhone) {
+          if (rawEmail && !isValidEmail(email)) {
+            skipped.push({ line: lineNumber, reason: `Email invalide: "${rawEmail}"` });
+          } else if (rawPhone && !phoneValidation.valid) {
+            skipped.push({ line: lineNumber, reason: `Téléphone invalide: "${rawPhone}"` });
+          } else {
+            skipped.push({ line: lineNumber, reason: 'Ni email ni téléphone valide' });
+          }
+          continue;
+        }
+
+        // Get other fields
+        const firstName = getValue(row, columnMapping.firstName);
+        const lastName = getValue(row, columnMapping.lastName);
+
+        // Add warnings for missing optional fields
+        if (rawPhone && !phoneValidation.valid) {
+          lineWarnings.push({
+            line: lineNumber,
+            field: 'Téléphone',
+            value: rawPhone,
+            message: 'Format de téléphone non reconnu'
+          });
+        }
+
+        if (!firstName) {
+          lineWarnings.push({
+            line: lineNumber,
+            field: 'Prénom',
+            value: '',
+            message: 'Prénom manquant'
+          });
+        }
+
+        if (!lastName) {
+          lineWarnings.push({
+            line: lineNumber,
+            field: 'Nom',
+            value: '',
+            message: 'Nom manquant'
+          });
+        }
+
+        // Parse numeric values
+        const rawPropertyPrice = getValue(row, columnMapping.propertyPrice);
+        const propertyPrice = parseNumericValue(rawPropertyPrice);
+
+        if (rawPropertyPrice && propertyPrice === undefined) {
+          lineWarnings.push({
+            line: lineNumber,
+            field: 'Prix du bien',
+            value: rawPropertyPrice,
+            message: 'Format numérique invalide'
+          });
+        }
+
+        const rawDownPayment = getValue(row, columnMapping.downPayment);
+        const downPayment = formatDownPayment(rawDownPayment);
+
+        if (rawDownPayment && downPayment === undefined) {
+          lineWarnings.push({
+            line: lineNumber,
+            field: 'Apport',
+            value: rawDownPayment,
+            message: 'Format numérique invalide'
+          });
+        }
+
+        const lead: ParsedLeadWithWarnings = {
+          email: hasValidEmail ? email : '',
+          firstName: firstName || 'Non renseigné',
+          lastName: lastName || 'Non renseigné',
+          phone: hasValidPhone ? phoneValidation.formatted : (phone || undefined),
+          propertyPrice,
+          downPayment,
+          purchaseType: getValue(row, columnMapping.purchaseType) || undefined,
+          source: getValue(row, columnMapping.source) || undefined,
+          pipelineStage: getValue(row, columnMapping.pipelineStage) || undefined,
+          lineNumber,
+          warnings: lineWarnings
+        };
+
+        leads.push(lead);
+        allWarnings.push(...lineWarnings);
+      } catch (lineErr) {
+        skipped.push({ line: lineNumber, reason: 'Erreur de parsing de la ligne' });
+        logger.warn('Error parsing CSV line', { line: lineNumber, error: lineErr });
+      }
+    }
+
+    return { leads, skipped, allWarnings };
+  };
+
+  const handleProceedToPreview = () => {
+    if (!mappingValidation.isValid) {
+      setError(mappingValidation.message);
+      return;
+    }
+
+    const { leads, skipped, allWarnings } = processDataWithMapping();
+
+    if (leads.length === 0) {
+      const reasons = skipped.slice(0, 5).map(s => `Ligne ${s.line}: ${s.reason}`).join('; ');
+      setError('Aucun lead valide trouvé. ' + (reasons || 'Vérifiez le format du fichier et le mapping des colonnes.'));
+      return;
+    }
+
+    logger.info('CSV parsing complete', { leadsCount: leads.length, totalLines: rawData.length });
+    logger.debug('CSV parsing details', { skippedCount: skipped.length, warningsCount: allWarnings.length });
+
+    setParsedLeads(leads);
+    setValidationWarnings(allWarnings);
+    setSkippedLines(skipped);
+    setError(null);
+    setStep('preview');
   };
 
   const handleImport = async () => {
@@ -365,7 +496,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           }
         } catch (err: any) {
           importResults.failed++;
-          importResults.errors.push(`${lead.email}: ${err.message || 'Erreur'}`);
+          importResults.errors.push(`${lead.email || lead.phone}: ${err.message || 'Erreur'}`);
         }
       }
 
@@ -379,10 +510,25 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
 
   const resetModal = () => {
     setStep('upload');
+    setRawData([]);
+    setHeaders([]);
+    setColumnMapping({
+      firstName: null,
+      lastName: null,
+      email: null,
+      phone: null,
+      propertyPrice: null,
+      downPayment: null,
+      purchaseType: null,
+      source: null,
+      pipelineStage: null,
+    });
+    setAutoDetected(false);
     setParsedLeads([]);
     setValidationWarnings([]);
     setSkippedLines([]);
     setError(null);
+    setMappingInfo(null);
     setFileName('');
     setImportMode('direct');
     setSendWelcomeEmails(true);
@@ -394,7 +540,42 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
     onClose();
   };
 
+  // Preview data for mapping step (first 5 rows)
+  const previewRows = useMemo(() => {
+    return rawData.slice(0, 5);
+  }, [rawData]);
+
+  // Mapped preview for confirmation step
+  const mappedPreview = useMemo(() => {
+    return previewRows.map((row, idx) => {
+      const getValue = (colIndex: number | null): string => {
+        if (colIndex === null || colIndex >= row.length) return '-';
+        return row[colIndex].replace(/^"|"$/g, '').trim() || '-';
+      };
+      
+      return {
+        lineNumber: idx + 2,
+        firstName: getValue(columnMapping.firstName),
+        lastName: getValue(columnMapping.lastName),
+        email: getValue(columnMapping.email),
+        phone: getValue(columnMapping.phone),
+      };
+    });
+  }, [previewRows, columnMapping]);
+
   if (!isOpen) return null;
+
+  const mappingFields = [
+    { key: 'firstName' as const, label: 'Prénom', required: false },
+    { key: 'lastName' as const, label: 'Nom', required: false },
+    { key: 'email' as const, label: 'Email', required: false, highlight: true },
+    { key: 'phone' as const, label: 'Téléphone', required: false, highlight: true },
+    { key: 'propertyPrice' as const, label: 'Prix du bien', required: false },
+    { key: 'downPayment' as const, label: 'Apport', required: false },
+    { key: 'purchaseType' as const, label: 'Type d\'achat', required: false },
+    { key: 'source' as const, label: 'Source', required: false },
+    { key: 'pipelineStage' as const, label: 'Pipeline', required: false },
+  ];
 
   return (
     <div className="client-import-modal-overlay">
@@ -404,6 +585,29 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
           <button onClick={handleClose}>
             <X size={20} />
           </button>
+        </div>
+
+        {/* Step indicator */}
+        <div className="client-import-steps">
+          <div className={`client-import-step ${step === 'upload' ? 'active' : 'completed'}`}>
+            <span className="step-number">1</span>
+            <span className="step-label">Upload</span>
+          </div>
+          <ChevronRight size={16} className="step-arrow" />
+          <div className={`client-import-step ${step === 'mapping' ? 'active' : step === 'preview' || step === 'result' ? 'completed' : ''}`}>
+            <span className="step-number">2</span>
+            <span className="step-label">Mapping</span>
+          </div>
+          <ChevronRight size={16} className="step-arrow" />
+          <div className={`client-import-step ${step === 'preview' ? 'active' : step === 'result' ? 'completed' : ''}`}>
+            <span className="step-number">3</span>
+            <span className="step-label">Aperçu</span>
+          </div>
+          <ChevronRight size={16} className="step-arrow" />
+          <div className={`client-import-step ${step === 'result' ? 'active' : ''}`}>
+            <span className="step-number">4</span>
+            <span className="step-label">Résultat</span>
+          </div>
         </div>
 
         {error && (
@@ -416,8 +620,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
         {step === 'upload' && (
           <div>
             <p className="client-import-instructions">
-              Téléchargez un fichier CSV avec les colonnes: <strong>email, prénom, nom</strong><br />
-              Colonnes optionnelles: téléphone, prix du bien, apport, type d'achat, source, pipeline
+              Téléchargez un fichier CSV. Les colonnes peuvent être nommées librement — vous les mapperez à l'étape suivante.
             </p>
             
             <div className="client-import-template-banner">
@@ -440,6 +643,127 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                 Sélectionner un fichier CSV
               </label>
               <p>Formats supportés: virgule (,) ou point-virgule (;) comme séparateur</p>
+            </div>
+          </div>
+        )}
+
+        {step === 'mapping' && (
+          <div className="client-import-mapping">
+            {mappingInfo && (
+              <div className={`client-import-info ${autoDetected ? 'success' : 'neutral'}`}>
+                <Info size={16} />
+                <span>{mappingInfo}</span>
+              </div>
+            )}
+
+            <p className="client-import-mapping-intro">
+              Associez les colonnes de votre fichier aux champs requis.
+              <br />
+              <strong>Au minimum Email OU Téléphone doit être mappé.</strong>
+            </p>
+
+            <div className="client-import-mapping-grid">
+              {mappingFields.map(field => (
+                <div 
+                  key={field.key} 
+                  className={`client-import-mapping-row ${field.highlight ? 'highlight' : ''}`}
+                >
+                  <label htmlFor={`mapping-${field.key}`}>
+                    {field.label}
+                    {field.highlight && <span className="required-hint">*</span>}
+                  </label>
+                  <select
+                    id={`mapping-${field.key}`}
+                    value={columnMapping[field.key] ?? ''}
+                    onChange={(e) => handleMappingChange(field.key, e.target.value === '' ? null : parseInt(e.target.value))}
+                    className={field.highlight && columnMapping[field.key] !== null ? 'selected' : ''}
+                  >
+                    {columnOptions.map(opt => (
+                      <option key={opt.value ?? 'null'} value={opt.value ?? ''}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+
+            {!mappingValidation.isValid && (
+              <div className="client-import-validation-warning">
+                <AlertCircle size={16} />
+                <span>{mappingValidation.message}</span>
+              </div>
+            )}
+
+            {/* Preview of raw data */}
+            <div className="client-import-raw-preview">
+              <h4>Aperçu des 5 premières lignes du fichier :</h4>
+              <div className="client-import-table-wrapper">
+                <table className="client-import-table compact">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      {headers.map((header, idx) => (
+                        <th key={idx}>{getColumnDisplayName(header, idx)}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {previewRows.map((row, rowIdx) => (
+                      <tr key={rowIdx}>
+                        <td className="line-num">{rowIdx + 2}</td>
+                        {row.map((cell, cellIdx) => (
+                          <td key={cellIdx} className="cell-preview">
+                            {cell.substring(0, 30)}{cell.length > 30 ? '...' : ''}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mapped preview */}
+            <div className="client-import-mapped-preview">
+              <h4>Résultat du mapping :</h4>
+              <div className="client-import-table-wrapper">
+                <table className="client-import-table compact">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Prénom</th>
+                      <th>Nom</th>
+                      <th>Email</th>
+                      <th>Téléphone</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mappedPreview.map((row, idx) => (
+                      <tr key={idx}>
+                        <td className="line-num">{row.lineNumber}</td>
+                        <td>{row.firstName}</td>
+                        <td>{row.lastName}</td>
+                        <td>{row.email}</td>
+                        <td>{row.phone}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="client-import-actions">
+              <button onClick={resetModal} className="client-import-btn-cancel">
+                Retour
+              </button>
+              <button
+                onClick={handleProceedToPreview}
+                disabled={!mappingValidation.isValid}
+                className="client-import-btn-submit"
+              >
+                Continuer vers l'aperçu
+              </button>
             </div>
           </div>
         )}
@@ -513,7 +837,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                           >⚠</span>
                         )}
                       </td>
-                      <td className="email">{lead.email}</td>
+                      <td className="email">{lead.email || '-'}</td>
                       <td>{lead.firstName}</td>
                       <td>{lead.lastName}</td>
                       <td className="nowrap">{lead.phone || '-'}</td>
@@ -545,14 +869,14 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                     <Mail size={18} className="text-info" />
                     <strong>Envoyer les identifiants par email</strong>
                   </div>
-                  <p>Chaque lead recevra un email avec son mot de passe temporaire (TempPass123!)</p>
+                  <p>Chaque lead avec email recevra un email avec son mot de passe temporaire (TempPass123!)</p>
                 </label>
               </div>
             )}
             
             <div className="client-import-actions">
-              <button onClick={resetModal} className="client-import-btn-cancel">
-                Annuler
+              <button onClick={() => setStep('mapping')} className="client-import-btn-cancel">
+                Retour au mapping
               </button>
               <button
                 onClick={handleImport}
@@ -563,7 +887,7 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                   ? 'Import en cours...'
                   : importMode === 'pending'
                     ? `Envoyer ${parsedLeads.length} leads pour validation`
-                    : `Importer ${parsedLeads.length} leads${sendWelcomeEmails ? ' + emails' : ''}`}
+                    : `Confirmer l'import de ${parsedLeads.length} leads${sendWelcomeEmails ? ' + emails' : ''}`}
               </button>
             </div>
           </div>
@@ -595,6 +919,12 @@ export const ClientImportModal: React.FC<ClientImportModalProps> = ({ isOpen, on
                 </div>
               )}
             </div>
+            {skippedLines.length > 0 && (
+              <div className="client-import-result-skipped">
+                <span className="value">{skippedLines.length}</span>
+                <span className="label">Lignes ignorées</span>
+              </div>
+            )}
             {results.errors.length > 0 && (
               <div className="client-import-errors-box">
                 <p className="title">Détails des erreurs:</p>

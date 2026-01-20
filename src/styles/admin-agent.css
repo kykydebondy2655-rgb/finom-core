@@ -528,7 +528,282 @@
   background-color: #ea580c;
 }
 
-/* Dark mode support */
+/* Step indicator */
+.client-import-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.client-import-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.client-import-step .step-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.client-import-step .step-label {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.client-import-step.active .step-number {
+  background-color: #f97316;
+  color: white;
+}
+
+.client-import-step.active .step-label {
+  color: #f97316;
+  font-weight: 500;
+}
+
+.client-import-step.completed .step-number {
+  background-color: #22c55e;
+  color: white;
+}
+
+.client-import-step.completed .step-label {
+  color: #22c55e;
+}
+
+.client-import-steps .step-arrow {
+  color: #cbd5e1;
+}
+
+/* Mapping step styles */
+.client-import-mapping {
+  padding-top: 8px;
+}
+
+.client-import-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.client-import-info.neutral {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.client-import-info.success {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+.client-import-mapping-intro {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.client-import-mapping-intro strong {
+  color: #1e293b;
+}
+
+.client-import-mapping-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.client-import-mapping-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.client-import-mapping-row.highlight {
+  background-color: #fef9f3;
+  border-color: #fed7aa;
+}
+
+.client-import-mapping-row label {
+  flex: 0 0 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.client-import-mapping-row label .required-hint {
+  color: #f97316;
+  margin-left: 2px;
+}
+
+.client-import-mapping-row select {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 13px;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.client-import-mapping-row select:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+}
+
+.client-import-mapping-row select.selected {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
+.client-import-validation-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+/* Raw data preview */
+.client-import-raw-preview,
+.client-import-mapped-preview {
+  margin-bottom: 20px;
+}
+
+.client-import-raw-preview h4,
+.client-import-mapped-preview h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.client-import-table.compact {
+  min-width: auto;
+  font-size: 12px;
+}
+
+.client-import-table.compact th,
+.client-import-table.compact td {
+  padding: 6px 8px;
+}
+
+.client-import-table .cell-preview {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Result skipped count */
+.client-import-result-skipped {
+  text-align: center;
+  padding: 12px;
+  background-color: #fffbeb;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.client-import-result-skipped .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #d97706;
+  display: block;
+}
+
+.client-import-result-skipped .label {
+  font-size: 12px;
+  color: #92400e;
+}
+
+/* Dark mode for new elements */
+.dark .client-import-steps {
+  border-color: #334155;
+}
+
+.dark .client-import-step .step-number {
+  background-color: #475569;
+  color: #94a3b8;
+}
+
+.dark .client-import-step .step-label {
+  color: #94a3b8;
+}
+
+.dark .client-import-info.neutral {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+.dark .client-import-info.success {
+  background-color: #14532d;
+  border-color: #166534;
+  color: #86efac;
+}
+
+.dark .client-import-mapping-intro {
+  color: #94a3b8;
+}
+
+.dark .client-import-mapping-intro strong {
+  color: #e2e8f0;
+}
+
+.dark .client-import-mapping-row {
+  background-color: #334155;
+  border-color: #475569;
+}
+
+.dark .client-import-mapping-row.highlight {
+  background-color: #431407;
+  border-color: #c2410c;
+}
+
+.dark .client-import-mapping-row label {
+  color: #e2e8f0;
+}
+
+.dark .client-import-mapping-row select {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .client-import-raw-preview h4,
+.dark .client-import-mapped-preview h4 {
+  color: #94a3b8;
+}
+
 .dark .client-import-modal {
   background-color: #1e293b;
 }
