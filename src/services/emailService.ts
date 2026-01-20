@@ -1,5 +1,6 @@
 /**
  * Email Service - Interface pour l'envoi d'emails via Edge Function
+ * Includes automatic logging to email_logs table
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -32,11 +33,56 @@ interface EmailResponse {
   error?: string;
 }
 
+/**
+ * Log email to email_logs table
+ */
+async function logEmail(params: {
+  template: EmailTemplate;
+  recipientEmail: string;
+  subject?: string;
+  status: 'sent' | 'error';
+  errorMessage?: string;
+  clientId?: string;
+  loanId?: string;
+  documentId?: string;
+  metadata?: Record<string, unknown>;
+}): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Only log if we have a valid user (agent/admin context)
+    if (!user) return;
+    
+    // Use raw insert to avoid type issues with newly created table
+    await supabase.from('email_logs' as any).insert({
+      user_id: user.id,
+      recipient_email: params.recipientEmail,
+      template: params.template,
+      subject: params.subject || null,
+      status: params.status,
+      error_message: params.errorMessage || null,
+      sent_by: user.id,
+      client_id: params.clientId || null,
+      loan_id: params.loanId || null,
+      document_id: params.documentId || null,
+      metadata: params.metadata || null
+    } as any);
+  } catch (err) {
+    // Don't throw - logging failure shouldn't block email sending
+    logger.warn('Failed to log email', { error: err });
+  }
+}
+
 export const emailService = {
   /**
-   * Envoie un email via l'edge function
+   * Envoie un email via l'edge function avec logging automatique
    */
-  async send(params: SendEmailParams): Promise<EmailResponse> {
+  async send(params: SendEmailParams, loggingContext?: {
+    clientId?: string;
+    loanId?: string;
+    documentId?: string;
+    subject?: string;
+  }): Promise<EmailResponse> {
     try {
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: params,
@@ -44,13 +90,53 @@ export const emailService = {
 
       if (error) {
         logger.warn('Email send error', { error: error.message });
+        
+        // Log failed email
+        await logEmail({
+          template: params.template,
+          recipientEmail: params.to,
+          subject: loggingContext?.subject,
+          status: 'error',
+          errorMessage: error.message,
+          clientId: loggingContext?.clientId,
+          loanId: loggingContext?.loanId,
+          documentId: loggingContext?.documentId,
+          metadata: params.data
+        });
+        
         return { success: false, error: error.message };
       }
+
+      // Log successful email
+      await logEmail({
+        template: params.template,
+        recipientEmail: params.to,
+        subject: loggingContext?.subject,
+        status: 'sent',
+        clientId: loggingContext?.clientId,
+        loanId: loggingContext?.loanId,
+        documentId: loggingContext?.documentId,
+        metadata: params.data
+      });
 
       return { success: true, data };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       logger.warn('Email service error', { error: errorMessage });
+      
+      // Log failed email
+      await logEmail({
+        template: params.template,
+        recipientEmail: params.to,
+        subject: loggingContext?.subject,
+        status: 'error',
+        errorMessage,
+        clientId: loggingContext?.clientId,
+        loanId: loggingContext?.loanId,
+        documentId: loggingContext?.documentId,
+        metadata: params.data
+      });
+      
       return { success: false, error: errorMessage };
     }
   },

@@ -548,6 +548,54 @@ export type Database = {
           },
         ]
       }
+      email_logs: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          document_id: string | null
+          error_message: string | null
+          id: string
+          loan_id: string | null
+          metadata: Json | null
+          recipient_email: string
+          sent_by: string | null
+          status: string
+          subject: string | null
+          template: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          document_id?: string | null
+          error_message?: string | null
+          id?: string
+          loan_id?: string | null
+          metadata?: Json | null
+          recipient_email: string
+          sent_by?: string | null
+          status?: string
+          subject?: string | null
+          template: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          document_id?: string | null
+          error_message?: string | null
+          id?: string
+          loan_id?: string | null
+          metadata?: Json | null
+          recipient_email?: string
+          sent_by?: string | null
+          status?: string
+          subject?: string | null
+          template?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_templates: {
         Row: {
           created_at: string
