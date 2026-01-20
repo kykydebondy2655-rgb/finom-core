@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { 
   RefreshCw, FileText, Search, CheckCircle2, XCircle, Coins, 
   Clock, ClipboardList, Cog, Mail, Users, User, ArrowUpFromLine,
-  ArrowDownToLine, X, Plus, FileStack, MessageCircle
+  ArrowDownToLine, X, Plus, FileStack, MessageCircle, Calendar, Calculator
 } from 'lucide-react';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
@@ -31,6 +31,10 @@ import type { ProjectType } from '@/lib/documentChecklist';
 import { logger } from '@/lib/logger';
 import LoanStatusHistory from '@/components/agent/LoanStatusHistory';
 import DocumentStatusHistory from '@/components/agent/DocumentStatusHistory';
+import LoanTimeline from '@/components/loans/LoanTimeline';
+import AmortizationSchedule from '@/components/loans/AmortizationSchedule';
+import AppointmentBooking from '@/components/appointments/AppointmentBooking';
+import { supabase } from '@/integrations/supabase/client';
 
 const LoanDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,13 +48,15 @@ const LoanDetail: React.FC = () => {
   const [assignedAgent, setAssignedAgent] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'messages' | 'timeline' | 'schedule'>('overview');
   const [activeDocOwner, setActiveDocOwner] = useState<'all' | 'primary' | 'co_borrower'>('all');
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
   const [clientProfile, setClientProfile] = useState<Profile | null>(null);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [statusHistory, setStatusHistory] = useState<Array<{ new_status: string; created_at: string; notes?: string | null }>>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -69,6 +75,20 @@ const LoanDetail: React.FC = () => {
       setLoan(loanData);
       setDocuments(docsData || []);
       setMessages(msgsData || []);
+      
+      // Load status history for timeline
+      try {
+        const { data: historyData } = await supabase
+          .from('loan_status_history')
+          .select('new_status, created_at, notes')
+          .eq('loan_id', id)
+          .order('created_at', { ascending: true });
+        if (historyData) {
+          setStatusHistory(historyData);
+        }
+      } catch {
+        // Silently fail for non-authorized users
+      }
       
       // Load assigned agent for this loan's owner
       if (loanData?.user_id) {
@@ -299,6 +319,13 @@ const LoanDetail: React.FC = () => {
               onClick={() => setActiveTab('timeline')}
             >
               Suivi
+            </button>
+            <button 
+              className={`tab ${activeTab === 'schedule' ? 'active' : ''}`}
+              onClick={() => setActiveTab('schedule')}
+            >
+              <Calculator size={14} className="inline mr-1" />
+              Échéancier
             </button>
           </div>
 
@@ -698,8 +725,50 @@ const LoanDetail: React.FC = () => {
               )}
             </div>
           )}
+
+          {/* Schedule Tab */}
+          {activeTab === 'schedule' && loan && (
+            <div className="tab-content fade-in">
+              <Card padding="lg">
+                <h3><Calculator size={18} className="inline-icon" /> Tableau d'amortissement</h3>
+                <AmortizationSchedule
+                  loanAmount={loan.amount}
+                  interestRate={loan.rate}
+                  durationMonths={loan.duration * 12}
+                  monthlyPayment={loan.monthly_payment || 0}
+                  insuranceRate={0.31}
+                />
+              </Card>
+
+              {/* Book appointment button for clients */}
+              {!isAgent && !isAdmin && assignedAgent && (
+                <Card padding="lg" className="mt-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3><Calendar size={18} className="inline-icon" /> Prendre rendez-vous</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Réservez un créneau avec votre conseiller pour discuter de votre dossier.
+                      </p>
+                    </div>
+                    <Button variant="primary" onClick={() => setShowAppointmentModal(true)}>
+                      <Calendar size={16} className="mr-2" />
+                      Réserver
+                    </Button>
+                  </div>
+                </Card>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* Appointment Booking Modal */}
+        {showAppointmentModal && assignedAgent && (
+          <AppointmentBooking
+            agentId={assignedAgent.id}
+            onClose={() => setShowAppointmentModal(false)}
+            onSuccess={() => toast.success('Rendez-vous réservé avec succès !')}
+          />
+        )}
       </div>
     </PageLayout>
   );
