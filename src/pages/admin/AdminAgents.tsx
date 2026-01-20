@@ -8,6 +8,7 @@ import CreateAgentModal from '@/components/admin/CreateAgentModal';
 import AssignLeadsModal from '@/components/admin/AssignLeadsModal';
 import DeleteAgentModal from '@/components/admin/DeleteAgentModal';
 import ManageLeadsModal from '@/components/admin/ManageLeadsModal';
+import ResetPasswordModal from '@/components/admin/ResetPasswordModal';
 import { useToast } from '@/components/finom/Toast';
 import { adminApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
@@ -25,6 +26,7 @@ const AdminAgents: React.FC = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showManageLeadsModal, setShowManageLeadsModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Profile | null>(null);
   const [availableLeadsCount, setAvailableLeadsCount] = useState(0);
 
@@ -71,6 +73,11 @@ const AdminAgents: React.FC = () => {
   const handleManageLeadsClick = (agent: Profile) => {
     setSelectedAgent(agent);
     setShowManageLeadsModal(true);
+  };
+
+  const handleResetPasswordClick = (agent: Profile) => {
+    setSelectedAgent(agent);
+    setShowResetPasswordModal(true);
   };
 
   if (loading) {
@@ -136,6 +143,13 @@ const AdminAgents: React.FC = () => {
                       </Button>
                       <Button variant="ghost" size="sm">Voir clients</Button>
                       <Button 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => handleResetPasswordClick(agent)}
+                      >
+                        🔑 Mot de passe
+                      </Button>
+                      <Button 
                         variant="ghost" 
                         size="sm"
                         className="delete-agent-btn"
@@ -197,6 +211,18 @@ const AdminAgents: React.FC = () => {
               loadAgents();
             }}
             agent={selectedAgent}
+          />
+        )}
+
+        {selectedAgent && (
+          <ResetPasswordModal
+            isOpen={showResetPasswordModal}
+            onClose={() => {
+              setShowResetPasswordModal(false);
+              setSelectedAgent(null);
+            }}
+            clientId={selectedAgent.id}
+            clientName={`${selectedAgent.first_name} ${selectedAgent.last_name}`}
           />
         )}
       </div>
