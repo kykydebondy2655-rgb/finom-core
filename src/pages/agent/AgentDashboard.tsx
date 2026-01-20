@@ -210,7 +210,7 @@ const AgentDashboard: React.FC = () => {
                       </span>
                       <span className="client-email">{assignment.client?.email}</span>
                     </div>
-                    <StatusBadge status={assignment.client?.kyc_status || 'pending'} size="sm" />
+                    <StatusBadge status={assignment.client?.pipeline_stage || 'nouveau'} size="sm" />
                   </div>
                 ))}
               </div>
