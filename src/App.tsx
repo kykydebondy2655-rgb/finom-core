@@ -22,6 +22,7 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import SecurityTrust from './pages/legal/SecurityTrust';
 import About from './pages/About';
+import Install from './pages/Install';
 
 // Client Pages
 import Dashboard from './pages/Dashboard';
@@ -47,6 +48,7 @@ import AdminLoginHistory from './pages/admin/AdminLoginHistory';
 import AdminLeads from './pages/admin/AdminLeads';
 import AdminImports from './pages/admin/AdminImports';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminEmailTemplates from './pages/admin/AdminEmailTemplates';
 
 import CookieBanner from './components/common/CookieBanner';
 
@@ -80,6 +82,7 @@ function App() {
                                 <Route path="/terms" element={<TermsOfService />} />
                                 <Route path="/security" element={<SecurityTrust />} />
                                 <Route path="/about" element={<About />} />
+                                <Route path="/install" element={<Install />} />
 
                                 {/* ============= CLIENT ROUTES ============= */}
                                 <Route 
@@ -246,8 +249,14 @@ function App() {
                                         </ProtectedRoute>
                                     } 
                                 />
-
-                                {/* ============= FALLBACK ============= */}
+                                <Route 
+                                    path="/admin/email-templates" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminEmailTemplates />
+                                        </ProtectedRoute>
+                                    } 
+                                />
                                 <Route path="*" element={<NotFound />} />
                             </Routes>
                         </main>
