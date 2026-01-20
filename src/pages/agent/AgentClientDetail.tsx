@@ -234,9 +234,9 @@ const AgentClientDetail: React.FC = () => {
                 </h4>
                 <div className="info-grid">
                   <div className="info-row"><span>Rue</span><strong>{client.address || '-'}</strong></div>
-                  <div className="info-row"><span>Code postal</span><strong>{(client as any).postal_code || '-'}</strong></div>
-                  <div className="info-row"><span>Ville</span><strong>{(client as any).city || '-'}</strong></div>
-                  <div className="info-row"><span>Pays</span><strong>{(client as any).country || 'France'}</strong></div>
+                  <div className="info-row"><span>Code postal</span><strong>{client.postal_code || '-'}</strong></div>
+                  <div className="info-row"><span>Ville</span><strong>{client.city || '-'}</strong></div>
+                  <div className="info-row"><span>Pays</span><strong>{client.country || 'France'}</strong></div>
                 </div>
 
                 {/* Informations projet */}

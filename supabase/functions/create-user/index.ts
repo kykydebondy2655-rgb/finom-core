@@ -224,13 +224,13 @@ serve(async (req: Request): Promise<Response> => {
           );
         }
 
-        // Ensure role exists (ignore duplicates)
-        try {
-          await adminClient
-            .from("user_roles")
-            .insert({ user_id: existingUserId, role });
-        } catch {
-          // Silently ignore duplicate role errors
+        // Ensure role exists (upsert to handle duplicates gracefully)
+        const { error: roleError } = await adminClient
+          .from("user_roles")
+          .upsert({ user_id: existingUserId, role }, { onConflict: 'user_id' });
+        
+        if (roleError && !roleError.message?.includes('duplicate')) {
+          console.warn('Role upsert warning:', roleError.message);
         }
 
         return new Response(
