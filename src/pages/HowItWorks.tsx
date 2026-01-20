@@ -4,6 +4,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 import processVideo from '@/assets/process-digital-video.mp4';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import { 
     motion,
     fadeInUp,
@@ -27,6 +28,9 @@ import {
 
 const HowItWorks = () => {
     const navigate = useNavigate();
+    
+    // SEO anti-phishing: signaux de confiance
+    useSEO(SEO_CONFIGS.howItWorks);
 
     const steps = [
         {
