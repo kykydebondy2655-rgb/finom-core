@@ -12,7 +12,7 @@ import Button from '../components/finom/Button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, LoanApplication } from '../services/api';
 import logger from '../lib/logger';
-import { BarChart3, FileText, FolderOpen, Landmark, User, Calculator } from 'lucide-react';
+import { BarChart3, FileText, FolderOpen, Landmark, User, Calculator, Headphones } from 'lucide-react';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -243,6 +243,22 @@ const Dashboard = () => {
                             <div className="banking-info">
                                 <h4>Mon profil</h4>
                                 <p>Informations personnelles</p>
+                            </div>
+                            <span className="arrow">→</span>
+                        </Card>
+                    </motion.div>
+                    <motion.div variants={fadeInUp} transition={{ duration: 0.4 }}>
+                        <Card className="banking-card support-card" padding="lg" onClick={() => navigate('/support')}>
+                            <motion.div 
+                                className="banking-icon support-icon"
+                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                transition={{ type: 'spring', stiffness: 300 }}
+                            >
+                                <Headphones size={28} />
+                            </motion.div>
+                            <div className="banking-info">
+                                <h4>Support</h4>
+                                <p>Contacter notre équipe</p>
                             </div>
                             <span className="arrow">→</span>
                         </Card>

@@ -40,6 +40,7 @@ const Banking = lazy(() => import('./pages/Banking'));
 const LoansList = lazy(() => import('./pages/loans/LoansList'));
 const LoanDetail = lazy(() => import('./pages/loans/LoanDetail'));
 const Appointments = lazy(() => import('./pages/Appointments'));
+const Support = lazy(() => import('./pages/Support'));
 
 // Agent Pages
 const AgentDashboard = lazy(() => import('./pages/agent/AgentDashboard'));
@@ -158,6 +159,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['client']}>
                                                 <Appointments />
+                                            </ProtectedRoute>
+                                        } 
+                                    />
+                                    <Route 
+                                        path="/support" 
+                                        element={
+                                            <ProtectedRoute allowedRoles={['client']}>
+                                                <Support />
                                             </ProtectedRoute>
                                         } 
                                     />
