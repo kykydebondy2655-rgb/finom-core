@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/layout/PageLayout';
@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import CallModal from '@/components/agent/CallModal';
 import ClientStatusStats from '@/components/agent/ClientStatusStats';
+import RecentActivityWidget from '@/components/agent/RecentActivityWidget';
 import { agentApi, formatDateTime } from '@/services/api';
 import type { ClientAssignment, Callback, Profile } from '@/services/api';
 import { logger } from '@/lib/logger';
@@ -57,6 +58,12 @@ const AgentDashboard: React.FC = () => {
     const today = new Date();
     return scheduled.toDateString() === today.toDateString() && c.status === 'planned';
   });
+
+  // Extract assigned client IDs for activity widget
+  const assignedClientIds = useMemo(() => 
+    clients.map(c => c.client_user_id), 
+    [clients]
+  );
 
   if (loading) {
     return <PageLayout showAnimatedBackground={false}><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
@@ -111,6 +118,15 @@ const AgentDashboard: React.FC = () => {
               Gérer les rappels
             </Button>
           </div>
+
+          {/* Recent Activity Widget */}
+          {user && (
+            <RecentActivityWidget 
+              agentId={user.id} 
+              assignedClientIds={assignedClientIds} 
+              maxItems={8}
+            />
+          )}
 
           {/* Today's Callbacks */}
           <Card className="callbacks-card fade-in" padding="lg">
