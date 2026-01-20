@@ -1,21 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/finom/Toast';
-import { useAuth } from '@/context/AuthContext';
-import { emailService } from '@/services/emailService';
-import logger from '@/lib/logger';
-import { documentStatusUpdateSchema } from '@/lib/validations/statusSchemas';
 import { 
   DOCUMENT_STATUS_DEFINITIONS,
-  isValidDocumentTransition,
   getAllowedDocumentTransitions,
   isDocumentTerminalStatus,
-  getDocumentTransitionBlockReason,
-  getDocumentStatusDefinition,
 } from '@/lib/documentStatusMachine';
+import { useDocumentStatusUpdate, type DocumentData } from '@/hooks/useDocumentStatusUpdate';
 import { Clock, Inbox, Search, CheckCircle2, XCircle, FileText, AlertTriangle } from 'lucide-react';
 import '@/styles/components.css';
 
@@ -28,6 +20,7 @@ interface DocumentStatusModalProps {
     file_name: string;
     status: string;
     user_id: string;
+    loan_id?: string | null;
   } | null;
 }
 
@@ -48,12 +41,8 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
 }) => {
   const [selectedStatus, setSelectedStatus] = useState(document?.status || 'pending');
   const [rejectionReason, setRejectionReason] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const toast = useToast();
-  const { user } = useAuth();
-
-  const clearError = useCallback(() => setError(null), []);
+  
+  const { updateStatus, loading, error, clearError } = useDocumentStatusUpdate();
 
   useEffect(() => {
     if (document) {
@@ -66,86 +55,23 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
   const handleSubmit = async () => {
     if (!document) return;
 
-    // Validate state machine transition
-    if (!isValidDocumentTransition(document.status, selectedStatus)) {
-      const reason = getDocumentTransitionBlockReason(document.status, selectedStatus);
-      setError(reason);
-      toast.error(reason);
-      return;
-    }
+    const documentData: DocumentData = {
+      id: document.id,
+      status: document.status,
+      user_id: document.user_id,
+      file_name: document.file_name,
+      loan_id: document.loan_id,
+    };
 
-    // Validate status update using Zod schema
-    const validationResult = documentStatusUpdateSchema.safeParse({
-      status: selectedStatus,
-      rejectionReason: rejectionReason
+    const success = await updateStatus({
+      document: documentData,
+      newStatus: selectedStatus,
+      rejectionReason,
     });
 
-    if (!validationResult.success) {
-      const firstError = validationResult.error.errors[0];
-      const errorMessage = firstError?.message || 'Données invalides';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Update document status
-      const updateData: Record<string, unknown> = {
-        status: selectedStatus,
-        validated_at: selectedStatus === 'validated' ? new Date().toISOString() : null,
-        validated_by: selectedStatus === 'validated' ? user?.id : null,
-      };
-
-      if (selectedStatus === 'rejected') {
-        updateData.rejection_reason = rejectionReason;
-      }
-
-      const { error: updateError } = await supabase
-        .from('documents')
-        .update(updateData)
-        .eq('id', document.id);
-
-      if (updateError) throw updateError;
-
-      // Create notification for client
-      const statusDef = getDocumentStatusDefinition(selectedStatus);
-      const statusLabel = statusDef?.label || selectedStatus;
-      const statusDescription = statusDef?.description || '';
-
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: document.user_id,
-          type: 'document_status',
-          category: 'document',
-          title: `Document ${statusLabel.toLowerCase()}`,
-          message: selectedStatus === 'rejected' 
-            ? `Votre document "${document.file_name}" a été rejeté. Raison: ${rejectionReason}. Veuillez téléverser un nouveau document.`
-            : `Votre document "${document.file_name}" est maintenant: ${statusLabel}. ${statusDescription}`,
-          related_entity: 'documents',
-          related_id: document.id,
-        });
-
-      if (notifError) {
-        logger.warn('Notification creation failed', { error: notifError.message });
-      }
-
-      // Send email notification to client for validated/rejected documents
-      await sendDocumentStatusEmail(document, selectedStatus, rejectionReason);
-
-      toast.success('Statut du document mis à jour');
+    if (success) {
       onSuccess();
       onClose();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la mise à jour';
-      logger.logError('Document status update error', err);
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -258,44 +184,5 @@ const DocumentStatusModal: React.FC<DocumentStatusModalProps> = ({
     </Dialog>
   );
 };
-
-/**
- * Send appropriate email based on document status change
- */
-async function sendDocumentStatusEmail(
-  document: { user_id: string; file_name: string },
-  newStatus: string,
-  rejectionReason: string
-): Promise<void> {
-  try {
-    const { data: clientProfile } = await supabase
-      .from('profiles')
-      .select('email, first_name')
-      .eq('id', document.user_id)
-      .maybeSingle();
-
-    if (!clientProfile?.email) return;
-
-    const clientName = clientProfile.first_name || 'Client';
-
-    if (newStatus === 'validated') {
-      await emailService.sendDocumentValidated(
-        clientProfile.email,
-        clientName,
-        document.file_name
-      );
-    } else if (newStatus === 'rejected') {
-      await emailService.sendDocumentRejected(
-        clientProfile.email,
-        clientName,
-        document.file_name,
-        rejectionReason
-      );
-    }
-  } catch (err) {
-    logger.logError('Failed to send document status email', err);
-    // Don't throw - email failure shouldn't block status update
-  }
-}
 
 export default DocumentStatusModal;
