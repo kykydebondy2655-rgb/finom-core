@@ -27,6 +27,7 @@ import { useAuth } from '@/context/AuthContext';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import EmptyState from '@/components/common/EmptyState';
 import AppointmentBooking from '@/components/appointments/AppointmentBooking';
+import logger from '@/lib/logger';
 
 interface Appointment {
   id: string;
@@ -68,7 +69,7 @@ const Appointments: React.FC = () => {
         setAssignedAgentId(data.agent_user_id);
       }
     } catch (err) {
-      console.error('Error loading assigned agent:', err);
+      // Silent fail - user may not have an assigned agent
     }
   };
 
@@ -93,7 +94,7 @@ const Appointments: React.FC = () => {
       if (error) throw error;
       setAppointments(data || []);
     } catch (err) {
-      console.error('Error loading appointments:', err);
+      logger.logError('Error loading appointments', err);
     } finally {
       setLoading(false);
     }

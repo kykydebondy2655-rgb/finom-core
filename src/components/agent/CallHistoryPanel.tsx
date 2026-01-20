@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Card from '@/components/finom/Card';
 import StatusBadge from '@/components/common/StatusBadge';
-import { agentApi, formatDateTime } from '@/services/api';
+import { agentApi, formatDateTime, CallLog, Profile } from '@/services/api';
 import logger from '@/lib/logger';
 import { Phone, PhoneIncoming, PhoneOutgoing } from 'lucide-react';
 
+interface CallLogWithClient extends CallLog {
+  client: Pick<Profile, 'first_name' | 'last_name'> | null;
+}
+
 const CallHistoryPanel: React.FC = () => {
   const { user } = useAuth();
-  const [callLogs, setCallLogs] = useState<any[]>([]);
+  const [callLogs, setCallLogs] = useState<CallLogWithClient[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
