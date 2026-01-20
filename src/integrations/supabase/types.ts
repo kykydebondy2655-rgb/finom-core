@@ -1161,6 +1161,54 @@ export type Database = {
           },
         ]
       }
+      profile_audit_logs: {
+        Row: {
+          action: string
+          changed_at: string
+          changed_by: string
+          changed_fields: string[]
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          profile_id: string
+        }
+        Insert: {
+          action?: string
+          changed_at?: string
+          changed_by: string
+          changed_fields?: string[]
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          profile_id: string
+        }
+        Update: {
+          action?: string
+          changed_at?: string
+          changed_by?: string
+          changed_fields?: string[]
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_audit_logs_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_audit_logs_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
