@@ -167,6 +167,7 @@ export const CALL_STATUS_LABELS: Record<string, string> = {
   busy: 'Occupé',
   voicemail: 'Messagerie',
   callback: 'À rappeler',
+  callback_scheduled: 'Rappel planifié',
 };
 
 /**
@@ -174,6 +175,7 @@ export const CALL_STATUS_LABELS: Record<string, string> = {
  */
 export const LOAN_STATUS_LABELS: Record<string, string> = {
   pending: 'En attente',
+  in_review: 'En analyse',
   documents_required: 'Documents requis',
   under_review: 'En analyse',
   processing: 'En traitement',
@@ -192,13 +194,14 @@ export const DOCUMENT_STATUS_LABELS: Record<string, string> = {
   under_review: 'En analyse',
   validated: 'Validé',
   rejected: 'Rejeté',
+  expired: 'Expiré',
 };
 
 /**
  * Get status label from any status type with fallback formatting
  */
 export const getClientStatusLabel = (status: string | null): string => {
-  if (!status) return '-';
+  if (!status) return 'Inconnu';
   // Try exact match first
   if (CLIENT_STATUS_LABELS[status]) return CLIENT_STATUS_LABELS[status];
   // Try lowercase
@@ -209,19 +212,19 @@ export const getClientStatusLabel = (status: string | null): string => {
 };
 
 export const getCallStatusLabel = (status: string): string => {
-  if (!status) return '-';
+  if (!status) return 'Inconnu';
   if (CALL_STATUS_LABELS[status]) return CALL_STATUS_LABELS[status];
   return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 };
 
 export const getLoanStatusLabel = (status: string | null): string => {
-  if (!status) return '-';
+  if (!status) return 'Inconnu';
   if (LOAN_STATUS_LABELS[status]) return LOAN_STATUS_LABELS[status];
   return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 };
 
 export const getDocumentStatusLabel = (status: string | null): string => {
-  if (!status) return '-';
+  if (!status) return 'Inconnu';
   if (DOCUMENT_STATUS_LABELS[status]) return DOCUMENT_STATUS_LABELS[status];
   return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 };
