@@ -12,9 +12,12 @@ import Button from '../components/finom/Button';
 import ForcePasswordChange from '../components/auth/ForcePasswordChange';
 import LoginLoadingOverlay from '../components/auth/LoginLoadingOverlay';
 import AnimatedBackground from '../components/common/AnimatedBackground';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import { AlertTriangle, Lock, ShieldCheck } from 'lucide-react';
 
 const Login = () => {
+    // SEO anti-phishing: signaux de confiance pour Google/navigateurs
+    useSEO(SEO_CONFIGS.login);
     const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});

@@ -1,16 +1,63 @@
-# FINOM - Robots Configuration
-# Permettre l'indexation par tous les moteurs de recherche légitimes
+# =================================================
+# FINOM - Robots.txt Configuration
+# Service financier légitime - Prêts immobiliers
+# https://pret-finom.co
+# =================================================
 
+# Googlebot - Moteur de recherche principal
 User-agent: Googlebot
 Allow: /
+Allow: /simulator
+Allow: /rates
+Allow: /how-it-works
+Allow: /faq
+Allow: /contact
+Allow: /about
+Allow: /legal
+Allow: /privacy
+Allow: /terms
+Allow: /security
+Allow: /login
+Allow: /register
+Allow: /install
 Disallow: /dashboard
 Disallow: /loans
 Disallow: /banking
 Disallow: /profile
 Disallow: /agent
 Disallow: /admin
+Disallow: /appointments
+Disallow: /forgot-password
+Disallow: /reset-password
 
+# Bingbot - Microsoft
 User-agent: Bingbot
+Allow: /
+Allow: /simulator
+Allow: /rates
+Allow: /how-it-works
+Allow: /faq
+Allow: /contact
+Allow: /about
+Allow: /legal
+Allow: /privacy
+Allow: /terms
+Allow: /security
+Allow: /login
+Allow: /register
+Allow: /install
+Disallow: /dashboard
+Disallow: /loans
+Disallow: /banking
+Disallow: /profile
+Disallow: /agent
+Disallow: /admin
+Disallow: /appointments
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# DuckDuckBot
+User-agent: DuckDuckBot
 Allow: /
 Disallow: /dashboard
 Disallow: /loans
@@ -18,13 +65,27 @@ Disallow: /banking
 Disallow: /profile
 Disallow: /agent
 Disallow: /admin
+Disallow: /appointments
+Disallow: /forgot-password
+Disallow: /reset-password
 
+# Réseaux sociaux - Aperçus de liens
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Tous les autres bots
 User-agent: *
 Allow: /
 Disallow: /dashboard
@@ -33,6 +94,23 @@ Disallow: /banking
 Disallow: /profile
 Disallow: /agent
 Disallow: /admin
+Disallow: /appointments
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*?*
 
-# Sitemap
+# Crawl-delay pour les bots génériques (éviter surcharge)
+Crawl-delay: 1
+
+# =================================================
+# Sitemap XML - Indexation structurée
+# =================================================
 Sitemap: https://pret-finom.co/sitemap.xml
+
+# =================================================
+# Informations de contact du webmaster
+# En cas de problème d'indexation, contacter :
+# webmaster@pret-finom.co
+# =================================================
