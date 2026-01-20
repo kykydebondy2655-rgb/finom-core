@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/finom/Toast';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -73,10 +75,11 @@ const PageLoader = () => (
 
 function App() {
     return (
-        <AuthProvider>
-            <ToastProvider>
-                <Router>
-                    <div className="app-container">
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <ToastProvider>
+                    <Router>
+                        <div className="app-container">
                         <PWAInstallBanner />
                         <main>
                             <Suspense fallback={<PageLoader />}>
@@ -305,9 +308,10 @@ function App() {
                         <MobileBottomNav />
                         <CookieBanner />
                     </div>
-                </Router>
-            </ToastProvider>
-        </AuthProvider>
+                    </Router>
+                </ToastProvider>
+            </AuthProvider>
+        </QueryClientProvider>
     );
 }
 

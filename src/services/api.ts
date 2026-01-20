@@ -1071,6 +1071,44 @@ export const getStatusColor = (status: string | null): string => {
 };
 
 // ============= PENDING IMPORTS =============
+
+/** Lead data structure from CSV import */
+export interface ImportLeadData {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  propertyPrice?: number | string;
+  downPayment?: number | string;
+}
+
+/** Validation error for a single row */
+export interface ImportValidationError {
+  line: number;
+  field: string;
+  message: string;
+  value: string;
+}
+
+/** Raw pending import from database (JSON fields are unknown) */
+interface PendingImportRaw {
+  id: string;
+  admin_id: string;
+  import_type: string;
+  file_name: string;
+  total_rows: number;
+  valid_rows: number;
+  invalid_rows: number;
+  data: unknown;
+  validation_errors: unknown;
+  status: string;
+  rejection_reason: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  processed_at: string | null;
+}
+
 export interface PendingImport {
   id: string;
   admin_id: string;
@@ -1079,14 +1117,35 @@ export interface PendingImport {
   total_rows: number;
   valid_rows: number;
   invalid_rows: number;
-  data: any[];
-  validation_errors: any[];
+  data: ImportLeadData[];
+  validation_errors: ImportValidationError[];
   status: 'pending' | 'approved' | 'rejected' | 'processed';
   rejection_reason?: string;
   reviewed_by?: string;
   reviewed_at?: string;
   created_at: string;
   processed_at?: string;
+}
+
+/** Transform raw database record to typed PendingImport */
+function transformPendingImport(raw: PendingImportRaw): PendingImport {
+  return {
+    id: raw.id,
+    admin_id: raw.admin_id,
+    import_type: raw.import_type,
+    file_name: raw.file_name,
+    total_rows: raw.total_rows,
+    valid_rows: raw.valid_rows,
+    invalid_rows: raw.invalid_rows,
+    data: (Array.isArray(raw.data) ? raw.data : []) as ImportLeadData[],
+    validation_errors: (Array.isArray(raw.validation_errors) ? raw.validation_errors : []) as ImportValidationError[],
+    status: raw.status as PendingImport['status'],
+    rejection_reason: raw.rejection_reason ?? undefined,
+    reviewed_by: raw.reviewed_by ?? undefined,
+    reviewed_at: raw.reviewed_at ?? undefined,
+    created_at: raw.created_at,
+    processed_at: raw.processed_at ?? undefined,
+  };
 }
 
 export const importsApi = {
@@ -1121,24 +1180,24 @@ export const importsApi = {
   },
 
   // Get all pending imports
-  async getPendingImports() {
+  async getPendingImports(): Promise<PendingImport[]> {
     const { data, error } = await supabase
       .from('pending_imports')
       .select('*')
       .order('created_at', { ascending: false });
     if (error) throw error;
-    return data as PendingImport[];
+    return (data || []).map(row => transformPendingImport(row as unknown as PendingImportRaw));
   },
 
   // Get a single pending import
-  async getPendingImportById(id: string) {
+  async getPendingImportById(id: string): Promise<PendingImport> {
     const { data, error } = await supabase
       .from('pending_imports')
       .select('*')
       .eq('id', id)
       .single();
     if (error) throw error;
-    return data as PendingImport;
+    return transformPendingImport(data as unknown as PendingImportRaw);
   },
 
   // Approve an import
