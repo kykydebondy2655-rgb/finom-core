@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.create-test-lead]
 verify_jwt = false
+
+[functions.sync-temp-passwords]
+verify_jwt = false
