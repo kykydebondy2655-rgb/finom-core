@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Smartphone } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -45,6 +46,14 @@ const Footer: React.FC = () => {
               <a href="mailto:contact@pret-finom.co">contact@pret-finom.co</a>
               <a href="tel:+33187680890">01 87 68 08 90</a>
               <span className="secure-note">🔒 pret-finom.co</span>
+            </div>
+
+            <div className="footer-column md:hidden">
+              <h4>Application mobile</h4>
+              <Link to="/install" className="flex items-center gap-2">
+                <Smartphone size={16} />
+                Installer l'application
+              </Link>
             </div>
           </div>
         </div>

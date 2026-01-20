@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/finom/Button';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
-import { Menu, X, User, LogOut, ChevronDown, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut, ChevronDown, Settings, Smartphone } from 'lucide-react';
 
 const Header = forwardRef<HTMLElement, object>((_props, ref) => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -145,6 +145,14 @@ const Header = forwardRef<HTMLElement, object>((_props, ref) => {
                 {link.label}
               </Link>
             ))}
+            <Link
+              to="/install"
+              className="mobile-nav-link flex items-center gap-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Smartphone size={18} />
+              Installer l'app
+            </Link>
           </nav>
           
           {!isAuthenticated && (
