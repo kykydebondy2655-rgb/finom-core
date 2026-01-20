@@ -782,7 +782,7 @@ export const adminApi = {
   // Delete a loan application and ALL associated data (admin only)
   async deleteLoan(loanId: string) {
     const { data, error } = await supabase
-      .rpc('admin_delete_loan' as any, { _loan_id: loanId });
+      .rpc('admin_delete_loan', { _loan_id: loanId });
     if (error) throw error;
     return data;
   },

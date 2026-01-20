@@ -8,6 +8,7 @@ import Card from '@/components/finom/Card';
 import { useToast } from '@/components/finom/Toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { logger } from '@/lib/logger';
 
 interface AppointmentBookingProps {
   agentId?: string;
@@ -74,7 +75,7 @@ const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
 
         setBookedSlots(booked);
       } catch (error) {
-        console.error('Error fetching booked slots:', error);
+        logger.logError('Error fetching booked slots', error);
       } finally {
         setLoading(false);
       }
@@ -144,7 +145,7 @@ const AppointmentBooking: React.FC<AppointmentBookingProps> = ({
       onSuccess?.();
       onClose();
     } catch (error) {
-      console.error('Booking error:', error);
+      logger.logError('Booking error', error);
       toast.error('Impossible de réserver ce créneau. Veuillez réessayer.');
     } finally {
       setSubmitting(false);

@@ -53,8 +53,8 @@ async function logEmail(params: {
     // Only log if we have a valid user (agent/admin context)
     if (!user) return;
     
-    // Use raw insert to avoid type issues with newly created table
-    await supabase.from('email_logs' as any).insert({
+    // Insert email log - cast metadata to Json type for Supabase compatibility
+    await supabase.from('email_logs').insert([{
       user_id: user.id,
       recipient_email: params.recipientEmail,
       template: params.template,
@@ -65,8 +65,8 @@ async function logEmail(params: {
       client_id: params.clientId || null,
       loan_id: params.loanId || null,
       document_id: params.documentId || null,
-      metadata: params.metadata || null
-    } as any);
+      metadata: (params.metadata || null) as import('@/integrations/supabase/types').Json
+    }]);
   } catch (err) {
     // Don't throw - logging failure shouldn't block email sending
     logger.warn('Failed to log email', { error: err });

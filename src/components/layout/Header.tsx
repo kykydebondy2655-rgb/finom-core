@@ -89,12 +89,15 @@ const Header = forwardRef<HTMLElement, object>((_props, ref) => {
               <button 
                 className="user-menu-trigger"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
+                aria-expanded={userMenuOpen}
+                aria-haspopup="true"
+                aria-label="Menu utilisateur"
               >
-                <div className="user-avatar">
+                <div className="user-avatar" aria-hidden="true">
                   {user?.firstName?.[0] || user?.email?.[0] || 'U'}
                 </div>
                 <span className="user-name">{user?.firstName || 'Utilisateur'}</span>
-                <ChevronDown size={16} />
+                <ChevronDown size={16} aria-hidden="true" />
               </button>
 
               {userMenuOpen && (
@@ -125,8 +128,10 @@ const Header = forwardRef<HTMLElement, object>((_props, ref) => {
           <button 
             className="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
           </button>
         </div>
       </div>
