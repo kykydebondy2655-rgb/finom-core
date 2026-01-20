@@ -12,7 +12,6 @@ export interface ForcePasswordChangeProps {
 const ForcePasswordChange: React.FC<ForcePasswordChangeProps> = ({ onSuccess }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,18 +80,6 @@ const ForcePasswordChange: React.FC<ForcePasswordChangeProps> = ({ onSuccess }) 
 
         <form onSubmit={handleSubmit}>
           {error && <div className="error-message">{error}</div>}
-
-          <div className="form-group">
-            <label htmlFor="currentPassword">Mot de passe actuel</label>
-            <input
-              type="password"
-              id="currentPassword"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-              placeholder="Entrez votre mot de passe actuel"
-            />
-          </div>
 
           <div className="form-group">
             <label htmlFor="newPassword">Nouveau mot de passe</label>
