@@ -29,6 +29,8 @@ import { useDocumentProgress } from '@/hooks/useDocumentProgress';
 import { useSequestreAlert } from '@/hooks/useSequestreAlert';
 import type { ProjectType } from '@/lib/documentChecklist';
 import { logger } from '@/lib/logger';
+import LoanStatusHistory from '@/components/agent/LoanStatusHistory';
+import DocumentStatusHistory from '@/components/agent/DocumentStatusHistory';
 
 const LoanDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -683,6 +685,17 @@ const LoanDetail: React.FC = () => {
                   ))}
                 </div>
               </Card>
+
+              {/* Detailed History - Visible to agents/admins */}
+              {(isAgent || isAdmin) && id && (
+                <Card padding="lg" className="mt-4">
+                  <h3>Historique détaillé</h3>
+                  <div className="space-y-4 mt-4">
+                    <LoanStatusHistory loanId={id} />
+                    <DocumentStatusHistory documents={documents} />
+                  </div>
+                </Card>
+              )}
             </div>
           )}
         </div>

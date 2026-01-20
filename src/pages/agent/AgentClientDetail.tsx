@@ -19,6 +19,8 @@ import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
 import ClientNotesPanel from '@/components/agent/ClientNotesPanel';
+import LoanStatusHistory from '@/components/agent/LoanStatusHistory';
+import DocumentStatusHistory from '@/components/agent/DocumentStatusHistory';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle } from 'lucide-react';
@@ -240,25 +242,31 @@ const AgentClientDetail: React.FC = () => {
               ) : (
                 <div className="loans-list">
                   {loans.map(loan => (
-                    <div key={loan.id} className="loan-item">
-                      <div className="loan-main" onClick={() => navigate(`/loans/${loan.id}`)}>
-                        <span className="loan-ref">#{loan.id.slice(0, 8)}</span>
-                        <span className="loan-amount">{formatCurrency(loan.amount)}</span>
+                    <div key={loan.id} className="loan-item-wrapper">
+                      <div className="loan-item">
+                        <div className="loan-main" onClick={() => navigate(`/loans/${loan.id}`)}>
+                          <span className="loan-ref">#{loan.id.slice(0, 8)}</span>
+                          <span className="loan-amount">{formatCurrency(loan.amount)}</span>
+                        </div>
+                        <div className="loan-meta">
+                          <span>{loan.duration} ans • {loan.rate}%</span>
+                          <StatusBadge status={loan.status} size="sm" />
+                          <button 
+                            className="status-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedLoan(loan);
+                              setShowLoanStatusModal(true);
+                            }}
+                            title="Modifier le statut"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="loan-meta">
-                        <span>{loan.duration} ans • {loan.rate}%</span>
-                        <StatusBadge status={loan.status} size="sm" />
-                        <button 
-                          className="status-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedLoan(loan);
-                            setShowLoanStatusModal(true);
-                          }}
-                          title="Modifier le statut"
-                        >
-                          <Pencil size={14} />
-                        </button>
+                      {/* Loan Status History */}
+                      <div className="loan-history-section pl-4 border-l-2 border-border/50 ml-2">
+                        <LoanStatusHistory loanId={loan.id} />
                       </div>
                     </div>
                   ))}
@@ -372,6 +380,11 @@ const AgentClientDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Document Status History */}
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <DocumentStatusHistory documents={documents} />
+              </div>
             </Card>
           )}
         </div>
