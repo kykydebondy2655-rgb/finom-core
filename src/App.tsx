@@ -29,8 +29,8 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Banking from './pages/Banking';
 import LoansList from './pages/loans/LoansList';
-// NewLoanApplication removed - redirects to Simulator
 import LoanDetail from './pages/loans/LoanDetail';
+import Appointments from './pages/Appointments';
 
 // Agent Pages
 import AgentDashboard from './pages/agent/AgentDashboard';
@@ -132,6 +132,14 @@ function App() {
                                     element={
                                         <ProtectedRoute allowedRoles={['client', 'agent', 'admin']}>
                                             <LoanDetail />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/appointments" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['client']}>
+                                            <Appointments />
                                         </ProtectedRoute>
                                     } 
                                 />
