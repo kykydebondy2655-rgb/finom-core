@@ -51,6 +51,7 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AdminEmailTemplates from './pages/admin/AdminEmailTemplates';
 
 import CookieBanner from './components/common/CookieBanner';
+import PWAInstallBanner from './components/pwa/PWAInstallBanner';
 
 import './styles/finom.css';
 import './styles/components.css';
@@ -62,6 +63,7 @@ function App() {
             <ToastProvider>
                 <Router>
                     <div className="app-container">
+                        <PWAInstallBanner />
                         <main>
                             <Routes>
                                 {/* ============= PUBLIC ROUTES ============= */}
