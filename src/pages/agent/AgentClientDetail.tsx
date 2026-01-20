@@ -17,6 +17,7 @@ import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModa
 import DeleteClientModal from '@/components/admin/DeleteClientModal';
 import DeleteLoanModal from '@/components/admin/DeleteLoanModal';
 import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
+import ResetPasswordModal from '@/components/admin/ResetPasswordModal';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
 import ClientNotesPanel from '@/components/agent/ClientNotesPanel';
@@ -27,7 +28,7 @@ import ActivityTimeline from '@/components/agent/ActivityTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { emailService } from '@/services/emailService';
-import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe, RefreshCw } from 'lucide-react';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2 } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -51,6 +52,8 @@ const AgentClientDetail: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
   const [showAccountEmailModal, setShowAccountEmailModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [impersonating, setImpersonating] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
   const [loanToDelete, setLoanToDelete] = useState<LoanApplication | null>(null);
@@ -158,25 +161,64 @@ const AgentClientDetail: React.FC = () => {
               <KeyRound size={16} className="mr-1" /> Envoyer identifiants
             </Button>
             <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Rappel</Button>
-            {/* Instructions pour voir le compte client */}
+            {/* Impersonation - Se connecter en tant que client */}
             <Button 
               variant="secondary" 
-              onClick={() => {
-                if (!client.email) {
-                  toast.error('Email client non disponible');
-                  return;
+              onClick={async () => {
+                if (!id) return;
+                setImpersonating(true);
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  
+                  // Générer le token
+                  const genResponse = await supabase.functions.invoke('impersonate-client', {
+                    body: { action: 'generate', targetUserId: id },
+                    headers: { Authorization: `Bearer ${session?.access_token}` },
+                  });
+
+                  if (genResponse.error || genResponse.data?.error) {
+                    throw new Error(genResponse.data?.error || genResponse.error?.message);
+                  }
+
+                  // Consommer le token pour obtenir le magic link
+                  const consumeResponse = await supabase.functions.invoke('impersonate-client', {
+                    body: { action: 'consume', token: genResponse.data.token },
+                    headers: { Authorization: `Bearer ${session?.access_token}` },
+                  });
+
+                  if (consumeResponse.error || consumeResponse.data?.error) {
+                    throw new Error(consumeResponse.data?.error || consumeResponse.error?.message);
+                  }
+
+                  // Ouvrir le lien dans un nouvel onglet
+                  if (consumeResponse.data?.magicLink) {
+                    window.open(consumeResponse.data.magicLink, '_blank');
+                    toast.success('Connexion ouverte dans un nouvel onglet');
+                  } else {
+                    throw new Error('Lien de connexion non reçu');
+                  }
+                } catch (error) {
+                  logger.logError('Impersonation error', error);
+                  toast.error(error instanceof Error ? error.message : 'Erreur lors de la connexion');
+                } finally {
+                  setImpersonating(false);
                 }
-                // Copy instructions to clipboard
-                const instructions = `Pour consulter le compte client:\n1. Ouvrir une fenêtre de navigation privée\n2. Se connecter avec: ${client.email}`;
-                navigator.clipboard.writeText(client.email).then(() => {
-                  toast.info('Email copié. Connectez-vous en navigation privée.');
-                }).catch(() => {
-                  toast.info(`Connectez-vous en navigation privée avec: ${client.email}`);
-                });
               }}
-              disabled={!client.email}
+              disabled={impersonating}
             >
-              <LogIn size={16} className="mr-1" /> Voir compte
+              {impersonating ? (
+                <Loader2 size={16} className="mr-1 animate-spin" />
+              ) : (
+                <UserCheck size={16} className="mr-1" />
+              )}
+              Se connecter en tant que
+            </Button>
+            {/* Modifier mot de passe */}
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowResetPasswordModal(true)}
+            >
+              <Lock size={16} className="mr-1" /> Mot de passe
             </Button>
             {isAdmin && (
               <Button 
@@ -603,6 +645,16 @@ const AgentClientDetail: React.FC = () => {
             }}
             onSuccess={loadClientData}
             loan={loanToDelete}
+          />
+        )}
+
+        {/* Reset Password Modal */}
+        {client && id && (
+          <ResetPasswordModal
+            isOpen={showResetPasswordModal}
+            onClose={() => setShowResetPasswordModal(false)}
+            clientId={id}
+            clientName={`${client.first_name || ''} ${client.last_name || ''}`}
           />
         )}
       </div>
