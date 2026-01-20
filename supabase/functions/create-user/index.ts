@@ -180,6 +180,18 @@ serve(async (req: Request): Promise<Response> => {
           );
         }
 
+        // CRITICAL: Update the user's password to the temporary password
+        // This ensures consistency when re-importing leads
+        const { error: updatePasswordError } = await adminClient.auth.admin.updateUserById(
+          existingUserId,
+          { password }
+        );
+
+        if (updatePasswordError) {
+          console.error("Failed to reset password for existing user:", updatePasswordError);
+          // Continue anyway - the profile update is still important
+        }
+
         // Build profile update payload
         const profileUpdate: Record<string, unknown> = {
           id: existingUserId,
