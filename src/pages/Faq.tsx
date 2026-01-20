@@ -4,8 +4,12 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Button from '../components/finom/Button';
 import { List, Home, FileText, Percent, Lock, ChevronDown, ChevronUp } from 'lucide-react';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 
 const Faq = () => {
+    // SEO anti-phishing: signaux de confiance
+    useSEO(SEO_CONFIGS.faq);
+    
     const [activeCategory, setActiveCategory] = useState('all');
     const [openQuestion, setOpenQuestion] = useState<string | null>(null);
 

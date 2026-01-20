@@ -1,0 +1,29 @@
+/* TEAM */
+Company: FINOM
+Site: https://pret-finom.co
+Contact: contact@pret-finom.co
+Location: France / Europe
+
+/* CREDITS */
+Development: FINOM Tech Team
+Design: FINOM Design Studio
+Framework: React + Vite + TypeScript
+UI Library: Tailwind CSS + shadcn/ui
+Icons: Lucide Icons
+Animations: Framer Motion
+
+/* THANKS */
+Special thanks to our partners:
+- Treezor (ACPR-regulated payment institution)
+- Solaris (BaFin-regulated credit institution)
+
+/* SITE INFO */
+Standards: HTML5, CSS3, ES6+
+Components: Accessible, WCAG 2.1 AA compliant
+Security: HTTPS, HSTS, CSP headers
+Privacy: GDPR compliant
+Last update: 2025-01
+
+/* LANGUAGES */
+French (primary)
+English (partial support)

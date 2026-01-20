@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import aboutTeamImage from '@/assets/about-team.jpg';
 import { 
   motion,
@@ -26,6 +27,9 @@ import {
 } from 'lucide-react';
 
 const About: React.FC = () => {
+  // SEO anti-phishing: signaux de confiance
+  useSEO(SEO_CONFIGS.about);
+  
   return (
     <>
       <Header />
