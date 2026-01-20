@@ -133,17 +133,29 @@ export const isValidBIC = (bic: string): boolean => {
  * Labels for client/lead statuses
  */
 export const CLIENT_STATUS_LABELS: Record<string, string> = {
+  // Pipeline stages
   nouveau: 'Nouveau',
   nrp: 'NRP',
+  NRP: 'NRP',
   pas_interesse: 'Pas intéressé',
   en_attente: 'En attente',
   a_rappeler: 'À rappeler',
   interesse: 'Intéressé',
   qualifie: 'Qualifié',
   converti: 'Converti',
+  // Lead statuses
   new: 'Nouveau',
   assigned: 'Assigné',
   contacted: 'Contacté',
+  qualified: 'Qualifié',
+  converted: 'Converti',
+  lost: 'Perdu',
+  // Callback statuses
+  pending: 'En attente',
+  done: 'Effectué',
+  missed: 'Manqué',
+  completed: 'Terminé',
+  cancelled: 'Annulé',
 };
 
 /**
@@ -154,16 +166,62 @@ export const CALL_STATUS_LABELS: Record<string, string> = {
   no_answer: 'Pas de réponse',
   busy: 'Occupé',
   voicemail: 'Messagerie',
+  callback: 'À rappeler',
 };
 
 /**
- * Get status label from any status type
+ * Labels for loan statuses
+ */
+export const LOAN_STATUS_LABELS: Record<string, string> = {
+  pending: 'En attente',
+  documents_required: 'Documents requis',
+  under_review: 'En analyse',
+  processing: 'En traitement',
+  offer_issued: 'Offre émise',
+  approved: 'Approuvé',
+  rejected: 'Refusé',
+  funded: 'Financé',
+};
+
+/**
+ * Labels for document statuses
+ */
+export const DOCUMENT_STATUS_LABELS: Record<string, string> = {
+  pending: 'En attente',
+  received: 'Reçu',
+  under_review: 'En analyse',
+  validated: 'Validé',
+  rejected: 'Rejeté',
+};
+
+/**
+ * Get status label from any status type with fallback formatting
  */
 export const getClientStatusLabel = (status: string | null): string => {
   if (!status) return '-';
-  return CLIENT_STATUS_LABELS[status] || status;
+  // Try exact match first
+  if (CLIENT_STATUS_LABELS[status]) return CLIENT_STATUS_LABELS[status];
+  // Try lowercase
+  const lower = status.toLowerCase();
+  if (CLIENT_STATUS_LABELS[lower]) return CLIENT_STATUS_LABELS[lower];
+  // Format unknown status (replace _ with space, capitalize)
+  return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 };
 
 export const getCallStatusLabel = (status: string): string => {
-  return CALL_STATUS_LABELS[status] || status;
+  if (!status) return '-';
+  if (CALL_STATUS_LABELS[status]) return CALL_STATUS_LABELS[status];
+  return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+};
+
+export const getLoanStatusLabel = (status: string | null): string => {
+  if (!status) return '-';
+  if (LOAN_STATUS_LABELS[status]) return LOAN_STATUS_LABELS[status];
+  return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+};
+
+export const getDocumentStatusLabel = (status: string | null): string => {
+  if (!status) return '-';
+  if (DOCUMENT_STATUS_LABELS[status]) return DOCUMENT_STATUS_LABELS[status];
+  return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 };

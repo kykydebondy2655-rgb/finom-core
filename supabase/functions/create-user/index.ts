@@ -30,7 +30,6 @@ serve(async (req: Request): Promise<Response> => {
     // Get authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      console.error("Missing or invalid authorization header");
       return new Response(
         JSON.stringify({ error: "Non autorisé" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -50,7 +49,6 @@ serve(async (req: Request): Promise<Response> => {
     const { data: userData, error: userError } = await userClient.auth.getUser();
 
     if (userError || !userData?.user) {
-      console.error("JWT verification failed:", userError);
       return new Response(
         JSON.stringify({ error: "Session invalide" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -58,7 +56,6 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const callerUserId = userData.user.id;
-    console.log("Request from user:", callerUserId);
 
     // Create admin client with service role key
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
@@ -70,7 +67,6 @@ serve(async (req: Request): Promise<Response> => {
     });
 
     if (roleError) {
-      console.error("Role check error:", roleError);
       return new Response(
         JSON.stringify({ error: "Erreur de vérification des droits" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -78,7 +74,6 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     if (!isAdmin) {
-      console.error("User is not admin:", callerUserId);
       return new Response(
         JSON.stringify({ error: "Seuls les administrateurs peuvent créer des utilisateurs" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -122,8 +117,6 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log("Creating user:", email, "with role:", role);
-
     // Create user using admin API (does NOT affect caller's session)
     const { data: createData, error: createError } = await adminClient.auth.admin.createUser({
       email: email.toLowerCase().trim(),
@@ -165,7 +158,6 @@ serve(async (req: Request): Promise<Response> => {
           });
 
           if (listError) {
-            console.error("Could not list users:", listError);
             break;
           }
 
@@ -182,14 +174,11 @@ serve(async (req: Request): Promise<Response> => {
 
         // Fallback: if we can't find the auth user id, we can't safely upsert a profile.
         if (!existingUserId) {
-          console.error("Could not find existing auth user for email:", normalizedEmail);
           return new Response(
             JSON.stringify({ error: "Cet email est déjà utilisé" }),
             { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-
-        console.log("Email already exists, upserting profile for existing user:", existingUserId);
 
         // Build profile update payload
         const profileUpdate: Record<string, unknown> = {
@@ -217,7 +206,6 @@ serve(async (req: Request): Promise<Response> => {
           .upsert(profileUpdate, { onConflict: "id" });
 
         if (upsertError) {
-          console.error("Profile upsert error (existing user):", upsertError);
           return new Response(
             JSON.stringify({ error: "Impossible de mettre à jour le profil" }),
             { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -225,17 +213,12 @@ serve(async (req: Request): Promise<Response> => {
         }
 
         // Ensure role exists (ignore duplicates)
-        const { error: roleInsertError } = await adminClient
-          .from("user_roles")
-          .insert({ user_id: existingUserId, role });
-
-        if (roleInsertError) {
-          // If duplicates are allowed it's fine; otherwise ignore duplicate constraint errors
-          const msg = (roleInsertError as any)?.message ?? "";
-          const code = (roleInsertError as any)?.code;
-          if (code !== "23505" && !msg.toLowerCase().includes("duplicate")) {
-            console.error("Role insert error (existing user):", roleInsertError);
-          }
+        try {
+          await adminClient
+            .from("user_roles")
+            .insert({ user_id: existingUserId, role });
+        } catch {
+          // Silently ignore duplicate role errors
         }
 
         return new Response(
@@ -255,7 +238,6 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     if (!createData.user) {
-      console.error("No user returned from createUser");
       return new Response(
         JSON.stringify({ error: "Erreur lors de la création de l'utilisateur" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -263,7 +245,6 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const newUserId = createData.user.id;
-    console.log("User created successfully:", newUserId);
 
     // The profile is created automatically by the trigger, but we need to update additional fields
     const profileUpdate: Record<string, unknown> = {
@@ -281,30 +262,19 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // Update profile with additional data
-    const { error: profileError } = await adminClient
+    await adminClient
       .from("profiles")
       .update(profileUpdate)
       .eq("id", newUserId);
 
-    if (profileError) {
-      console.error("Profile update error:", profileError);
-      // Don't fail the whole operation, user is already created
+    // Insert role into user_roles table (ignore duplicates)
+    try {
+      await adminClient
+        .from("user_roles")
+        .insert({ user_id: newUserId, role });
+    } catch {
+      // Role might already exist via trigger - ignore duplicate errors
     }
-
-    // Insert role into user_roles table
-    const { error: roleInsertError } = await adminClient
-      .from("user_roles")
-      .insert({ user_id: newUserId, role });
-
-    if (roleInsertError) {
-      console.error("Role insert error:", roleInsertError);
-      // Check if role already exists (trigger might have created it)
-      if (!roleInsertError.message?.includes("duplicate")) {
-        console.warn("Failed to insert role, but continuing...");
-      }
-    }
-
-    console.log("User setup complete:", newUserId);
 
     // Return success - DO NOT return session data
     return new Response(
@@ -317,7 +287,8 @@ serve(async (req: Request): Promise<Response> => {
     );
 
   } catch (error) {
-    console.error("Unexpected error in create-user function:", error);
+    const errorMessage = error instanceof Error ? error.message : "Erreur serveur inattendue";
+    console.error("Error in create-user:", errorMessage);
     return new Response(
       JSON.stringify({ error: "Erreur serveur inattendue" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
