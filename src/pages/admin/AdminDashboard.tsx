@@ -48,7 +48,7 @@ const AdminDashboard: React.FC = () => {
         agents: agents?.length || 0,
         loans: loans?.length || 0,
         pendingLoans: loans?.filter((l: any) => l.status === 'pending').length || 0,
-        totalAmount: loans?.reduce((sum: number, l: any) => sum + (l.down_payment || 0), 0) || 0
+        totalAmount: loans?.reduce((sum: number, l: any) => sum + (l.amount || 0), 0) || 0
       });
 
       // Group loans by status for chart
@@ -105,7 +105,7 @@ const AdminDashboard: React.FC = () => {
             <Card className="stat-card wide" padding="lg">
               <span className="stat-icon"><Wallet size={24} /></span>
               <span className="stat-value">{formatCurrency(stats.totalAmount)}</span>
-              <span className="stat-label">Apports encaissés</span>
+              <span className="stat-label">Montant total des prêts</span>
             </Card>
           </div>
 

@@ -1022,6 +1022,7 @@ export const getStatusLabel = (status: string | null): string => {
     interesse: 'Intéressé',
     qualifie: 'Qualifié',
     converti: 'Converti',
+    nouveau: 'Nouveau',
   };
   return labels[status || ''] || status || 'Inconnu';
 };
