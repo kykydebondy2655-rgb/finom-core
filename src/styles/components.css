@@ -1,3 +1,12 @@
+/* ===== PAGE LOADER FALLBACK ===== */
+.page-loader-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: hsl(var(--background));
+}
+
 /* ===== LUCIDE ICON HOVER ANIMATIONS (MODALS) ===== */
 .modal-icon-hover {
   transition: transform 0.2s ease, color 0.2s ease;
