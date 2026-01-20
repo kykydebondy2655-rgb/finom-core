@@ -20,6 +20,9 @@ interface CreateUserRequest {
   pipelineStage?: string;
 }
 
+// Default temp password - must match frontend constant
+const DEFAULT_TEMP_PASSWORD = Deno.env.get("DEFAULT_TEMP_PASSWORD") || "TempPass123!";
+
 serve(async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -180,11 +183,12 @@ serve(async (req: Request): Promise<Response> => {
           );
         }
 
-        // CRITICAL: Update the user's password to the temporary password
-        // This ensures consistency when re-importing leads
+        // CRITICAL: Update the user's password to the DEFAULT temp password
+        // This ensures consistency when re-importing leads - always use the centralized temp password
+        const passwordToSet = DEFAULT_TEMP_PASSWORD;
         const { error: updatePasswordError } = await adminClient.auth.admin.updateUserById(
           existingUserId,
-          { password }
+          { password: passwordToSet }
         );
 
         if (updatePasswordError) {
