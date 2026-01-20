@@ -10,9 +10,12 @@ import { useAuth } from '../context/AuthContext';
 import { registerSchema, RegisterFormData } from '@/lib/validations/authSchemas';
 import Button from '../components/finom/Button';
 import AnimatedBackground from '../components/common/AnimatedBackground';
+import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import { AlertTriangle, Lock, Check } from 'lucide-react';
 
 const Register = () => {
+    // SEO anti-phishing: signaux de confiance pour Google/navigateurs
+    useSEO(SEO_CONFIGS.register);
     const [formData, setFormData] = useState<RegisterFormData>({
         email: '',
         password: '',
