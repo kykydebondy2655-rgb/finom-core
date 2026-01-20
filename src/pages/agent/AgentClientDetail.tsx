@@ -21,6 +21,7 @@ import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
 import ClientNotesPanel from '@/components/agent/ClientNotesPanel';
 import LoanStatusHistory from '@/components/agent/LoanStatusHistory';
 import DocumentStatusHistory from '@/components/agent/DocumentStatusHistory';
+import NotesHistory from '@/components/agent/NotesHistory';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle } from 'lucide-react';
@@ -201,6 +202,10 @@ const AgentClientDetail: React.FC = () => {
               {/* Internal Notes Panel */}
               <Card className="notes-card fade-in" padding="lg">
                 <ClientNotesPanel clientId={id || ''} />
+                {/* Notes History */}
+                <div className="mt-4 pt-4 border-t border-border/50">
+                  <NotesHistory clientId={id || ''} />
+                </div>
               </Card>
 
               {/* Admin-only: Bank Account Section */}

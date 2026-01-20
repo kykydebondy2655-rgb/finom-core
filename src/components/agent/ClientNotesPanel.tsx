@@ -198,7 +198,7 @@ const ClientNotesPanel: React.FC<ClientNotesPanelProps> = ({ clientId }) => {
                   </div>
                 </div>
               ) : (
-                <>
+              <>
                   <p className="note-content">{note.note}</p>
                   <div className="note-meta">
                     <span className="note-author">
@@ -210,6 +210,15 @@ const ClientNotesPanel: React.FC<ClientNotesPanelProps> = ({ clientId }) => {
                         locale: fr,
                       })}
                     </span>
+                    {/* Show if note was edited */}
+                    {note.updated_at && note.updated_at !== note.created_at && (
+                      <span className="note-edited text-xs text-muted-foreground italic">
+                        (modifié {formatDistanceToNow(new Date(note.updated_at), {
+                          addSuffix: true,
+                          locale: fr,
+                        })})
+                      </span>
+                    )}
                     {note.agent_id === user?.id && (
                       <div className="note-actions">
                         <button
