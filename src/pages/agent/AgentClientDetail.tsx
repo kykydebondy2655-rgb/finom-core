@@ -18,6 +18,7 @@ import DeleteClientModal from '@/components/admin/DeleteClientModal';
 import DeleteLoanModal from '@/components/admin/DeleteLoanModal';
 import SendAccountEmailModal from '@/components/agent/SendAccountEmailModal';
 import ResetPasswordModal from '@/components/admin/ResetPasswordModal';
+import EditClientModal from '@/components/admin/EditClientModal';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
 import ClientStatusHistory from '@/components/agent/ClientStatusHistory';
 import ClientNotesPanel from '@/components/agent/ClientNotesPanel';
@@ -28,7 +29,7 @@ import ActivityTimeline from '@/components/agent/ActivityTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { emailService } from '@/services/emailService';
-import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2 } from 'lucide-react';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2, Edit } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -53,6 +54,7 @@ const AgentClientDetail: React.FC = () => {
   const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
   const [showAccountEmailModal, setShowAccountEmailModal] = useState(false);
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [showEditClientModal, setShowEditClientModal] = useState(false);
   const [impersonating, setImpersonating] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [selectedLoan, setSelectedLoan] = useState<LoanApplication | null>(null);
@@ -257,7 +259,14 @@ const AgentClientDetail: React.FC = () => {
           {activeTab === 'info' && (
             <>
               <Card className="info-card fade-in" padding="lg">
-                <h3>Informations personnelles</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3>Informations personnelles</h3>
+                  {isAdmin && (
+                    <Button variant="primary" size="sm" onClick={() => setShowEditClientModal(true)}>
+                      <Edit size={14} className="mr-1" /> Modifier le profil
+                    </Button>
+                  )}
+                </div>
                 <div className="info-grid">
                   <div className="info-row"><span>Nom complet</span><strong>{client.first_name} {client.last_name}</strong></div>
                   <div className="info-row"><span>Email</span><strong>{client.email || '-'}</strong></div>
@@ -655,6 +664,16 @@ const AgentClientDetail: React.FC = () => {
             onClose={() => setShowResetPasswordModal(false)}
             clientId={id}
             clientName={`${client.first_name || ''} ${client.last_name || ''}`}
+          />
+        )}
+
+        {/* Edit Client Modal (Admin only) */}
+        {isAdmin && client && (
+          <EditClientModal
+            isOpen={showEditClientModal}
+            onClose={() => setShowEditClientModal(false)}
+            client={client}
+            onSuccess={(updatedClient) => setClient(updatedClient)}
           />
         )}
       </div>
