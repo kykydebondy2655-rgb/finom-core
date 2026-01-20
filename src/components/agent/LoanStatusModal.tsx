@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/finom/Toast';
-import { useAuth } from '@/context/AuthContext';
-import { emailService } from '@/services/emailService';
-import logger from '@/lib/logger';
-import { loanStatusUpdateSchema, LOAN_STATUSES as VALID_LOAN_STATUSES } from '@/lib/validations/statusSchemas';
-import { Clock, ClipboardList, Search, Settings, Send, CheckCircle2, XCircle, Wallet, FolderOpen } from 'lucide-react';
+import { useLoanStatusUpdate, type LoanData } from '@/hooks/useLoanStatusUpdate';
+import { 
+  LOAN_STATUS_DEFINITIONS, 
+  getAllowedTransitions, 
+  isTerminalStatus,
+  getStatusDefinition 
+} from '@/lib/loanStatusMachine';
+import { Clock, ClipboardList, Search, Settings, Send, CheckCircle2, XCircle, Wallet, FolderOpen, AlertTriangle } from 'lucide-react';
 import '@/styles/components.css';
 
 interface LoanStatusModalProps {
@@ -25,16 +26,17 @@ interface LoanStatusModalProps {
   } | null;
 }
 
-const LOAN_STATUSES = [
-  { value: 'pending', label: 'En attente', color: '#f59e0b', Icon: Clock, description: 'Dossier reçu, en attente de traitement' },
-  { value: 'documents_required', label: 'Documents requis', color: '#3b82f6', Icon: ClipboardList, description: 'Documents manquants à fournir' },
-  { value: 'under_review', label: 'En analyse', color: '#8b5cf6', Icon: Search, description: 'Analyse du dossier en cours' },
-  { value: 'processing', label: 'En traitement', color: '#06b6d4', Icon: Settings, description: 'Dossier en cours de traitement' },
-  { value: 'offer_issued', label: 'Offre émise', color: '#f97316', Icon: Send, description: 'Offre envoyée, délai légal 10 jours' },
-  { value: 'approved', label: 'Approuvé', color: '#10b981', Icon: CheckCircle2, description: 'Dossier validé et approuvé' },
-  { value: 'rejected', label: 'Rejeté', color: '#ef4444', Icon: XCircle, description: 'Dossier refusé' },
-  { value: 'funded', label: 'Financé', color: '#059669', Icon: Wallet, description: 'Fonds débloqués' },
-];
+// Map status values to Lucide icons
+const STATUS_ICONS: Record<string, typeof Clock> = {
+  pending: Clock,
+  documents_required: ClipboardList,
+  under_review: Search,
+  processing: Settings,
+  offer_issued: Send,
+  approved: CheckCircle2,
+  rejected: XCircle,
+  funded: Wallet,
+};
 
 const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
   isOpen,
@@ -45,185 +47,53 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
   const [selectedStatus, setSelectedStatus] = useState(loan?.status || 'pending');
   const [nextAction, setNextAction] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
-  const [loading, setLoading] = useState(false);
-  const toast = useToast();
-  const { user } = useAuth();
+  
+  const { updateStatus, loading, error, clearError } = useLoanStatusUpdate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (loan) {
       setSelectedStatus(loan.status);
       setNextAction('');
       setRejectionReason('');
+      clearError();
     }
-  }, [loan]);
+  }, [loan, clearError]);
 
   const handleSubmit = async () => {
     if (!loan) return;
 
-    // Validate status update using schema
-    const validationResult = loanStatusUpdateSchema.safeParse({
-      status: selectedStatus,
-      nextAction: nextAction,
-      rejectionReason: rejectionReason
+    const loanData: LoanData = {
+      id: loan.id,
+      status: loan.status,
+      user_id: loan.user_id,
+      amount: loan.amount,
+      rate: loan.rate,
+      monthly_payment: loan.monthly_payment,
+    };
+
+    const success = await updateStatus({
+      loan: loanData,
+      newStatus: selectedStatus,
+      rejectionReason: rejectionReason.trim(),
+      nextAction: nextAction.trim(),
     });
 
-    if (!validationResult.success) {
-      const firstError = validationResult.error.errors[0];
-      toast.error(firstError?.message || 'Données invalides');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Get old status for history
-      const oldStatus = loan.status;
-
-      // Update loan status
-      const updateData: Record<string, unknown> = {
-        status: selectedStatus,
-        next_action: nextAction || null,
-        updated_at: new Date().toISOString(),
-      };
-
-      if (selectedStatus === 'rejected') {
-        updateData.rejection_reason = rejectionReason;
-      }
-
-      const { error: updateError } = await supabase
-        .from('loan_applications')
-        .update(updateData)
-        .eq('id', loan.id);
-
-      if (updateError) throw updateError;
-
-      // Log status change to history
-      const { error: historyError } = await supabase
-        .from('loan_status_history')
-        .insert({
-          loan_id: loan.id,
-          old_status: oldStatus,
-          new_status: selectedStatus,
-          changed_by: user?.id || null,
-          next_action: nextAction || null,
-          rejection_reason: selectedStatus === 'rejected' ? rejectionReason : null,
-        });
-
-      if (historyError) {
-        logger.warn('Failed to log status history', { error: historyError.message });
-      }
-
-      // Create notification for client
-      const statusLabel = LOAN_STATUSES.find(s => s.value === selectedStatus)?.label || selectedStatus;
-      const statusDesc = LOAN_STATUSES.find(s => s.value === selectedStatus)?.description || '';
-      
-      let notificationMessage = `Votre dossier de prêt est maintenant: ${statusLabel}. ${statusDesc}`;
-      if (selectedStatus === 'rejected') {
-        notificationMessage = `Votre demande de prêt a été rejetée. Raison: ${rejectionReason}`;
-      }
-      if (nextAction) {
-        notificationMessage += ` Prochaine étape: ${nextAction}`;
-      }
-
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: loan.user_id,
-          type: 'loan_status',
-          category: 'loan',
-          title: `Dossier ${statusLabel.toLowerCase()}`,
-          message: notificationMessage,
-          related_entity: 'loan_applications',
-          related_id: loan.id,
-        });
-
-      if (notifError) {
-        logger.warn('Notification error', { error: notifError.message });
-      }
-
-      // Send email notification to client (non-blocking)
-      try {
-        const { data: clientProfile } = await supabase
-          .from('profiles')
-          .select('email, first_name')
-          .eq('id', loan.user_id)
-          .maybeSingle();
-
-        if (clientProfile?.email) {
-          if (selectedStatus === 'approved') {
-            emailService.sendLoanApproved(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              loan.id,
-              loan.amount,
-              loan.rate || 0,
-              loan.monthly_payment || 0
-            ).catch(err => logger.logError('Email send error', err));
-          } else if (selectedStatus === 'rejected') {
-            emailService.sendLoanRejected(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              loan.id,
-              rejectionReason
-            ).catch(err => logger.logError('Email send error', err));
-          } else if (selectedStatus === 'funded') {
-            emailService.sendNotification(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              'Votre financement est débloqué ! 🎉',
-              'Les fonds de votre prêt immobilier ont été versés. Félicitations pour votre nouveau projet !'
-            ).catch(err => logger.logError('Email send error', err));
-          } else if (selectedStatus === 'offer_issued') {
-            emailService.sendLoanOfferIssued(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              loan.id,
-              loan.amount,
-              loan.rate || 0,
-              loan.monthly_payment || 0
-            ).catch(err => logger.logError('Email send error', err));
-          } else if (selectedStatus === 'documents_required') {
-            emailService.sendDocumentRequired(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              loan.id,
-              ['Veuillez consulter votre espace client pour voir les documents requis']
-            ).catch(err => logger.logError('Email send error', err));
-          } else if (selectedStatus === 'under_review') {
-            emailService.sendNotification(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              'Votre dossier est en cours d\'analyse 🔍',
-              'Notre équipe analyse actuellement votre dossier de prêt. Nous vous tiendrons informé de l\'avancement.',
-              'Voir mon dossier',
-              'https://pret-finom.co/loans'
-            ).catch(err => logger.logError('Email send error', err));
-          } else if (selectedStatus === 'processing') {
-            emailService.sendNotification(
-              clientProfile.email,
-              clientProfile.first_name || 'Client',
-              'Votre dossier est en traitement ⚙️',
-              'Votre demande de prêt est en cours de traitement par notre service. Une réponse vous sera communiquée très prochainement.',
-              'Suivre mon dossier',
-              'https://pret-finom.co/loans'
-            ).catch(err => logger.logError('Email send error', err));
-          }
-        }
-      } catch (emailErr) {
-        logger.logError('Failed to send status email', emailErr);
-      }
-
-      toast.success('Statut du dossier mis à jour');
+    if (success) {
       onSuccess();
       onClose();
-    } catch (err) {
-      logger.logError('Update error', err);
-      toast.error('Erreur lors de la mise à jour');
-    } finally {
-      setLoading(false);
     }
   };
 
   if (!loan) return null;
+
+  const currentStatus = loan.status || 'pending';
+  const isTerminal = isTerminalStatus(currentStatus);
+  const allowedTransitions = getAllowedTransitions(currentStatus);
+
+  // Include current status + allowed transitions
+  const availableStatuses = LOAN_STATUS_DEFINITIONS.filter(
+    s => s.value === currentStatus || allowedTransitions.includes(s.value as any)
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -237,27 +107,54 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
+        {isTerminal && (
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-sm">
+            <AlertTriangle size={16} />
+            <span>
+              Dossier en statut terminal ({getStatusDefinition(currentStatus)?.label}). 
+              Aucune modification possible.
+            </span>
+          </div>
+        )}
+
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label>Nouveau statut</Label>
             <div className="grid grid-cols-1 gap-2">
-              {LOAN_STATUSES.map((status) => (
-                <button
-                  key={status.value}
-                  type="button"
-                  onClick={() => setSelectedStatus(status.value)}
-                  className={`status-option ${selectedStatus === status.value ? 'selected' : ''}`}
-                  style={{
-                    '--status-color': status.color,
-                  } as React.CSSProperties}
-                >
-                  <span className="status-icon"><status.Icon size={16} /></span>
-                  <div className="status-content">
-                    <span className="status-label">{status.label}</span>
-                    <span className="status-desc">{status.description}</span>
-                  </div>
-                </button>
-              ))}
+              {availableStatuses.map((status) => {
+                const IconComponent = STATUS_ICONS[status.value] || Clock;
+                const isCurrent = status.value === currentStatus;
+                const isDisabled = isTerminal && !isCurrent;
+                
+                return (
+                  <button
+                    key={status.value}
+                    type="button"
+                    onClick={() => !isDisabled && setSelectedStatus(status.value)}
+                    disabled={isDisabled}
+                    className={`status-option ${selectedStatus === status.value ? 'selected' : ''}`}
+                    style={{
+                      '--status-color': status.color,
+                      opacity: isDisabled ? 0.5 : 1,
+                    } as React.CSSProperties}
+                  >
+                    <span className="status-icon"><IconComponent size={16} /></span>
+                    <div className="status-content">
+                      <span className="status-label">
+                        {status.label}
+                        {isCurrent && <span className="ml-2 text-xs opacity-60">(actuel)</span>}
+                      </span>
+                      <span className="status-desc">{status.description}</span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -299,7 +196,7 @@ const LoanStatusModal: React.FC<LoanStatusModalProps> = ({
             type="button"
             onClick={handleSubmit}
             className="submit-btn"
-            disabled={loading}
+            disabled={loading || isTerminal || selectedStatus === currentStatus}
           >
             {loading ? 'Mise à jour...' : 'Confirmer'}
           </button>
