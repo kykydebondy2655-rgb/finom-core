@@ -63,9 +63,9 @@ const Profile = () => {
                 ...prev,
                 phone: data.phone || '',
                 address: data.address || '',
-                city: (data as any).city || '',
-                postalCode: (data as any).postal_code || '',
-                country: (data as any).country || 'France'
+                city: data.city || '',
+                postalCode: data.postal_code || '',
+                country: data.country || 'France'
             }));
             setKycStatus(data.kyc_status || 'pending');
         }
@@ -109,7 +109,7 @@ const Profile = () => {
                     city: formData.city.trim() || null,
                     postal_code: formData.postalCode.trim() || null,
                     country: formData.country.trim() || 'France'
-                } as any)
+                })
                 .eq('id', user.id);
 
             if (error) {

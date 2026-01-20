@@ -21,16 +21,18 @@ const LoadingSpinner = forwardRef<HTMLDivElement, LoadingSpinnerProps>(({
   const borderWidth = size === 'sm' ? 2 : 3;
 
   const content = (
-    <div className="spinner-wrapper">
+    <div className="spinner-wrapper" role="status" aria-live="polite">
       <div 
         className="spinner" 
         style={{ 
           width: spinnerSize, 
           height: spinnerSize,
           borderWidth: borderWidth
-        }} 
+        }}
+        aria-hidden="true"
       />
       {message && <p className="spinner-message">{message}</p>}
+      {!message && <span className="sr-only">Chargement en cours...</span>}
     </div>
   );
 

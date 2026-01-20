@@ -56,8 +56,9 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
                 className={fullClass} 
                 onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>} 
                 ref={ref as React.Ref<HTMLAnchorElement>}
+                aria-disabled={disabled || isLoading}
             >
-                {isLoading && <span className="spinner"></span>}
+                {isLoading && <span className="spinner" aria-hidden="true"></span>}
                 <span className="content">{children}</span>
             </Link>
         );
@@ -70,9 +71,11 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
             className={fullClass}
             disabled={disabled || isLoading}
             onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+            aria-disabled={disabled || isLoading}
+            aria-busy={isLoading}
             {...motionProps}
         >
-            {isLoading && <span className="spinner"></span>}
+            {isLoading && <span className="spinner" aria-hidden="true"></span>}
             <span className="content">{children}</span>
         </motion.button>
     );
