@@ -14,8 +14,8 @@ import logger from '@/lib/logger';
 export const CLIENT_STATUSES = [
   { value: 'nouveau', label: 'Nouveau', color: '#3B82F6' },
   { value: 'nrp', label: 'NRP', color: '#EF4444' },
+  { value: 'faux_numero', label: 'Faux numéro', color: '#DC2626' },
   { value: 'pas_interesse', label: 'Pas intéressé', color: '#6B7280' },
-  { value: 'en_attente', label: 'En attente', color: '#F59E0B' },
   { value: 'a_rappeler', label: 'À rappeler', color: '#8B5CF6' },
   { value: 'interesse', label: 'Intéressé', color: '#10B981' },
   { value: 'qualifie', label: 'Qualifié', color: '#059669' },
