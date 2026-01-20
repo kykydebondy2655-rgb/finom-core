@@ -1,13 +1,14 @@
 /**
  * Component to upload documents with drag & drop support
+ * Includes camera capture for mobile devices
  */
 
-import React, { useState, useCallback, useRef } from 'react';
-import Button from '@/components/finom/Button';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { storageService } from '@/services/storageService';
 import { documentsApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
-import { FileText, CheckCircle2 } from 'lucide-react';
+import { FileText, CheckCircle2, Camera, Smartphone } from 'lucide-react';
+import CameraCapture from './CameraCapture';
 
 // Document types for the checklist matching
 const DOCUMENT_TYPES = [
@@ -43,6 +44,7 @@ export interface DocumentUploadProps {
   accept?: string;
   maxSize?: number; // in MB
   showTypeSelector?: boolean;
+  showCameraOption?: boolean; // Enable camera capture on mobile
 }
 
 const DocumentUpload: React.FC<DocumentUploadProps> = ({
@@ -54,13 +56,29 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
   accept = '.pdf,.jpg,.jpeg,.png,.webp',
   maxSize = 10,
   showTypeSelector = true,
+  showCameraOption = true,
 }) => {
   const { user } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [selectedType, setSelectedType] = useState<string>('');
+  const [showCamera, setShowCamera] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      setIsMobile(isMobileDevice || (isTouchDevice && window.innerWidth < 768));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -78,7 +96,11 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
       return `Le fichier dépasse la taille maximale de ${maxSize} Mo`;
     }
 
-    // Check type
+    // Check type - camera captures are always jpeg
+    if (file.type === 'image/jpeg' || file.type === 'image/png') {
+      return null;
+    }
+
     const allowedTypes = accept.split(',').map(t => t.trim().toLowerCase());
     const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
     const fileMime = file.type.toLowerCase();
@@ -200,72 +222,112 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
     }
   };
 
+  const handleCameraCapture = (file: File) => {
+    setShowCamera(false);
+    uploadFile(file);
+  };
+
+  const canOpenCamera = showCameraOption && isMobile && (showTypeSelector ? selectedType : true);
+
   return (
-    <div className="document-upload">
-      {/* Document Type Selector */}
-      {showTypeSelector && (
-        <div className="type-selector">
-          <label className="type-label">Type de document *</label>
-          <select 
-            value={selectedType} 
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="type-select"
-            disabled={uploading}
-          >
-            <option value="">-- Sélectionnez le type --</option>
-            {DOCUMENT_TYPES.map(type => (
-              <option key={type.id} value={type.id}>{type.label}</option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      <div
-        className={`upload-zone ${isDragging ? 'dragging' : ''} ${uploading ? 'uploading' : ''} ${showTypeSelector && !selectedType ? 'disabled' : ''}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => !uploading && (showTypeSelector ? selectedType : true) && fileInputRef.current?.click()}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={accept}
-          onChange={handleFileSelect}
-          className="hidden-input"
-          disabled={uploading}
-        />
-
-        {uploading ? (
-          <div className="upload-progress">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${progress}%` }} />
-            </div>
-            <span className="progress-text">
-              {progress < 100 ? 'Envoi en cours...' : <><CheckCircle2 size={14} className="inline mr-1" /> Terminé !</>}
-            </span>
+    <>
+      <div className="document-upload">
+        {/* Document Type Selector */}
+        {showTypeSelector && (
+          <div className="type-selector">
+            <label className="type-label">Type de document *</label>
+            <select 
+              value={selectedType} 
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="type-select"
+              disabled={uploading}
+            >
+              <option value="">-- Sélectionnez le type --</option>
+              {DOCUMENT_TYPES.map(type => (
+                <option key={type.id} value={type.id}>{type.label}</option>
+              ))}
+            </select>
           </div>
-        ) : (
-          <>
-            <div className="upload-icon"><FileText size={32} /></div>
-            <p className="upload-text">
-              {showTypeSelector && !selectedType ? (
-                <>Sélectionnez d'abord le type de document</>
-              ) : (
-                <>
-                  Glissez-déposez un fichier ici
-                  <br />
-                  <span>ou cliquez pour sélectionner</span>
-                </>
-              )}
-            </p>
-            <p className="upload-hint">
-              PDF, JPG, PNG • Max {maxSize} Mo
-            </p>
-          </>
         )}
+
+        {/* Upload Methods */}
+        <div className={`upload-methods ${isMobile && showCameraOption ? 'mobile-layout' : ''}`}>
+          {/* Camera Button - Mobile Only */}
+          {showCameraOption && isMobile && (
+            <button
+              type="button"
+              onClick={() => canOpenCamera && setShowCamera(true)}
+              disabled={uploading || !canOpenCamera}
+              className={`camera-capture-btn ${!canOpenCamera ? 'disabled' : ''}`}
+            >
+              <div className="camera-icon-wrapper">
+                <Camera className="w-8 h-8" />
+              </div>
+              <span className="camera-label">Scanner avec la caméra</span>
+              <span className="camera-hint">
+                <Smartphone className="w-3 h-3 inline mr-1" />
+                Capture directe
+              </span>
+            </button>
+          )}
+
+          {/* Drag & Drop Zone */}
+          <div
+            className={`upload-zone ${isDragging ? 'dragging' : ''} ${uploading ? 'uploading' : ''} ${showTypeSelector && !selectedType ? 'disabled' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => !uploading && (showTypeSelector ? selectedType : true) && fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={accept}
+              onChange={handleFileSelect}
+              className="hidden-input"
+              disabled={uploading}
+            />
+
+            {uploading ? (
+              <div className="upload-progress">
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${progress}%` }} />
+                </div>
+                <span className="progress-text">
+                  {progress < 100 ? 'Envoi en cours...' : <><CheckCircle2 size={14} className="inline mr-1" /> Terminé !</>}
+                </span>
+              </div>
+            ) : (
+              <>
+                <div className="upload-icon"><FileText size={32} /></div>
+                <p className="upload-text">
+                  {showTypeSelector && !selectedType ? (
+                    <>Sélectionnez d'abord le type de document</>
+                  ) : (
+                    <>
+                      {isMobile ? 'Appuyez pour sélectionner un fichier' : 'Glissez-déposez un fichier ici'}
+                      <br />
+                      <span>{isMobile ? 'depuis votre appareil' : 'ou cliquez pour sélectionner'}</span>
+                    </>
+                  )}
+                </p>
+                <p className="upload-hint">
+                  PDF, JPG, PNG • Max {maxSize} Mo
+                </p>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Camera Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
+    </>
   );
 };
 
