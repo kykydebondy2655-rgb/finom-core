@@ -25,8 +25,9 @@ import NotesHistory from '@/components/agent/NotesHistory';
 import ActivityTimeline from '@/components/agent/ActivityTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
-import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle } from 'lucide-react';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
+import { supabase } from '@/integrations/supabase/client';
 
 const AgentClientDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -153,6 +154,34 @@ const AgentClientDetail: React.FC = () => {
               <KeyRound size={16} className="mr-1" /> Envoyer identifiants
             </Button>
             <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Rappel</Button>
+            {/* Connexion en tant que client */}
+            <Button 
+              variant="secondary" 
+              onClick={async () => {
+                if (!client.email) {
+                  toast.error('Email client non disponible');
+                  return;
+                }
+                // Generate a magic link for the client
+                const { data, error } = await supabase.auth.admin.generateLink({
+                  type: 'magiclink',
+                  email: client.email,
+                  options: {
+                    redirectTo: `${window.location.origin}/dashboard`
+                  }
+                });
+                if (error) {
+                  // Fallback: open dashboard in new tab with user context
+                  toast.info(`Ouvrez une fenêtre de navigation privée et connectez-vous avec ${client.email}`);
+                } else if (data?.properties?.action_link) {
+                  window.open(data.properties.action_link, '_blank');
+                  toast.success('Lien de connexion ouvert');
+                }
+              }}
+              disabled={!client.email}
+            >
+              <LogIn size={16} className="mr-1" /> Voir compte
+            </Button>
             {isAdmin && (
               <Button 
                 variant="danger" 
@@ -191,12 +220,42 @@ const AgentClientDetail: React.FC = () => {
               <Card className="info-card fade-in" padding="lg">
                 <h3>Informations personnelles</h3>
                 <div className="info-grid">
-                  <div className="info-row"><span>Nom</span><strong>{client.first_name} {client.last_name}</strong></div>
+                  <div className="info-row"><span>Nom complet</span><strong>{client.first_name} {client.last_name}</strong></div>
                   <div className="info-row"><span>Email</span><strong>{client.email || '-'}</strong></div>
                   <div className="info-row"><span>Téléphone</span><strong>{client.phone || '-'}</strong></div>
-                  <div className="info-row"><span>Adresse</span><strong>{client.address || '-'}</strong></div>
+                </div>
+                
+                {/* Adresse complète */}
+                <h4 className="mt-4 mb-2 text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <MapPin size={14} /> Adresse
+                </h4>
+                <div className="info-grid">
+                  <div className="info-row"><span>Rue</span><strong>{client.address || '-'}</strong></div>
+                  <div className="info-row"><span>Code postal</span><strong>{(client as any).postal_code || '-'}</strong></div>
+                  <div className="info-row"><span>Ville</span><strong>{(client as any).city || '-'}</strong></div>
+                  <div className="info-row"><span>Pays</span><strong>{(client as any).country || 'France'}</strong></div>
+                </div>
+
+                {/* Informations projet */}
+                <h4 className="mt-4 mb-2 text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Building size={14} /> Projet immobilier
+                </h4>
+                <div className="info-grid">
+                  <div className="info-row"><span>Prix du bien</span><strong>{client.property_price ? formatCurrency(client.property_price) : '-'}</strong></div>
+                  <div className="info-row"><span>Apport</span><strong>{client.down_payment || '-'}</strong></div>
+                  <div className="info-row"><span>Type d'achat</span><strong>{client.purchase_type || '-'}</strong></div>
+                  <div className="info-row"><span>Source</span><strong>{client.lead_source || '-'}</strong></div>
+                </div>
+
+                {/* Statuts */}
+                <h4 className="mt-4 mb-2 text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Globe size={14} /> Statuts
+                </h4>
+                <div className="info-grid">
                   <div className="info-row"><span>Statut KYC</span><StatusBadge status={client.kyc_status} size="sm" /></div>
                   <div className="info-row"><span>Niveau KYC</span><strong>{client.kyc_level || 1}</strong></div>
+                  <div className="info-row"><span>Statut lead</span><strong>{client.lead_status || '-'}</strong></div>
+                  <div className="info-row"><span>Pipeline</span><strong>{client.pipeline_stage || '-'}</strong></div>
                   <div className="info-row"><span>Inscrit le</span><strong>{formatDate(client.created_at)}</strong></div>
                 </div>
               </Card>
