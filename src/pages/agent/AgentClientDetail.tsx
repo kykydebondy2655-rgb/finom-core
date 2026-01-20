@@ -22,6 +22,7 @@ import ClientNotesPanel from '@/components/agent/ClientNotesPanel';
 import LoanStatusHistory from '@/components/agent/LoanStatusHistory';
 import DocumentStatusHistory from '@/components/agent/DocumentStatusHistory';
 import NotesHistory from '@/components/agent/NotesHistory';
+import ActivityTimeline from '@/components/agent/ActivityTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle } from 'lucide-react';
@@ -38,7 +39,7 @@ const AgentClientDetail: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [bankAccount, setBankAccount] = useState<BankAccount | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents' | 'activity'>('info');
   const [showCallbackModal, setShowCallbackModal] = useState(false);
   const [showDocumentStatusModal, setShowDocumentStatusModal] = useState(false);
   const [showLoanStatusModal, setShowLoanStatusModal] = useState(false);
@@ -182,6 +183,7 @@ const AgentClientDetail: React.FC = () => {
             <button className={`tab ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>Informations</button>
             <button className={`tab ${activeTab === 'loans' ? 'active' : ''}`} onClick={() => setActiveTab('loans')}>Dossiers ({loans.length})</button>
             <button className={`tab ${activeTab === 'documents' ? 'active' : ''}`} onClick={() => setActiveTab('documents')}>Documents ({documents.length})</button>
+            <button className={`tab ${activeTab === 'activity' ? 'active' : ''}`} onClick={() => setActiveTab('activity')}>Historique</button>
           </div>
 
           {activeTab === 'info' && (
@@ -390,6 +392,13 @@ const AgentClientDetail: React.FC = () => {
               <div className="mt-4 pt-4 border-t border-border/50">
                 <DocumentStatusHistory documents={documents} />
               </div>
+            </Card>
+          )}
+
+          {activeTab === 'activity' && (
+            <Card className="activity-card fade-in" padding="lg">
+              <h3 className="mb-4">Historique complet des actions</h3>
+              <ActivityTimeline clientId={id || ''} maxItems={100} />
             </Card>
           )}
         </div>
