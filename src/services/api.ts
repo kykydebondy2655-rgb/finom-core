@@ -1007,7 +1007,7 @@ export const getStatusLabel = (status: string | null): string => {
     inactive: 'Inactif',
     planned: 'Planifié',
     cancelled: 'Annulé',
-    // Lead statuses
+    // Lead/Pipeline statuses
     new: 'Nouveau',
     assigned: 'Assigné',
     contacted: 'Contacté',
@@ -1015,6 +1015,13 @@ export const getStatusLabel = (status: string | null): string => {
     converted: 'Converti',
     lost: 'Perdu',
     verified: 'Vérifié',
+    faux_numero: 'Faux numéro',
+    nrp: 'NRP',
+    pas_interesse: 'Pas intéressé',
+    a_rappeler: 'À rappeler',
+    interesse: 'Intéressé',
+    qualifie: 'Qualifié',
+    converti: 'Converti',
   };
   return labels[status || ''] || status || 'Inconnu';
 };
@@ -1042,7 +1049,7 @@ export const getStatusColor = (status: string | null): string => {
     inactive: 'var(--color-text-tertiary)',
     planned: 'var(--color-info)',
     cancelled: 'var(--color-danger)',
-    // Lead statuses
+    // Lead/Pipeline statuses
     new: 'var(--color-info)',
     assigned: '#0891B2',
     contacted: '#0891B2',
@@ -1050,6 +1057,14 @@ export const getStatusColor = (status: string | null): string => {
     converted: 'var(--color-success)',
     lost: 'var(--color-danger)',
     verified: 'var(--color-success)',
+    faux_numero: '#DC2626',
+    nrp: '#EF4444',
+    pas_interesse: '#6B7280',
+    a_rappeler: '#8B5CF6',
+    interesse: '#10B981',
+    qualifie: '#059669',
+    converti: '#22C55E',
+    nouveau: '#3B82F6',
   };
   return colors[status || ''] || 'var(--color-text-secondary)';
 };
