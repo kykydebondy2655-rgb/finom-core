@@ -6,13 +6,21 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
-import { agentApi, formatDate } from '@/services/api';
+import { agentApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+
+interface ClientAssignmentWithProfile {
+  id: string;
+  client_user_id: string;
+  agent_user_id: string;
+  assigned_at: string;
+  client: Profile | null;
+}
 
 const AgentClients: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<ClientAssignmentWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 

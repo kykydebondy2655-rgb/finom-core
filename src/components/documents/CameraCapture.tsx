@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, RotateCcw, Check, Zap, ZapOff } from 'lucide-react';
 import Button from '@/components/finom/Button';
+import logger from '@/lib/logger';
 
 interface CameraCaptureProps {
   onCapture: (file: File) => void;
@@ -44,7 +45,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onClose }) => 
         setIsStreaming(true);
       }
     } catch (err) {
-      console.error('Camera error:', err);
+      logger.logError('Camera access error', err);
       setError('Impossible d\'accéder à la caméra. Vérifiez les permissions.');
     }
   }, [facingMode]);

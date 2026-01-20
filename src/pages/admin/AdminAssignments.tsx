@@ -5,12 +5,21 @@ import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import AssignmentModal from '@/components/admin/AssignmentModal';
-import { adminApi, formatDate } from '@/services/api';
+import { adminApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+
+interface AssignmentWithProfiles {
+  id: string;
+  client_user_id: string;
+  agent_user_id: string;
+  assigned_at: string;
+  client: Profile | null;
+  agent: Profile | null;
+}
 
 const AdminAssignments: React.FC = () => {
   const navigate = useNavigate();
-  const [assignments, setAssignments] = useState<any[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentWithProfiles[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);

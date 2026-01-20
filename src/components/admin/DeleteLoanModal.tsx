@@ -12,6 +12,7 @@ import { useToast } from '@/components/finom/Toast';
 import { adminApi, formatCurrency } from '@/services/api';
 import { AlertTriangle } from 'lucide-react';
 import type { LoanApplication } from '@/services/api';
+import logger from '@/lib/logger';
 
 interface DeleteLoanModalProps {
   isOpen: boolean;
@@ -40,7 +41,7 @@ const DeleteLoanModal: React.FC<DeleteLoanModalProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      console.error('Error deleting loan:', err);
+      logger.logError('Error deleting loan', err);
       toast.error('Erreur lors de la suppression du dossier');
     } finally {
       setLoading(false);
