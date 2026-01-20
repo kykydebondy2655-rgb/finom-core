@@ -18,7 +18,9 @@ import {
   History,
   ClipboardList,
   Upload,
-  Settings
+  Settings,
+  Shield,
+  BarChart3
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
@@ -146,6 +148,14 @@ const AdminDashboard: React.FC = () => {
               <Card className="action-card" padding="lg" onClick={() => navigate('/admin/login-history')}>
                 <span className="action-icon"><History size={24} /></span>
                 <span className="action-label">Historique connexions</span>
+              </Card>
+              <Card className="action-card" padding="lg" onClick={() => navigate('/admin/roles')}>
+                <span className="action-icon"><Shield size={24} /></span>
+                <span className="action-label">Gestion des rôles</span>
+              </Card>
+              <Card className="action-card" padding="lg" onClick={() => navigate('/admin/analytics')}>
+                <span className="action-icon"><BarChart3 size={24} /></span>
+                <span className="action-label">Analytics</span>
               </Card>
               <Card className="action-card" padding="lg" onClick={() => navigate('/admin/settings')}>
                 <span className="action-icon"><Settings size={24} /></span>

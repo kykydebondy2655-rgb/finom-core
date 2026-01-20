@@ -49,7 +49,8 @@ import AdminLeads from './pages/admin/AdminLeads';
 import AdminImports from './pages/admin/AdminImports';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminEmailTemplates from './pages/admin/AdminEmailTemplates';
-
+import AdminRoles from './pages/admin/AdminRoles';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
 import CookieBanner from './components/common/CookieBanner';
 import PWAInstallBanner from './components/pwa/PWAInstallBanner';
 
@@ -264,6 +265,22 @@ function App() {
                                     element={
                                         <ProtectedRoute allowedRoles={['admin']}>
                                             <AdminEmailTemplates />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/roles" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminRoles />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/analytics" 
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <AdminAnalytics />
                                         </ProtectedRoute>
                                     } 
                                 />
