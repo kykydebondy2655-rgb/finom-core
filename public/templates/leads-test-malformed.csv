@@ -1,0 +1,7 @@
+Col1;Col2;Col3;Col4;Col5
+test@example.com;Jean;Martin;0612345678;250000
+autre@test.fr;Pierre;;0698765432;180000
+mauvais-email;Paul;Durand;0654321098;320000
+;Sophie;Bernard;0687654321;150000
+valide@mail.com;;;;200000
+dernier@email.org;Marc;Legrand;;280000
