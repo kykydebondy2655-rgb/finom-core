@@ -969,16 +969,127 @@
   margin-bottom: 1.5rem;
 }
 
-/* Responsive */
+/* Responsive - Tablet */
 @media (max-width: 768px) {
+  .auth-page-finom {
+    padding: 1rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+  
+  .auth-container-finom {
+    max-width: 100%;
+  }
+  
   .auth-card-finom {
-    padding: 1.75rem;
+    padding: 1.75rem 1.25rem;
+    border-radius: 1rem;
+  }
+  
+  .auth-header-finom h1 {
+    font-size: 1.5rem;
   }
   
   .form-row-finom {
     grid-template-columns: 1fr;
   }
   
+  .input-finom {
+    padding: 1rem;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  .auth-logo .logo-text {
+    font-size: 1.75rem;
+  }
+  
+  .auth-trust-finom {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .auth-trust-finom .trust-item {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+  .auth-page-finom {
+    padding: 0.75rem;
+    padding-top: 1.5rem;
+  }
+  
+  .auth-card-finom {
+    padding: 1.5rem 1rem;
+  }
+  
+  .auth-header-finom {
+    margin-bottom: 1.5rem;
+  }
+  
+  .auth-header-finom h1 {
+    font-size: 1.375rem;
+  }
+  
+  .auth-header-finom p {
+    font-size: 0.875rem;
+  }
+  
+  .auth-form-finom {
+    gap: 1rem;
+  }
+  
+  .form-group-finom label {
+    font-size: 0.8125rem;
+  }
+  
+  .input-finom {
+    padding: 0.875rem;
+    border-radius: 0.625rem;
+  }
+  
+  .btn-full-width {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  
+  .auth-logo {
+    margin-bottom: 1.5rem;
+  }
+  
+  .auth-logo .logo-text {
+    font-size: 1.5rem;
+  }
+  
+  .forgot-link-finom a {
+    font-size: 0.8125rem;
+  }
+  
+  .auth-divider-finom {
+    margin: 1rem 0;
+  }
+  
+  .auth-footer-finom {
+    font-size: 0.875rem;
+  }
+  
+  .auth-trust-finom {
+    margin-top: 1rem;
+  }
+  
+  .auth-trust-finom .trust-item {
+    font-size: 0.6875rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+/* Responsive - Tablet - Other Pages */
+@media (max-width: 768px) {
   .about-hero h1,
   .contact-hero h1,
   .how-hero h1,
