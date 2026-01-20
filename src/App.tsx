@@ -61,6 +61,7 @@ const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 const AdminEmailTemplates = lazy(() => import('./pages/admin/AdminEmailTemplates'));
 const AdminRoles = lazy(() => import('./pages/admin/AdminRoles'));
 const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
+const AdminSupport = lazy(() => import('./pages/admin/AdminSupport'));
 
 import './styles/finom.css';
 import './styles/components.css';
@@ -307,6 +308,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['admin']}>
                                                 <AdminAnalytics />
+                                            </ProtectedRoute>
+                                        } 
+                                    />
+                                    <Route 
+                                        path="/admin/support" 
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin', 'agent']}>
+                                                <AdminSupport />
                                             </ProtectedRoute>
                                         } 
                                     />

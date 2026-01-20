@@ -20,7 +20,8 @@ import {
   Upload,
   Settings,
   Shield,
-  BarChart3
+  BarChart3,
+  Headphones
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -173,6 +174,10 @@ const AdminDashboard: React.FC = () => {
               <Card className="action-card" padding="lg" onClick={() => navigate('/admin/analytics')}>
                 <span className="action-icon"><BarChart3 size={24} /></span>
                 <span className="action-label">Analytics</span>
+              </Card>
+              <Card className="action-card" padding="lg" onClick={() => navigate('/admin/support')}>
+                <span className="action-icon"><Headphones size={24} /></span>
+                <span className="action-label">Support client</span>
               </Card>
               <Card className="action-card" padding="lg" onClick={() => navigate('/admin/settings')}>
                 <span className="action-icon"><Settings size={24} /></span>

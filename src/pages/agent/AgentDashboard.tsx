@@ -14,7 +14,7 @@ import { useAgentPushNotifications } from '@/hooks/useAgentPushNotifications';
 import { agentApi, formatDateTime } from '@/services/api';
 import type { ClientAssignment, Callback, Profile } from '@/services/api';
 import { logger } from '@/lib/logger';
-import { Users, Phone, Calendar, BarChart3 } from 'lucide-react';
+import { Users, Phone, Calendar, BarChart3, Headphones } from 'lucide-react';
 
 // Extended types for joined data
 interface ClientAssignmentWithProfile extends ClientAssignment {
@@ -132,6 +132,10 @@ const AgentDashboard: React.FC = () => {
             <Button variant="secondary" onClick={() => navigate('/agent/callbacks')}>
               <Phone size={18} className="btn-icon-text" />
               Gérer les rappels
+            </Button>
+            <Button variant="ghost" onClick={() => navigate('/admin/support')}>
+              <Headphones size={18} className="btn-icon-text" />
+              Support client
             </Button>
           </div>
 
