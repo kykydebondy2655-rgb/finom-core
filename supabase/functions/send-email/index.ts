@@ -1167,8 +1167,6 @@ interface EmailRequest {
 // ============= HANDLER =============
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("send-email function called", req.method);
-
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -1181,7 +1179,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { template, to, data }: EmailRequest = await req.json();
 
-    console.log("Sending email:", { template, to, data });
+    // Validate required fields
+    if (!template || !to) {
+      throw new Error("Missing required fields: template and to");
+    }
 
     // Generate email content
     const emailContent = generateTemplate(template, data);
@@ -1204,13 +1205,12 @@ const handler = async (req: Request): Promise<Response> => {
     const result = await response.json();
 
     if (!response.ok) {
-      console.error("Resend API error:", result);
+      // Log error without sensitive data
+      console.error("Email send failed:", { status: response.status, template });
       throw new Error(result.message || "Failed to send email");
     }
 
-    console.log("Email sent successfully:", result);
-
-    return new Response(JSON.stringify({ success: true, data: result }), {
+    return new Response(JSON.stringify({ success: true, data: { id: result.id } }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

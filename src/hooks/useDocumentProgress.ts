@@ -72,6 +72,22 @@ export const useDocumentProgress = ({
 
         if (updateError) throw updateError;
 
+        // Log the automatic status change to history for audit trail
+        const { error: historyError } = await supabase
+          .from('loan_status_history')
+          .insert({
+            loan_id: loanId,
+            old_status: currentStatus,
+            new_status: 'under_review',
+            next_action: 'Analyse du dossier en cours',
+            notes: 'Transition automatique - Tous les documents requis ont été reçus',
+            changed_by: null, // System-triggered
+          });
+
+        if (historyError) {
+          logger.warn('Failed to log auto-transition history', { error: historyError.message });
+        }
+
         // Create notification for client
         await supabase.from('notifications').insert({
           user_id: userId,
