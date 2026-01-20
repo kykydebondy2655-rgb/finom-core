@@ -5,16 +5,19 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Button from '@/components/finom/Button';
 import { useToast } from '@/components/finom/Toast';
-import { profilesApi, formatCurrency } from '@/services/api';
+import { profilesApi } from '@/services/api';
 import type { Profile } from '@/services/api';
 import logger from '@/lib/logger';
-import { User, Mail, Phone, MapPin, Building, Euro, FileText, Globe } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Building, Euro, Globe, Lock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 
 interface EditClientModalProps {
   isOpen: boolean;
   onClose: () => void;
   client: Profile;
   onSuccess: (updatedClient: Profile) => void;
+  isAdmin?: boolean; // true = full access, false = agent restricted access
 }
 
 const PIPELINE_STAGES = [
@@ -60,9 +63,18 @@ const LEAD_SOURCES = [
   { value: 'other', label: 'Autre' },
 ];
 
-const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, client, onSuccess }) => {
+const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, client, onSuccess, isAdmin = true }) => {
   const toast = useToast();
+  const { user } = useAuth();
   const [saving, setSaving] = useState(false);
+
+  // Fields agents CAN edit (restricted mode)
+  const AGENT_EDITABLE_FIELDS = ['first_name', 'last_name', 'phone', 'address', 'city', 'postal_code', 'country'];
+
+  const canEditField = (field: string): boolean => {
+    if (isAdmin) return true;
+    return AGENT_EDITABLE_FIELDS.includes(field);
+  };
   
   // Form state
   const [formData, setFormData] = useState({
@@ -121,26 +133,83 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
 
     setSaving(true);
     try {
-      const updates: Record<string, unknown> = {
-        first_name: formData.first_name.trim(),
-        last_name: formData.last_name.trim(),
-        email: formData.email.trim() || null,
-        phone: formData.phone.trim() || null,
-        address: formData.address.trim() || null,
-        city: formData.city.trim() || null,
-        postal_code: formData.postal_code.trim() || null,
-        country: formData.country.trim() || 'France',
-        property_price: formData.property_price ? parseFloat(formData.property_price) : null,
-        down_payment: formData.down_payment.trim() || null,
-        purchase_type: formData.purchase_type || null,
-        lead_source: formData.lead_source || null,
-        pipeline_stage: formData.pipeline_stage || null,
-        lead_status: formData.lead_status || null,
-        kyc_status: formData.kyc_status || null,
-        kyc_level: formData.kyc_level ? parseInt(formData.kyc_level) : null,
-      };
+      // Build updates based on permissions
+      const updates: Record<string, unknown> = {};
+      const changedFields: string[] = [];
+      const oldValues: Record<string, unknown> = {};
+      const newValues: Record<string, unknown> = {};
+
+      // Define field types for proper typing
+      type FieldDef = { key: string; value: string | number | null; oldValue: string | number | null | undefined };
+      
+      // Always allow these fields
+      const allFields: FieldDef[] = [
+        { key: 'first_name', value: formData.first_name.trim(), oldValue: client.first_name },
+        { key: 'last_name', value: formData.last_name.trim(), oldValue: client.last_name },
+        { key: 'phone', value: formData.phone.trim() || null, oldValue: client.phone },
+        { key: 'address', value: formData.address.trim() || null, oldValue: client.address },
+        { key: 'city', value: formData.city.trim() || null, oldValue: client.city },
+        { key: 'postal_code', value: formData.postal_code.trim() || null, oldValue: client.postal_code },
+        { key: 'country', value: formData.country.trim() || 'France', oldValue: client.country },
+      ];
+
+      // Admin-only fields
+      if (isAdmin) {
+        allFields.push(
+          { key: 'email', value: formData.email.trim() || null, oldValue: client.email },
+          { key: 'property_price', value: formData.property_price ? parseFloat(formData.property_price) : null, oldValue: client.property_price ?? null },
+          { key: 'down_payment', value: formData.down_payment.trim() || null, oldValue: client.down_payment },
+          { key: 'purchase_type', value: formData.purchase_type || null, oldValue: client.purchase_type },
+          { key: 'lead_source', value: formData.lead_source || null, oldValue: client.lead_source },
+          { key: 'pipeline_stage', value: formData.pipeline_stage || null, oldValue: client.pipeline_stage },
+          { key: 'lead_status', value: formData.lead_status || null, oldValue: client.lead_status },
+          { key: 'kyc_status', value: formData.kyc_status || null, oldValue: client.kyc_status },
+          { key: 'kyc_level', value: formData.kyc_level ? parseInt(formData.kyc_level) : null, oldValue: client.kyc_level ?? null },
+        );
+      }
+
+      // Build updates and track changes
+      for (const field of allFields) {
+        updates[field.key] = field.value;
+        if (field.value !== field.oldValue) {
+          changedFields.push(field.key);
+          oldValues[field.key] = field.oldValue;
+          newValues[field.key] = field.value;
+        }
+      }
 
       const updatedClient = await profilesApi.update(client.id, updates);
+
+      // Log to audit table if there are changes
+      if (changedFields.length > 0 && user) {
+        try {
+          // Insert using direct fetch since types haven't regenerated for the new table
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+          const { data: sessionData } = await supabase.auth.getSession();
+          
+          await fetch(`${supabaseUrl}/rest/v1/profile_audit_logs`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${sessionData?.session?.access_token || supabaseKey}`,
+              'Prefer': 'return=minimal',
+            },
+            body: JSON.stringify({
+              profile_id: client.id,
+              changed_by: user.id,
+              action: 'update',
+              old_values: oldValues,
+              new_values: newValues,
+              changed_fields: changedFields,
+            }),
+          });
+        } catch (auditError) {
+          logger.logError('Failed to log audit', auditError);
+        }
+      }
+
       toast.success('Profil client mis à jour avec succès');
       onSuccess(updatedClient);
       onClose();
@@ -192,12 +261,15 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-1">
                   <Mail size={12} /> Email
+                  {!canEditField('email') && <Lock size={10} className="text-muted-foreground" />}
                 </Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
+                  disabled={!canEditField('email')}
+                  className={!canEditField('email') ? 'bg-muted cursor-not-allowed' : ''}
                 />
               </div>
               <div className="space-y-2">
@@ -255,128 +327,132 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
             </div>
           </div>
 
-          {/* Projet immobilier */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2 border-b pb-2">
-              <Building size={14} /> Projet immobilier
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="property_price" className="flex items-center gap-1">
-                  <Euro size={12} /> Prix du bien
-                </Label>
-                <Input
-                  id="property_price"
-                  type="number"
-                  min="0"
-                  step="1000"
-                  value={formData.property_price}
-                  onChange={(e) => handleChange('property_price', e.target.value)}
-                  placeholder="250000"
-                />
+          {/* Projet immobilier - Admin only */}
+          {isAdmin && (
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2 border-b pb-2">
+                <Building size={14} /> Projet immobilier
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="property_price" className="flex items-center gap-1">
+                    <Euro size={12} /> Prix du bien
+                  </Label>
+                  <Input
+                    id="property_price"
+                    type="number"
+                    min="0"
+                    step="1000"
+                    value={formData.property_price}
+                    onChange={(e) => handleChange('property_price', e.target.value)}
+                    placeholder="250000"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="down_payment">Apport</Label>
+                  <Input
+                    id="down_payment"
+                    value={formData.down_payment}
+                    onChange={(e) => handleChange('down_payment', e.target.value)}
+                    placeholder="50000 €"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="down_payment">Apport</Label>
-                <Input
-                  id="down_payment"
-                  value={formData.down_payment}
-                  onChange={(e) => handleChange('down_payment', e.target.value)}
-                  placeholder="50000 €"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="purchase_type">Type d'achat</Label>
+                  <Select value={formData.purchase_type} onValueChange={(v) => handleChange('purchase_type', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PURCHASE_TYPES.map(t => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lead_source">Source</Label>
+                  <Select value={formData.lead_source} onValueChange={(v) => handleChange('lead_source', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LEAD_SOURCES.map(s => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="purchase_type">Type d'achat</Label>
-                <Select value={formData.purchase_type} onValueChange={(v) => handleChange('purchase_type', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PURCHASE_TYPES.map(t => (
-                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lead_source">Source</Label>
-                <Select value={formData.lead_source} onValueChange={(v) => handleChange('lead_source', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEAD_SOURCES.map(s => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+          )}
 
-          {/* Statuts */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2 border-b pb-2">
-              <Globe size={14} /> Statuts & Pipeline
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="pipeline_stage">Étape pipeline</Label>
-                <Select value={formData.pipeline_stage} onValueChange={(v) => handleChange('pipeline_stage', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PIPELINE_STAGES.map(s => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          {/* Statuts - Admin only */}
+          {isAdmin && (
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-2 border-b pb-2">
+                <Globe size={14} /> Statuts & Pipeline
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pipeline_stage">Étape pipeline</Label>
+                  <Select value={formData.pipeline_stage} onValueChange={(v) => handleChange('pipeline_stage', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PIPELINE_STAGES.map(s => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lead_status">Statut lead</Label>
+                  <Select value={formData.lead_status} onValueChange={(v) => handleChange('lead_status', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LEAD_STATUSES.map(s => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lead_status">Statut lead</Label>
-                <Select value={formData.lead_status} onValueChange={(v) => handleChange('lead_status', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEAD_STATUSES.map(s => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="kyc_status">Statut KYC</Label>
+                  <Select value={formData.kyc_status} onValueChange={(v) => handleChange('kyc_status', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {KYC_STATUSES.map(s => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="kyc_level">Niveau KYC</Label>
+                  <Select value={formData.kyc_level} onValueChange={(v) => handleChange('kyc_level', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Niveau 1</SelectItem>
+                      <SelectItem value="2">Niveau 2</SelectItem>
+                      <SelectItem value="3">Niveau 3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="kyc_status">Statut KYC</Label>
-                <Select value={formData.kyc_status} onValueChange={(v) => handleChange('kyc_status', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {KYC_STATUSES.map(s => (
-                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="kyc_level">Niveau KYC</Label>
-                <Select value={formData.kyc_level} onValueChange={(v) => handleChange('kyc_level', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">Niveau 1</SelectItem>
-                    <SelectItem value="2">Niveau 2</SelectItem>
-                    <SelectItem value="3">Niveau 3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>

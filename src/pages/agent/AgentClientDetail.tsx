@@ -261,11 +261,9 @@ const AgentClientDetail: React.FC = () => {
               <Card className="info-card fade-in" padding="lg">
                 <div className="flex items-center justify-between mb-4">
                   <h3>Informations personnelles</h3>
-                  {isAdmin && (
-                    <Button variant="primary" size="sm" onClick={() => setShowEditClientModal(true)}>
-                      <Edit size={14} className="mr-1" /> Modifier le profil
-                    </Button>
-                  )}
+                  <Button variant="primary" size="sm" onClick={() => setShowEditClientModal(true)}>
+                    <Edit size={14} className="mr-1" /> Modifier le profil
+                  </Button>
                 </div>
                 <div className="info-grid">
                   <div className="info-row"><span>Nom complet</span><strong>{client.first_name} {client.last_name}</strong></div>
@@ -667,13 +665,14 @@ const AgentClientDetail: React.FC = () => {
           />
         )}
 
-        {/* Edit Client Modal (Admin only) */}
-        {isAdmin && client && (
+        {/* Edit Client Modal (Admin full access, Agent restricted access) */}
+        {client && (
           <EditClientModal
             isOpen={showEditClientModal}
             onClose={() => setShowEditClientModal(false)}
             client={client}
             onSuccess={(updatedClient) => setClient(updatedClient)}
+            isAdmin={isAdmin}
           />
         )}
       </div>
