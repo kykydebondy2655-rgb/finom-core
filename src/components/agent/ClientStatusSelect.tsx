@@ -28,6 +28,7 @@ interface ClientStatusSelectProps {
   clientId: string;
   currentStatus: string | null;
   onStatusChange?: (newStatus: string) => void;
+  onCallbackRequested?: () => void; // Callback to open callback modal
   size?: 'sm' | 'default';
 }
 
@@ -35,6 +36,7 @@ const ClientStatusSelect: React.FC<ClientStatusSelectProps> = ({
   clientId,
   currentStatus,
   onStatusChange,
+  onCallbackRequested,
   size = 'default',
 }) => {
   const [updating, setUpdating] = useState(false);
@@ -69,6 +71,12 @@ const ClientStatusSelect: React.FC<ClientStatusSelectProps> = ({
       }
 
       toast.success('Statut mis à jour');
+      onStatusChange?.(newStatus);
+      
+      // Auto-trigger callback modal when status is "a_rappeler"
+      if (newStatus === 'a_rappeler' && onCallbackRequested) {
+        onCallbackRequested();
+      }
       onStatusChange?.(newStatus);
     } catch (err) {
       logger.logError('Error updating client status', err);

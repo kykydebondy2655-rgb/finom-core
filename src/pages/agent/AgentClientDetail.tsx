@@ -26,7 +26,8 @@ import NotesHistory from '@/components/agent/NotesHistory';
 import ActivityTimeline from '@/components/agent/ActivityTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
-import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe } from 'lucide-react';
+import { emailService } from '@/services/emailService';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe, RefreshCw } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -131,7 +132,7 @@ const AgentClientDetail: React.FC = () => {
                   <p>{client.email}</p>
                 </div>
               </div>
-              <StatusBadge status={client.kyc_status} />
+              <StatusBadge status={client.pipeline_stage || 'nouveau'} />
             </div>
           </div>
         </div>
@@ -157,29 +158,21 @@ const AgentClientDetail: React.FC = () => {
               <KeyRound size={16} className="mr-1" /> Envoyer identifiants
             </Button>
             <Button variant="ghost" onClick={() => setShowCallbackModal(true)}>+ Rappel</Button>
-            {/* Connexion en tant que client */}
+            {/* Instructions pour voir le compte client */}
             <Button 
               variant="secondary" 
-              onClick={async () => {
+              onClick={() => {
                 if (!client.email) {
                   toast.error('Email client non disponible');
                   return;
                 }
-                // Generate a magic link for the client
-                const { data, error } = await supabase.auth.admin.generateLink({
-                  type: 'magiclink',
-                  email: client.email,
-                  options: {
-                    redirectTo: `${window.location.origin}/dashboard`
-                  }
+                // Copy instructions to clipboard
+                const instructions = `Pour consulter le compte client:\n1. Ouvrir une fenêtre de navigation privée\n2. Se connecter avec: ${client.email}`;
+                navigator.clipboard.writeText(client.email).then(() => {
+                  toast.info('Email copié. Connectez-vous en navigation privée.');
+                }).catch(() => {
+                  toast.info(`Connectez-vous en navigation privée avec: ${client.email}`);
                 });
-                if (error) {
-                  // Fallback: open dashboard in new tab with user context
-                  toast.info(`Ouvrez une fenêtre de navigation privée et connectez-vous avec ${client.email}`);
-                } else if (data?.properties?.action_link) {
-                  window.open(data.properties.action_link, '_blank');
-                  toast.success('Lien de connexion ouvert');
-                }
               }}
               disabled={!client.email}
             >
@@ -202,6 +195,7 @@ const AgentClientDetail: React.FC = () => {
               clientId={id || ''} 
               currentStatus={client.pipeline_stage} 
               onStatusChange={(newStatus) => setClient(prev => prev ? {...prev, pipeline_stage: newStatus} : null)}
+              onCallbackRequested={() => setShowCallbackModal(true)}
             />
           </div>
           
@@ -383,6 +377,35 @@ const AgentClientDetail: React.FC = () => {
                         <span className="doc-meta">{doc.category} • {formatDate(doc.uploaded_at)}</span>
                       </div>
                       <StatusBadge status={doc.status} size="sm" />
+                      {/* Bouton relance pour documents rejetés */}
+                      {doc.status === 'rejected' && client.email && (
+                        <button 
+                          className="reminder-btn"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              const result = await emailService.sendDocumentRejected(
+                                client.email!,
+                                client.first_name || 'Client',
+                                doc.file_name,
+                                doc.rejection_reason || 'Veuillez fournir un document conforme',
+                                loans[0]?.id
+                              );
+                              if (result.success) {
+                                toast.success('Email de relance envoyé');
+                              } else {
+                                toast.error(result.error || 'Erreur lors de l\'envoi');
+                              }
+                            } catch (err) {
+                              logger.logError('Reminder email error', err);
+                              toast.error('Erreur lors de l\'envoi');
+                            }
+                          }}
+                          title="Relancer le client"
+                        >
+                          <RefreshCw size={14} />
+                        </button>
+                      )}
                       <button 
                         className="status-btn"
                         onClick={(e) => {

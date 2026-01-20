@@ -5,7 +5,9 @@ import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { LoanStatsChart } from '@/components/charts/LoanStatsChart';
+import GlobalSearchBar from '@/components/admin/GlobalSearchBar';
 import { adminApi, formatCurrency, LoanApplication, Profile } from '@/services/api';
+import logger from '@/lib/logger';
 import {
   Users, 
   UserCheck, 
@@ -68,8 +70,8 @@ const AdminDashboard: React.FC = () => {
       });
       setLoansByStatus(Object.entries(statusCounts).map(([status, count]) => ({ status, count })));
 
-    } catch {
-      // Silent fail for stats - non-blocking
+    } catch (err) {
+      logger.logError('Error loading admin stats', err);
     } finally {
       setLoading(false);
     }
@@ -84,8 +86,13 @@ const AdminDashboard: React.FC = () => {
       <div className="admin-dashboard">
         <div className="page-header">
           <div className="container">
-            <h1>Administration FINOM</h1>
-            <p>Bienvenue, {user?.firstName || 'Admin'}</p>
+            <div className="header-top-row">
+              <div>
+                <h1>Administration FINOM</h1>
+                <p>Bienvenue, {user?.firstName || 'Admin'}</p>
+              </div>
+              <GlobalSearchBar />
+            </div>
           </div>
         </div>
 

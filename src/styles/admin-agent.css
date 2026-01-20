@@ -2810,6 +2810,21 @@
   background: #E2E8F0;
 }
 
+.reminder-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  color: #F59E0B;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.reminder-btn:hover {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
 .docs-header {
   display: flex;
   justify-content: space-between;
