@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
-import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { LoanStatsChart } from '@/components/charts/LoanStatsChart';
-import { adminApi, formatCurrency } from '@/services/api';
-import { supabase } from '@/integrations/supabase/client';
-import { 
+import { adminApi, formatCurrency, LoanApplication, Profile } from '@/services/api';
+import {
   Users, 
   UserCheck, 
   FileText, 
@@ -23,10 +21,18 @@ import {
   BarChart3
 } from 'lucide-react';
 
+interface DashboardStats {
+  clients: number;
+  agents: number;
+  loans: number;
+  pendingLoans: number;
+  totalAmount: number;
+}
+
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ clients: 0, agents: 0, loans: 0, pendingLoans: 0, totalAmount: 0 });
+  const [stats, setStats] = useState<DashboardStats>({ clients: 0, agents: 0, loans: 0, pendingLoans: 0, totalAmount: 0 });
   const [loansByStatus, setLoansByStatus] = useState<{ status: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,22 +49,26 @@ const AdminDashboard: React.FC = () => {
         adminApi.getAllLoans()
       ]);
       
+      // Type-safe calculations
+      const typedLoans = (loans || []) as LoanApplication[];
+      
       setStats({
-        clients: clients?.length || 0,
-        agents: agents?.length || 0,
-        loans: loans?.length || 0,
-        pendingLoans: loans?.filter((l: any) => l.status === 'pending').length || 0,
-        totalAmount: loans?.reduce((sum: number, l: any) => sum + (l.amount || 0), 0) || 0
+        clients: (clients as Profile[] | null)?.length || 0,
+        agents: (agents as Profile[] | null)?.length || 0,
+        loans: typedLoans.length,
+        pendingLoans: typedLoans.filter(l => l.status === 'pending').length,
+        totalAmount: typedLoans.reduce((sum, l) => sum + (l.amount || 0), 0)
       });
 
       // Group loans by status for chart
       const statusCounts: Record<string, number> = {};
-      loans?.forEach((l: any) => {
-        statusCounts[l.status || 'pending'] = (statusCounts[l.status || 'pending'] || 0) + 1;
+      typedLoans.forEach(l => {
+        const status = l.status || 'pending';
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
       });
       setLoansByStatus(Object.entries(statusCounts).map(([status, count]) => ({ status, count })));
 
-    } catch (err) {
+    } catch {
       // Silent fail for stats - non-blocking
     } finally {
       setLoading(false);

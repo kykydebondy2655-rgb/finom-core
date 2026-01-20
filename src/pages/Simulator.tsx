@@ -19,7 +19,8 @@ import {
   INSURANCE_RATE,
   SimulationResult
 } from '@/lib/loanCalculations';
-import { loansApi } from '@/services/api';
+import { loansApi, type LoanApplication } from '@/services/api';
+import type { TablesInsert } from '@/integrations/supabase/types';
 import { emailService } from '@/services/emailService';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
@@ -171,7 +172,7 @@ const Simulator = () => {
     try {
       setLoading(true);
 
-      const loanData: Record<string, any> = {
+      const loanData: TablesInsert<'loan_applications'> = {
         user_id: user.id,
         amount: result.loanAmount,
         duration: formData.durationYears,
@@ -199,7 +200,7 @@ const Simulator = () => {
         coborrower_data: hasCoborrower ? coborrowerData : null
       };
 
-      const newLoan = await loansApi.create(loanData as any);
+      const newLoan = await loansApi.create(loanData);
 
       // Send confirmation email (non-blocking)
       if (user.email) {
