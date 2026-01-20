@@ -1,12 +1,14 @@
 /**
  * Hook to monitor document progress and trigger automatic status transitions
+ * Uses centralized useLoanStatusUpdate for consistency
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getDocumentChecklist, calculateDocumentProgress, type ProjectType } from '@/lib/documentChecklist';
 import { emailService } from '@/services/emailService';
 import { logger } from '@/lib/logger';
+import { isValidTransition } from '@/lib/loanStatusMachine';
 
 interface UseDocumentProgressOptions {
   loanId: string;
@@ -14,6 +16,9 @@ interface UseDocumentProgressOptions {
   projectType: ProjectType;
   currentStatus: string | null;
   hasCoborrower: boolean;
+  loanAmount?: number;
+  loanRate?: number;
+  monthlyPayment?: number;
   onStatusChange?: () => void;
 }
 
@@ -26,16 +31,33 @@ export const useDocumentProgress = ({
   projectType,
   currentStatus,
   hasCoborrower,
+  loanAmount = 0,
+  loanRate = 0,
+  monthlyPayment = 0,
   onStatusChange,
 }: UseDocumentProgressOptions) => {
   
+  // Prevent duplicate transitions
+  const isTransitioning = useRef(false);
+  
   const checkAndTransition = useCallback(async () => {
+    // Prevent concurrent transitions
+    if (isTransitioning.current) return;
+    
     // Only transition from pending or documents_required
     if (currentStatus !== 'pending' && currentStatus !== 'documents_required') {
       return;
     }
 
+    // Validate transition is allowed by state machine
+    if (!isValidTransition(currentStatus, 'under_review')) {
+      logger.warn('Invalid auto-transition attempted', { from: currentStatus, to: 'under_review' });
+      return;
+    }
+
     try {
+      isTransitioning.current = true;
+      
       // Fetch all documents for this loan
       const { data: documents, error } = await supabase
         .from('documents')
@@ -93,8 +115,8 @@ export const useDocumentProgress = ({
           user_id: userId,
           type: 'loan_status',
           category: 'loan',
-          title: 'Dossier complet',
-          message: 'Tous vos documents ont été reçus. Votre dossier passe en analyse.',
+          title: 'Dossier complet - En analyse 🔍',
+          message: 'Tous vos documents ont été reçus. Votre dossier passe en analyse par notre équipe.',
           related_entity: 'loan_applications',
           related_id: loanId,
         });
@@ -118,7 +140,7 @@ export const useDocumentProgress = ({
           });
         }
 
-        // Send email to client
+        // Send email to client (critical - was missing before)
         const { data: profile } = await supabase
           .from('profiles')
           .select('email, first_name')
@@ -126,12 +148,20 @@ export const useDocumentProgress = ({
           .maybeSingle();
 
         if (profile?.email) {
-          emailService.sendNotification(
-            profile.email,
-            profile.first_name || 'Client',
-            'Votre dossier est complet ! 🎉',
-            'Tous vos documents ont été reçus et votre dossier passe maintenant en phase d\'analyse.'
-          ).catch(err => logger.logError('Email error', err));
+          try {
+            await emailService.sendNotification(
+              profile.email,
+              profile.first_name || 'Client',
+              'Votre dossier est en cours d\'analyse 🔍',
+              'Tous vos documents ont été reçus ! Notre équipe analyse maintenant votre dossier de prêt. Nous vous tiendrons informé de l\'avancement.',
+              'Voir mon dossier',
+              'https://pret-finom.co/loans'
+            );
+            logger.info('Auto-transition email sent', { loanId, email: profile.email });
+          } catch (emailErr) {
+            logger.logError('Failed to send auto-transition email', emailErr);
+            // Don't throw - email failure shouldn't block the transition
+          }
         }
 
         onStatusChange?.();
@@ -139,6 +169,8 @@ export const useDocumentProgress = ({
       }
     } catch (err) {
       logger.logError('Error in document progress check', err);
+    } finally {
+      isTransitioning.current = false;
     }
   }, [loanId, userId, projectType, currentStatus, hasCoborrower, onStatusChange]);
 
