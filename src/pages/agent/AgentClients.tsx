@@ -18,6 +18,25 @@ interface ClientAssignmentWithProfile {
   client: Profile | null;
 }
 
+const normalizeStatus = (raw: string | null | undefined): string => {
+  if (!raw) return 'nouveau';
+  const v = raw.trim();
+  if (!v) return 'nouveau';
+
+  const lower = v.toLowerCase();
+  const normalized = lower
+    .replace(/\s+/g, '_')
+    .replace(/-/g, '_');
+
+  if (normalized === 'faux_numéro' || normalized === 'faux_numero') return 'faux_numero';
+  if (normalized === 'à_rappeler' || normalized === 'a_rappeler') return 'a_rappeler';
+  if (normalized === 'pas_intéressé' || normalized === 'pas_interessé') return 'pas_interesse';
+  if (normalized === 'nrp') return 'nrp';
+  if (normalized === 'nouveau' || normalized === 'nouveaux') return 'nouveau';
+
+  return normalized;
+};
+
 const AgentClients: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -47,10 +66,7 @@ const AgentClients: React.FC = () => {
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { all: clients.length };
     clients.forEach(c => {
-      // Treat null, undefined, empty string as 'nouveau'
-      const status = c.client?.pipeline_stage && c.client.pipeline_stage.trim() !== '' 
-        ? c.client.pipeline_stage 
-        : 'nouveau';
+      const status = normalizeStatus(c.client?.pipeline_stage);
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
@@ -62,9 +78,7 @@ const AgentClients: React.FC = () => {
     
     // Status filter - treat null/empty as 'nouveau'
     if (statusFilter) {
-      const clientStatus = client.pipeline_stage && client.pipeline_stage.trim() !== '' 
-        ? client.pipeline_stage 
-        : 'nouveau';
+      const clientStatus = normalizeStatus(client.pipeline_stage);
       if (clientStatus !== statusFilter) return false;
     }
     
