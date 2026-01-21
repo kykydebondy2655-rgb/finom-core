@@ -19,6 +19,7 @@ import Register from './pages/Register';
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Simulator = lazy(() => import('./pages/Simulator'));
+const Landing = lazy(() => import('./pages/Landing'));
 const Rates = lazy(() => import('./pages/Rates'));
 const HowItWorks = lazy(() => import('./pages/HowItWorks'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -93,6 +94,7 @@ function App() {
                                     <Route path="/forgot-password" element={<ForgotPassword />} />
                                     <Route path="/reset-password" element={<ResetPassword />} />
                                     <Route path="/simulator" element={<Simulator />} />
+                                    <Route path="/landing" element={<Landing />} />
                                     <Route path="/rates" element={<Rates />} />
                                     <Route path="/how-it-works" element={<HowItWorks />} />
                                     <Route path="/contact" element={<Contact />} />
