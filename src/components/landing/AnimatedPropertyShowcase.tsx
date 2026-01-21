@@ -1,10 +1,10 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Home, Euro, MapPin, Maximize, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, MapPin, Maximize, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import parisProperty from '@/assets/paris-property.jpg';
-import heroFintech from '@/assets/hero-fintech.png';
-import securityTrust from '@/assets/security-trust.jpg';
+import loftModerne from '@/assets/loft-moderne-lyon.jpg';
+import maisonFamiliale from '@/assets/maison-familiale-bordeaux.jpg';
 
 interface PropertyCard {
   id: number;
@@ -26,7 +26,7 @@ const properties: PropertyCard[] = [
   },
   {
     id: 2,
-    image: heroFintech,
+    image: loftModerne,
     title: "Loft Moderne",
     location: "Lyon 6ème",
     price: 420000,
@@ -34,7 +34,7 @@ const properties: PropertyCard[] = [
   },
   {
     id: 3,
-    image: securityTrust,
+    image: maisonFamiliale,
     title: "Maison Familiale",
     location: "Bordeaux",
     price: 580000,
