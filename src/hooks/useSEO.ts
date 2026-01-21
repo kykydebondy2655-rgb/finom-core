@@ -312,13 +312,88 @@ export const SEO_CONFIGS = {
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      'name': 'FAQ FINOM',
-      'description': 'Questions fréquentes sur le prêt immobilier',
+      'name': 'FAQ FINOM - Questions Fréquentes',
+      'description': 'Réponses aux questions fréquentes sur le crédit immobilier FINOM',
       'url': 'https://pret-finom.co/faq',
+      'mainEntity': [
+        {
+          '@type': 'Question',
+          'name': 'FINOM délivre-t-elle directement des crédits immobiliers ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Oui, FINOM est un établissement bancaire qui finance directement les projets immobiliers de ses clients.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Quels types de projets immobiliers financez-vous ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Nous finançons l\'acquisition de résidences principales, secondaires et investissements locatifs.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Comment fonctionne la simulation de crédit ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Notre simulateur vous permet d\'estimer votre capacité d\'emprunt et vos mensualités en quelques clics. Gratuit et sans engagement.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Quels documents dois-je fournir ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Pièce d\'identité, justificatifs de revenus, relevés bancaires et justificatif de domicile.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Comment est analysée ma demande ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Nos analystes étudient votre situation financière globale pour vous proposer les meilleures conditions.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Les taux affichés sont-ils garantis ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Les taux sont indicatifs. Le taux définitif dépend de l\'étude de votre dossier.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Qu\'est-ce que le TAEG ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Le Taux Annuel Effectif Global représente le coût total de votre crédit incluant intérêts et frais.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'Mes données sont-elles sécurisées ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Toutes vos données sont chiffrées et hébergées sur des serveurs sécurisés en Europe.'
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': 'FINOM est-elle régulée ?',
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'FINOM opère avec des établissements agréés par l\'ACPR et la BaFin.'
+          }
+        }
+      ],
       'publisher': {
         '@type': 'Organization',
         'name': 'FINOM Payments B.V.',
-        'url': 'https://pret-finom.co'
+        'url': 'https://pret-finom.co',
+        'logo': 'https://pret-finom.co/icons/icon-512x512.png'
       }
     }
   },
