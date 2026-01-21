@@ -10,6 +10,27 @@ import { Badge } from '@/components/ui/badge';
 import { agentApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
 import { normalizeClientStatus } from '@/lib/clientStatus';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+
+type SortField = 'name' | 'assigned_at' | 'updated_at';
+type SortDirection = 'asc' | 'desc';
+
+const SORT_STORAGE_KEY = 'agent-clients-sort';
+
+const getSavedSort = (): { field: SortField; direction: SortDirection } => {
+  try {
+    const saved = localStorage.getItem(SORT_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.field && parsed.direction) return parsed;
+    }
+  } catch {}
+  return { field: 'assigned_at', direction: 'desc' };
+};
+
+const saveSort = (field: SortField, direction: SortDirection) => {
+  localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify({ field, direction }));
+};
 
 interface ClientAssignmentWithProfile {
   id: string;
@@ -28,6 +49,18 @@ const AgentClients: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<SortField>(getSavedSort().field);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(getSavedSort().direction);
+
+  const handleSort = (field: SortField) => {
+    let newDirection: SortDirection = 'asc';
+    if (sortField === field) {
+      newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+    setSortField(field);
+    setSortDirection(newDirection);
+    saveSort(field, newDirection);
+  };
 
   useEffect(() => {
     if (user) loadClients();
@@ -56,24 +89,57 @@ const AgentClients: React.FC = () => {
     return counts;
   }, [clients]);
 
-  const filteredClients = clients.filter(c => {
-    const client = c.client;
-    if (!client) return false;
-    
-    // Status filter - treat null/empty as 'nouveau'
-    if (statusFilter) {
-      const clientStatus = normalizeClientStatus(client.pipeline_stage);
-      if (clientStatus !== statusFilter) return false;
-    }
-    
-    // Search filter
-    const searchLower = search.toLowerCase();
-    return (
-      (client.first_name || '').toLowerCase().includes(searchLower) ||
-      (client.last_name || '').toLowerCase().includes(searchLower) ||
-      (client.email || '').toLowerCase().includes(searchLower)
-    );
-  });
+  const filteredAndSortedClients = useMemo(() => {
+    // Filter
+    const filtered = clients.filter(c => {
+      const client = c.client;
+      if (!client) return false;
+      
+      // Status filter - treat null/empty as 'nouveau'
+      if (statusFilter) {
+        const clientStatus = normalizeClientStatus(client.pipeline_stage);
+        if (clientStatus !== statusFilter) return false;
+      }
+      
+      // Search filter
+      const searchLower = search.toLowerCase();
+      return (
+        (client.first_name || '').toLowerCase().includes(searchLower) ||
+        (client.last_name || '').toLowerCase().includes(searchLower) ||
+        (client.email || '').toLowerCase().includes(searchLower)
+      );
+    });
+
+    // Sort
+    const sorted = [...filtered].sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortField) {
+        case 'name': {
+          const nameA = `${a.client?.first_name || ''} ${a.client?.last_name || ''}`.toLowerCase();
+          const nameB = `${b.client?.first_name || ''} ${b.client?.last_name || ''}`.toLowerCase();
+          comparison = nameA.localeCompare(nameB, 'fr');
+          break;
+        }
+        case 'assigned_at': {
+          const dateA = new Date(a.assigned_at).getTime();
+          const dateB = new Date(b.assigned_at).getTime();
+          comparison = dateA - dateB;
+          break;
+        }
+        case 'updated_at': {
+          const dateA = new Date(a.client?.updated_at || a.assigned_at).getTime();
+          const dateB = new Date(b.client?.updated_at || b.assigned_at).getTime();
+          comparison = dateA - dateB;
+          break;
+        }
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [clients, statusFilter, search, sortField, sortDirection]);
 
   if (loading) {
     return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
@@ -146,9 +212,39 @@ const AgentClients: React.FC = () => {
             })}
           </div>
 
+          {/* Sort Controls */}
+          <div className="flex flex-wrap items-center gap-2 mb-4 fade-in">
+            <span className="text-sm text-muted-foreground">Trier par :</span>
+            {[
+              { field: 'name' as SortField, label: 'Nom' },
+              { field: 'assigned_at' as SortField, label: 'Date d\'assignation' },
+              { field: 'updated_at' as SortField, label: 'Dernier contact' },
+            ].map(opt => {
+              const isActive = sortField === opt.field;
+              return (
+                <button
+                  key={opt.field}
+                  onClick={() => handleSort(opt.field)}
+                  className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-md border transition-all ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-card hover:bg-muted border-border text-foreground'
+                  }`}
+                >
+                  {opt.label}
+                  {isActive ? (
+                    sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                  ) : (
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Clients Table */}
           <Card className="clients-card fade-in" padding="lg">
-            {filteredClients.length === 0 ? (
+            {filteredAndSortedClients.length === 0 ? (
               <p className="empty-text">Aucun client trouvé</p>
             ) : (
               <div className="table-wrapper">
@@ -164,7 +260,7 @@ const AgentClients: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredClients.map(assignment => (
+                    {filteredAndSortedClients.map(assignment => (
                       <tr key={assignment.id}>
                         <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>
                           <div className="client-cell">
