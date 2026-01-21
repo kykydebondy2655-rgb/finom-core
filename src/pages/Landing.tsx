@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -17,7 +18,11 @@ import {
   Award,
   Phone,
   Mail,
-  User
+  User,
+  BarChart3,
+  Plus,
+  Trash2,
+  Smartphone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +33,7 @@ import { performSimulation, safeNumber, SimulationResult } from '@/lib/loanCalcu
 import { getRateForProfile } from '@/lib/rates';
 import { supabase } from '@/integrations/supabase/client';
 import { useSEO } from '@/hooks/useSEO';
+import { emailService } from '@/services/emailService';
 
 // Lead form validation schema
 const leadSchema = z.object({
@@ -54,6 +60,14 @@ interface LeadForm {
   lastName: string;
   email: string;
   phone: string;
+}
+
+interface Scenario {
+  id: string;
+  label: string;
+  durationYears: number;
+  downPayment: number;
+  result: SimulationResult | null;
 }
 
 const Landing = () => {
@@ -89,6 +103,8 @@ const Landing = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [showComparator, setShowComparator] = useState(false);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
 
   // Recalculate on form change
   useEffect(() => {
@@ -101,6 +117,34 @@ const Landing = () => {
     formData.downPayment,
     formData.durationYears
   ]);
+
+  // Recalculate scenarios when base params change
+  useEffect(() => {
+    if (scenarios.length > 0) {
+      const updatedScenarios = scenarios.map(scenario => ({
+        ...scenario,
+        result: calculateScenario(scenario.durationYears, scenario.downPayment)
+      }));
+      setScenarios(updatedScenarios);
+    }
+  }, [formData.propertyPrice, formData.notaryFees, formData.agencyFees, formData.worksAmount]);
+
+  const calculateScenario = (durationYears: number, downPayment: number): SimulationResult => {
+    const totalProject = safeNumber(formData.propertyPrice) + safeNumber(formData.notaryFees) + 
+                         safeNumber(formData.agencyFees) + safeNumber(formData.worksAmount);
+    const contributionPercent = totalProject > 0 ? safeNumber(downPayment) / totalProject : 0;
+    const rateData = getRateForProfile(durationYears, contributionPercent);
+    
+    return performSimulation({
+      propertyPrice: formData.propertyPrice,
+      notaryFees: formData.notaryFees,
+      agencyFees: formData.agencyFees,
+      worksAmount: formData.worksAmount,
+      downPayment: downPayment,
+      durationYears: durationYears,
+      annualRate: rateData.rate
+    });
+  };
 
   const calculate = () => {
     const totalProject = safeNumber(formData.propertyPrice) + safeNumber(formData.notaryFees) + 
@@ -143,6 +187,98 @@ const Landing = () => {
       currency: 'EUR',
       maximumFractionDigits: 0 
     }).format(value);
+  };
+
+  // Scenario comparator functions
+  const addScenario = () => {
+    if (scenarios.length >= 3) return;
+    const newScenario: Scenario = {
+      id: crypto.randomUUID(),
+      label: `Scénario ${scenarios.length + 1}`,
+      durationYears: formData.durationYears,
+      downPayment: formData.downPayment,
+      result: result
+    };
+    setScenarios([...scenarios, newScenario]);
+  };
+
+  const removeScenario = (id: string) => {
+    setScenarios(scenarios.filter(s => s.id !== id));
+  };
+
+  const updateScenario = (id: string, field: 'durationYears' | 'downPayment', value: number) => {
+    setScenarios(scenarios.map(s => {
+      if (s.id !== id) return s;
+      const updated = { ...s, [field]: value };
+      updated.result = calculateScenario(updated.durationYears, updated.downPayment);
+      return updated;
+    }));
+  };
+
+  // Notify admins via email when new lead is submitted
+  const notifyAdminsNewLead = async (leadData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    propertyPrice: number;
+    downPayment: number;
+    monthlyPayment: number;
+  }) => {
+    try {
+      // Get all admin users
+      const { data: adminRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'admin');
+
+      if (!adminRoles || adminRoles.length === 0) return;
+
+      // Get admin emails
+      const { data: adminProfiles } = await supabase
+        .from('profiles')
+        .select('email, first_name')
+        .in('id', adminRoles.map(r => r.user_id));
+
+      if (!adminProfiles) return;
+
+      // Create in-app notifications
+      const notifications = adminRoles.map(admin => ({
+        user_id: admin.user_id,
+        type: 'new_lead',
+        category: 'lead',
+        title: 'Nouveau lead depuis la landing page',
+        message: `${leadData.firstName} ${leadData.lastName} (${leadData.email}) - Projet: ${formatCurrency(leadData.propertyPrice)}`,
+        related_entity: 'profiles',
+      }));
+
+      await supabase.from('notifications').insert(notifications);
+
+      // Send email to each admin
+      for (const admin of adminProfiles) {
+        if (admin.email) {
+          await emailService.sendNotification(
+            admin.email,
+            admin.first_name || 'Administrateur',
+            '🔔 Nouveau lead - Landing Page',
+            `Un nouveau prospect vient de soumettre une demande via la landing page.\n\n` +
+            `**Coordonnées:**\n` +
+            `- Nom: ${leadData.firstName} ${leadData.lastName}\n` +
+            `- Email: ${leadData.email}\n` +
+            `- Téléphone: ${leadData.phone}\n\n` +
+            `**Projet:**\n` +
+            `- Prix du bien: ${formatCurrency(leadData.propertyPrice)}\n` +
+            `- Apport: ${formatCurrency(leadData.downPayment)}\n` +
+            `- Mensualité estimée: ${formatCurrency(leadData.monthlyPayment)}\n\n` +
+            `Connectez-vous pour consulter et assigner ce lead.`,
+            'Voir les leads',
+            'https://pret-finom.co/admin/leads'
+          );
+        }
+      }
+    } catch (err) {
+      console.error('Failed to notify admins:', err);
+    }
   };
 
   const handleSubmitLead = async () => {
@@ -195,6 +331,17 @@ const Landing = () => {
 
       if (error) throw error;
 
+      // Notify admins (non-blocking)
+      notifyAdminsNewLead({
+        firstName: leadForm.firstName,
+        lastName: leadForm.lastName,
+        email: leadForm.email,
+        phone: leadForm.phone,
+        propertyPrice: formData.propertyPrice,
+        downPayment: formData.downPayment,
+        monthlyPayment: result?.monthlyTotal || 0
+      });
+
       toast.success('Merci ! Un conseiller vous contactera très rapidement.');
       setShowLeadForm(false);
       setLeadForm({ firstName: '', lastName: '', email: '', phone: '' });
@@ -214,8 +361,10 @@ const Landing = () => {
     { icon: Award, title: 'Expert reconnu', description: 'Plus de 10 ans d\'expérience' }
   ];
 
+  const currentYear = new Date().getFullYear();
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 md:py-20">
         <div className="container mx-auto px-4">
@@ -394,15 +543,25 @@ const Landing = () => {
                           </div>
                         </div>
 
-                        {/* CTA Button */}
-                        <Button
-                          onClick={() => setShowLeadForm(true)}
-                          size="lg"
-                          className="w-full bg-white text-primary hover:bg-white/90 font-semibold text-lg py-6"
-                        >
-                          Être recontacté
-                          <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
+                        {/* CTA Buttons */}
+                        <div className="space-y-3">
+                          <Button
+                            onClick={() => setShowLeadForm(true)}
+                            size="lg"
+                            className="w-full bg-white text-primary hover:bg-white/90 font-semibold text-lg py-6"
+                          >
+                            Être recontacté
+                            <ArrowRight className="w-5 h-5 ml-2" />
+                          </Button>
+                          <Button
+                            onClick={() => setShowComparator(!showComparator)}
+                            variant="ghost"
+                            className="w-full text-white/80 hover:text-white hover:bg-white/10"
+                          >
+                            <BarChart3 className="w-4 h-4 mr-2" />
+                            {showComparator ? 'Masquer' : 'Comparer les scénarios'}
+                          </Button>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex-1 flex items-center justify-center">
@@ -418,6 +577,191 @@ const Landing = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Scenario Comparator */}
+      <AnimatePresence>
+        {showComparator && (
+          <motion.section
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-muted/50 overflow-hidden"
+          >
+            <div className="container mx-auto px-4 py-12">
+              <div className="max-w-5xl mx-auto">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                      <BarChart3 className="w-6 h-6 text-primary" />
+                      Comparateur de scénarios
+                    </h2>
+                    <p className="text-muted-foreground mt-1">
+                      Comparez jusqu'à 3 scénarios avec différentes durées et apports
+                    </p>
+                  </div>
+                  {scenarios.length < 3 && (
+                    <Button onClick={addScenario} variant="outline" className="gap-2">
+                      <Plus className="w-4 h-4" />
+                      Ajouter un scénario
+                    </Button>
+                  )}
+                </div>
+
+                {scenarios.length === 0 ? (
+                  <Card className="p-8 text-center">
+                    <BarChart3 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground mb-4">
+                      Ajoutez des scénarios pour comparer différentes options de financement
+                    </p>
+                    <Button onClick={addScenario} className="gap-2">
+                      <Plus className="w-4 h-4" />
+                      Créer mon premier scénario
+                    </Button>
+                  </Card>
+                ) : (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Current scenario */}
+                    <Card className="border-2 border-primary">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                            ✓
+                          </span>
+                          Actuel
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Durée</span>
+                            <span className="font-medium">{formData.durationYears} ans</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Apport</span>
+                            <span className="font-medium">{formatCurrency(formData.downPayment)}</span>
+                          </div>
+                        </div>
+                        <div className="pt-4 border-t">
+                          <div className="text-center">
+                            <p className="text-sm text-muted-foreground">Mensualité</p>
+                            <p className="text-2xl font-bold text-primary">
+                              {result ? formatCurrency(result.monthlyTotal) : '—'}
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                            <div className="text-center">
+                              <p className="text-muted-foreground">Taux</p>
+                              <p className="font-medium">{formData.rate.toFixed(2)}%</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-muted-foreground">Coût crédit</p>
+                              <p className="font-medium">{result ? formatCurrency(result.totalInterest) : '—'}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Comparison scenarios */}
+                    {scenarios.map((scenario, index) => (
+                      <Card key={scenario.id} className="relative">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive"
+                          onClick={() => removeScenario(scenario.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs flex items-center justify-center">
+                              {index + 1}
+                            </span>
+                            {scenario.label}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="space-y-3">
+                            <div>
+                              <Label className="text-xs text-muted-foreground">Durée (ans)</Label>
+                              <Slider
+                                value={[scenario.durationYears]}
+                                onValueChange={([v]) => updateScenario(scenario.id, 'durationYears', v)}
+                                min={5}
+                                max={30}
+                                step={1}
+                                className="mt-2"
+                              />
+                              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>5 ans</span>
+                                <span className="font-medium text-foreground">{scenario.durationYears} ans</span>
+                                <span>30 ans</span>
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-xs text-muted-foreground">Apport</Label>
+                              <Slider
+                                value={[scenario.downPayment]}
+                                onValueChange={([v]) => updateScenario(scenario.id, 'downPayment', v)}
+                                min={0}
+                                max={formData.propertyPrice * 0.5}
+                                step={1000}
+                                className="mt-2"
+                              />
+                              <div className="text-center text-xs font-medium mt-1">
+                                {formatCurrency(scenario.downPayment)}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="pt-4 border-t">
+                            <div className="text-center">
+                              <p className="text-sm text-muted-foreground">Mensualité</p>
+                              <p className="text-2xl font-bold text-primary">
+                                {scenario.result ? formatCurrency(scenario.result.monthlyTotal) : '—'}
+                              </p>
+                              {scenario.result && result && (
+                                <p className={`text-xs mt-1 ${
+                                  scenario.result.monthlyTotal < result.monthlyTotal 
+                                    ? 'text-green-600' 
+                                    : scenario.result.monthlyTotal > result.monthlyTotal 
+                                    ? 'text-red-500'
+                                    : 'text-muted-foreground'
+                                }`}>
+                                  {scenario.result.monthlyTotal < result.monthlyTotal 
+                                    ? `−${formatCurrency(result.monthlyTotal - scenario.result.monthlyTotal)}/mois`
+                                    : scenario.result.monthlyTotal > result.monthlyTotal
+                                    ? `+${formatCurrency(scenario.result.monthlyTotal - result.monthlyTotal)}/mois`
+                                    : 'Identique'
+                                  }
+                                </p>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                              <div className="text-center">
+                                <p className="text-muted-foreground">Coût crédit</p>
+                                <p className="font-medium">
+                                  {scenario.result ? formatCurrency(scenario.result.totalInterest) : '—'}
+                                </p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-muted-foreground">Capital</p>
+                                <p className="font-medium">
+                                  {scenario.result ? formatCurrency(scenario.result.loanAmount) : '—'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
 
       {/* Advantages Section */}
       <section className="py-16 bg-muted/30">
@@ -484,6 +828,93 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-muted border-t mt-auto">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              {/* Brand */}
+              <div className="md:col-span-1">
+                <span className="text-2xl font-bold text-primary">FINOM</span>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Votre banque pour le crédit immobilier
+                </p>
+                <div className="flex gap-2 mt-4">
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Treezor</span>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">Solaris</span>
+                </div>
+              </div>
+
+              {/* Crédit immobilier */}
+              <div>
+                <h4 className="font-semibold text-foreground mb-4">Crédit immobilier</h4>
+                <ul className="space-y-2 text-sm">
+                  <li><Link to="/simulator" className="text-muted-foreground hover:text-foreground transition-colors">Simuler mon crédit</Link></li>
+                  <li><Link to="/rates" className="text-muted-foreground hover:text-foreground transition-colors">Nos taux</Link></li>
+                  <li><Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</Link></li>
+                  <li><Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">Questions fréquentes</Link></li>
+                </ul>
+              </div>
+
+              {/* Légal */}
+              <div>
+                <h4 className="font-semibold text-foreground mb-4">Informations légales</h4>
+                <ul className="space-y-2 text-sm">
+                  <li><Link to="/legal" className="text-muted-foreground hover:text-foreground transition-colors">Mentions légales</Link></li>
+                  <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Politique de confidentialité</Link></li>
+                  <li><Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">Conditions générales</Link></li>
+                  <li><Link to="/security" className="text-muted-foreground hover:text-foreground transition-colors">Sécurité</Link></li>
+                </ul>
+              </div>
+
+              {/* Contact */}
+              <div>
+                <h4 className="font-semibold text-foreground mb-4">Contact</h4>
+                <ul className="space-y-3 text-sm">
+                  <li>
+                    <a href="mailto:contact@pret-finom.co" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                      <Mail className="w-4 h-4" />
+                      contact@pret-finom.co
+                    </a>
+                  </li>
+                  <li>
+                    <a href="tel:+33187680890" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                      <Phone className="w-4 h-4" />
+                      01 87 68 08 90
+                    </a>
+                  </li>
+                  <li>
+                    <Link to="/install" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                      <Smartphone className="w-4 h-4" />
+                      Installer l'application
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Regulatory info */}
+            <div className="border-t pt-8 space-y-4">
+              <div className="text-xs text-muted-foreground space-y-2">
+                <p>
+                  <strong>FINOM</strong> — Établissement bancaire spécialisé en crédit immobilier. 
+                  Partenaires bancaires agréés : Treezor (ACPR - France) et Solaris (BaFin - Allemagne).
+                </p>
+                <p>
+                  Vos données sont protégées et hébergées en Europe, conformément au RGPD et aux standards bancaires.
+                </p>
+              </div>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-4 border-t">
+                <p className="text-xs text-muted-foreground">© {currentYear} FINOM. Tous droits réservés.</p>
+                <p className="text-xs text-muted-foreground">
+                  Un crédit vous engage et doit être remboursé. Vérifiez vos capacités de remboursement avant de vous engager.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* Lead Form Modal */}
       <AnimatePresence>
