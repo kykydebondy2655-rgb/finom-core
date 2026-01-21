@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -34,6 +34,9 @@ import { getRateForProfile } from '@/lib/rates';
 import { supabase } from '@/integrations/supabase/client';
 import { useSEO } from '@/hooks/useSEO';
 import { emailService } from '@/services/emailService';
+import ScenarioComparisonChart from '@/components/landing/ScenarioComparisonChart';
+import LandingChatWidget from '@/components/landing/LandingChatWidget';
+import { useLandingAnalytics } from '@/hooks/useLandingAnalytics';
 
 // Lead form validation schema
 const leadSchema = z.object({
@@ -105,6 +108,9 @@ const Landing = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showComparator, setShowComparator] = useState(false);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  
+  // Analytics tracking
+  const { trackCtaClick, trackFormSubmit, trackScenarioAdd } = useLandingAnalytics();
 
   // Recalculate on form change
   useEffect(() => {
@@ -190,7 +196,7 @@ const Landing = () => {
   };
 
   // Scenario comparator functions
-  const addScenario = () => {
+  const addScenario = useCallback(() => {
     if (scenarios.length >= 3) return;
     const newScenario: Scenario = {
       id: crypto.randomUUID(),
@@ -200,7 +206,8 @@ const Landing = () => {
       result: result
     };
     setScenarios([...scenarios, newScenario]);
-  };
+    trackScenarioAdd(scenarios.length + 1);
+  }, [scenarios, formData.durationYears, formData.downPayment, result, trackScenarioAdd]);
 
   const removeScenario = (id: string) => {
     setScenarios(scenarios.filter(s => s.id !== id));
@@ -342,12 +349,20 @@ const Landing = () => {
         monthlyPayment: result?.monthlyTotal || 0
       });
 
+      // Track successful form submission
+      trackFormSubmit('lead_form', true, {
+        property_price: formData.propertyPrice,
+        down_payment: formData.downPayment,
+        duration_years: formData.durationYears,
+      });
+
       toast.success('Merci ! Un conseiller vous contactera très rapidement.');
       setShowLeadForm(false);
       setLeadForm({ firstName: '', lastName: '', email: '', phone: '' });
 
     } catch (err) {
       console.error('Lead submission error:', err);
+      trackFormSubmit('lead_form', false);
       toast.error('Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setIsSubmitting(false);
@@ -546,7 +561,13 @@ const Landing = () => {
                         {/* CTA Buttons */}
                         <div className="space-y-3">
                           <Button
-                            onClick={() => setShowLeadForm(true)}
+                            onClick={() => {
+                              trackCtaClick('lead_form_open', { 
+                                monthly_payment: result?.monthlyTotal,
+                                loan_amount: result?.loanAmount 
+                              });
+                              setShowLeadForm(true);
+                            }}
                             size="lg"
                             className="w-full bg-white text-primary hover:bg-white/90 font-semibold text-lg py-6"
                           >
@@ -554,7 +575,10 @@ const Landing = () => {
                             <ArrowRight className="w-5 h-5 ml-2" />
                           </Button>
                           <Button
-                            onClick={() => setShowComparator(!showComparator)}
+                            onClick={() => {
+                              trackCtaClick('comparator_toggle', { action: showComparator ? 'close' : 'open' });
+                              setShowComparator(!showComparator);
+                            }}
                             variant="ghost"
                             className="w-full text-white/80 hover:text-white hover:bg-white/10"
                           >
@@ -756,6 +780,27 @@ const Landing = () => {
                       </Card>
                     ))}
                   </div>
+                )}
+
+                {/* Animated Comparison Chart */}
+                {scenarios.length > 0 && (
+                  <ScenarioComparisonChart
+                    currentScenario={result ? {
+                      id: 'current',
+                      label: 'Actuel',
+                      monthlyPayment: result.monthlyTotal,
+                      totalInterest: result.totalInterest,
+                      loanAmount: result.loanAmount,
+                    } : null}
+                    scenarios={scenarios.map(s => ({
+                      id: s.id,
+                      label: s.label,
+                      monthlyPayment: s.result?.monthlyTotal || 0,
+                      totalInterest: s.result?.totalInterest || 0,
+                      loanAmount: s.result?.loanAmount || 0,
+                    }))}
+                    formatCurrency={formatCurrency}
+                  />
                 )}
               </div>
             </div>
@@ -1056,6 +1101,9 @@ const Landing = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Live Chat Widget */}
+      <LandingChatWidget />
     </div>
   );
 };
