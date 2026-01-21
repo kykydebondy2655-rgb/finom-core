@@ -1,18 +1,15 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { 
   Home, 
-  Calculator, 
   Euro, 
   Calendar, 
   Percent, 
   Shield, 
   Clock, 
-  CheckCircle2,
-  ArrowRight,
   Building2,
   TrendingDown,
   Award,
@@ -22,7 +19,10 @@ import {
   BarChart3,
   Plus,
   Trash2,
-  Smartphone
+  Smartphone,
+  Calculator,
+  ArrowRight,
+  CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +37,10 @@ import { emailService } from '@/services/emailService';
 import ScenarioComparisonChart from '@/components/landing/ScenarioComparisonChart';
 import LandingChatWidget from '@/components/landing/LandingChatWidget';
 import { useLandingAnalytics } from '@/hooks/useLandingAnalytics';
+import { useABTesting } from '@/hooks/useABTesting';
+import ABVariantHero from '@/components/landing/ABVariantHero';
+import ABVariantCTA from '@/components/landing/ABVariantCTA';
+import ABVariantSocialProof from '@/components/landing/ABVariantSocialProof';
 
 // Lead form validation schema
 const leadSchema = z.object({
@@ -111,6 +115,12 @@ const Landing = () => {
   
   // Analytics tracking
   const { trackCtaClick, trackFormSubmit, trackScenarioAdd } = useLandingAnalytics();
+  
+  // A/B Testing
+  const { getVariant, trackConversion } = useABTesting();
+  const heroVariant = getVariant('landing_hero');
+  const ctaVariant = getVariant('landing_cta');
+  const socialProofVariant = getVariant('landing_social_proof');
 
   // Recalculate on form change
   useEffect(() => {
@@ -356,6 +366,11 @@ const Landing = () => {
         duration_years: formData.durationYears,
       });
 
+      // Track A/B conversion
+      trackConversion('landing_hero', 'lead_submit');
+      trackConversion('landing_cta', 'lead_submit');
+      trackConversion('landing_social_proof', 'lead_submit');
+
       toast.success('Merci ! Un conseiller vous contactera très rapidement.');
       setShowLeadForm(false);
       setLeadForm({ firstName: '', lastName: '', email: '', phone: '' });
@@ -384,24 +399,8 @@ const Landing = () => {
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-                <Calculator className="w-4 h-4" />
-                Simulateur de crédit immobilier
-              </span>
-              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-                Votre projet immobilier<br />
-                <span className="text-primary">commence ici</span>
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Simulez votre crédit en quelques clics et obtenez une estimation personnalisée. 
-                Un conseiller dédié vous accompagne dans toutes les étapes.
-              </p>
-            </motion.div>
+            {/* A/B Tested Hero */}
+            <ABVariantHero variant={heroVariant} />
           </div>
 
           {/* Simulator Card */}
