@@ -25,6 +25,7 @@ import { fr } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import logger from '@/lib/logger';
 
 interface ActivityTimelineProps {
@@ -41,6 +42,7 @@ interface Activity {
   type: ActivityType;
   title: string;
   description: string;
+  fullContent?: string;
   timestamp: string;
   actor?: string;
   status?: 'success' | 'error' | 'pending' | 'info';
@@ -57,6 +59,7 @@ const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [filter, setFilter] = useState<ActivityType | 'all'>('all');
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
   useEffect(() => {
     loadAllActivities();
@@ -262,6 +265,7 @@ const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
       type: 'note' as ActivityType,
       title: 'Note ajoutée',
       description: note.note.slice(0, 100) + (note.note.length > 100 ? '...' : ''),
+      fullContent: note.note,
       timestamp: note.created_at,
       actor: profileMap.get(note.agent_id) || 'Agent',
       status: 'info'
@@ -418,7 +422,12 @@ const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                   </div>
 
                   {/* Content */}
-                  <div className="bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
+                  <div 
+                    className={`bg-card border border-border rounded-lg p-3 hover:shadow-sm transition-shadow ${
+                      activity.fullContent ? 'cursor-pointer hover:border-primary/50' : ''
+                    }`}
+                    onClick={() => activity.fullContent && setSelectedActivity(activity)}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -430,6 +439,11 @@ const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                           {activity.description}
                         </p>
+                        {activity.fullContent && activity.fullContent.length > 100 && (
+                          <span className="text-xs text-primary mt-1 inline-block">
+                            Cliquer pour voir tout
+                          </span>
+                        )}
                       </div>
                     </div>
                     
@@ -451,6 +465,37 @@ const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
             </AnimatePresence>
           </div>
         )}
+
+        {/* Detail Modal */}
+        <Dialog open={!!selectedActivity} onOpenChange={(open) => !open && setSelectedActivity(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {selectedActivity && getActivityIcon(selectedActivity.type)}
+                {selectedActivity?.title}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <p className="text-sm whitespace-pre-wrap">
+                  {selectedActivity?.fullContent || selectedActivity?.description}
+                </p>
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <User className="w-3 h-3" />
+                  <span>{selectedActivity?.actor}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  <span>
+                    {selectedActivity && format(parseISO(selectedActivity.timestamp), 'PPpp', { locale: fr })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </CollapsibleContent>
     </Collapsible>
   );
