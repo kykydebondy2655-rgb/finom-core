@@ -8,8 +8,6 @@
 // CONSTANTS
 // ============================================
 export const INSURANCE_RATE = 0.31; // Taux assurance fixe 0.31% par an (OBLIGATOIRE)
-export const ORIGINATION_FEE = 500; // Frais de dossier fixes
-export const GUARANTEE_RATE = 1.2; // Taux de garantie (1.2% du capital)
 
 // ============================================
 // SAFE NUMBER HELPERS
@@ -151,14 +149,10 @@ export const calculateTotalInsurance = (
 };
 
 /**
- * Calculates bank fees (dossier + garantie)
+ * Calculates bank fees (none - removed guarantee fees)
  */
-export const calculateBankFees = (principal: number): number => {
-  const p = safeNumber(principal);
-  if (p <= 0) return ORIGINATION_FEE;
-  
-  const guaranteeFee = p * (GUARANTEE_RATE / 100);
-  return Math.round((ORIGINATION_FEE + guaranteeFee) * 100) / 100;
+export const calculateBankFees = (_principal: number): number => {
+  return 0;
 };
 
 /**
