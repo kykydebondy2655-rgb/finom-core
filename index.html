@@ -1,11 +1,50 @@
 <!doctype html>
 <html lang="fr">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17893071932"></script>
+    <!-- Google Consent Mode v2 - Default denied for GDPR compliance -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      
+      // Default consent state - denied until user accepts
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'denied',
+        'security_storage': 'granted',
+        'wait_for_update': 500,
+        'region': ['BE', 'BG', 'CZ', 'DK', 'DE', 'EE', 'IE', 'EL', 'ES', 'FR', 'HR', 'IT', 'CY', 'LV', 'LT', 'LU', 'HU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO', 'SI', 'SK', 'FI', 'SE', 'IS', 'LI', 'NO']
+      });
+      
+      // For non-EEA users, grant by default
+      gtag('consent', 'default', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted'
+      });
+      
+      // Check for existing consent from localStorage
+      (function() {
+        var consent = localStorage.getItem('cookie-consent');
+        if (consent === 'accepted') {
+          gtag('consent', 'update', {
+            'ad_storage': 'granted',
+            'ad_user_data': 'granted',
+            'ad_personalization': 'granted',
+            'analytics_storage': 'granted',
+            'personalization_storage': 'granted'
+          });
+        }
+      })();
+    </script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17893071932"></script>
+    <script>
       gtag('js', new Date());
       gtag('config', 'AW-17893071932');
     </script>
