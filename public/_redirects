@@ -1,4 +1,11 @@
 # Cloudflare Pages SPA Routing
-# Toutes les routes non-fichiers redirigent vers index.html
+# Les fichiers statiques sont servis directement, les routes SPA redirigent vers index.html
 
+# Exclure les fichiers statiques de la redirection SPA
+/sitemap.xml    /sitemap.xml    200
+/robots.txt     /robots.txt     200
+/favicon.ico    /favicon.ico    200
+/.well-known/*  /.well-known/:splat  200
+
+# Toutes les autres routes (SPA) redirigent vers index.html
 /*    /index.html   200
