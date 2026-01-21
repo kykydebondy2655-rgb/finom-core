@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["finom-favicon.ico", "placeholder.svg"],
+      includeAssets: ["finom-favicon.ico", "placeholder.svg", "sitemap.xml", "robots.txt"],
       manifest: {
         name: "FINOM - Crédit Immobilier",
         short_name: "FINOM",

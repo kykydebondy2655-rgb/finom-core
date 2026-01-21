@@ -6,8 +6,10 @@ import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import StatusBadge from '@/components/common/StatusBadge';
 import LoanStatusModal from '@/components/admin/LoanStatusModal';
+import DeleteLoanModal from '@/components/admin/DeleteLoanModal';
 import { adminApi, formatCurrency, formatDate, type LoanApplication, type Profile } from '@/services/api';
 import logger from '@/lib/logger';
+import { Trash2 } from 'lucide-react';
 
 interface LoanWithUser extends LoanApplication {
   user?: Profile | null;
@@ -19,6 +21,7 @@ const AdminLoans: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<LoanWithUser | null>(null);
 
   useEffect(() => {
@@ -40,6 +43,11 @@ const AdminLoans: React.FC = () => {
   const handleEditStatus = (loan: LoanWithUser) => {
     setSelectedLoan(loan);
     setShowStatusModal(true);
+  };
+
+  const handleDeleteLoan = (loan: LoanWithUser) => {
+    setSelectedLoan(loan);
+    setShowDeleteModal(true);
   };
 
   const filteredLoans = loans.filter(l => {
@@ -145,6 +153,13 @@ const AdminLoans: React.FC = () => {
                           <Button variant="secondary" size="sm" onClick={() => handleEditStatus(loan)}>
                             ✏️ Statut
                           </Button>
+                          <button 
+                            onClick={() => handleDeleteLoan(loan)}
+                            className="inline-flex items-center justify-center px-2 py-1 text-sm rounded-md text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            aria-label="Supprimer ce dossier"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                           <Button variant="ghost" size="sm" onClick={() => navigate(`/loans/${loan.id}`)}>
                             Voir →
                           </Button>
@@ -161,6 +176,16 @@ const AdminLoans: React.FC = () => {
             isOpen={showStatusModal}
             onClose={() => {
               setShowStatusModal(false);
+              setSelectedLoan(null);
+            }}
+            onSuccess={loadLoans}
+            loan={selectedLoan}
+          />
+
+          <DeleteLoanModal
+            isOpen={showDeleteModal}
+            onClose={() => {
+              setShowDeleteModal(false);
               setSelectedLoan(null);
             }}
             onSuccess={loadLoans}
