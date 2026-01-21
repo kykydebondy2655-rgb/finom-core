@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import type { User, Session } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { emailService } from '@/services/emailService';
 import logger from '@/lib/logger';
 import { detectDevice, getClientIP } from '@/lib/deviceDetector';

@@ -30,7 +30,7 @@ import ProfileAuditTimeline from '@/components/agent/ProfileAuditTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { emailService } from '@/services/emailService';
-import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, LogIn, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2, Edit } from 'lucide-react';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2, Edit } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 

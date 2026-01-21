@@ -12,7 +12,7 @@ import Button from '../components/finom/Button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { loansApi, formatCurrency, formatDate, getStatusLabel, getStatusColor, LoanApplication } from '../services/api';
 import logger from '../lib/logger';
-import { BarChart3, FileText, FolderOpen, Landmark, User, Calculator, Headphones } from 'lucide-react';
+import { FileText, FolderOpen, Landmark, User, Calculator, Headphones } from 'lucide-react';
 
 const Dashboard = () => {
     const { user } = useAuth();

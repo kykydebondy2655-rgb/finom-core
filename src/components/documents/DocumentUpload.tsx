@@ -9,6 +9,7 @@ import { documentsApi } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import { FileText, CheckCircle2, Camera, Smartphone } from 'lucide-react';
 import CameraCapture from './CameraCapture';
+import type { Document } from '@/services/api';
 
 // Document types for the checklist matching
 const DOCUMENT_TYPES = [
@@ -160,16 +161,17 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
       // Create document record in database
       if (result.path) {
-        await documentsApi.upload({
+        const docRecord: Partial<Document> = {
           user_id: user.id,
-          loan_id: loanId || null,
+          loan_id: loanId || undefined,
           file_name: file.name,
           file_path: result.path,
           file_type: file.type,
           category: documentCategory,
           status: 'pending',
           document_owner: documentOwner,
-        } as any);
+        };
+        await documentsApi.upload(docRecord as Document);
       }
 
       setProgress(100);
