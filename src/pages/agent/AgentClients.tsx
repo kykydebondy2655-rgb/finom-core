@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/layout/PageLayout';
 import Card from '@/components/finom/Card';
 import Button from '@/components/finom/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
-import ClientStatusSelect from '@/components/agent/ClientStatusSelect';
+import ClientStatusSelect, { CLIENT_STATUSES } from '@/components/agent/ClientStatusSelect';
+import { Badge } from '@/components/ui/badge';
 import { agentApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
 
@@ -23,6 +24,7 @@ const AgentClients: React.FC = () => {
   const [clients, setClients] = useState<ClientAssignmentWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) loadClients();
@@ -41,9 +43,27 @@ const AgentClients: React.FC = () => {
     }
   };
 
+  // Count clients per status
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: clients.length };
+    clients.forEach(c => {
+      const status = c.client?.pipeline_stage || 'nouveau';
+      counts[status] = (counts[status] || 0) + 1;
+    });
+    return counts;
+  }, [clients]);
+
   const filteredClients = clients.filter(c => {
     const client = c.client;
     if (!client) return false;
+    
+    // Status filter
+    if (statusFilter) {
+      const clientStatus = client.pipeline_stage || 'nouveau';
+      if (clientStatus !== statusFilter) return false;
+    }
+    
+    // Search filter
     const searchLower = search.toLowerCase();
     return (
       (client.first_name || '').toLowerCase().includes(searchLower) ||
@@ -76,6 +96,51 @@ const AgentClients: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+          </div>
+
+          {/* Status Quick Filters */}
+          <div className="flex flex-wrap gap-2 mb-4 fade-in">
+            <button
+              onClick={() => setStatusFilter(null)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border transition-all ${
+                statusFilter === null
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-card hover:bg-muted border-border text-foreground'
+              }`}
+            >
+              Tous
+              <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                {statusCounts.all || 0}
+              </Badge>
+            </button>
+            {CLIENT_STATUSES.map(status => {
+              const count = statusCounts[status.value] || 0;
+              const isActive = statusFilter === status.value;
+              return (
+                <button
+                  key={status.value}
+                  onClick={() => setStatusFilter(isActive ? null : status.value)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border transition-all ${
+                    isActive
+                      ? 'text-white border-transparent'
+                      : 'bg-card hover:bg-muted border-border text-foreground'
+                  }`}
+                  style={isActive ? { backgroundColor: status.color } : undefined}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: status.color }}
+                  />
+                  {status.label}
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs px-1.5 py-0 ${isActive ? 'bg-white/20 text-white' : ''}`}
+                  >
+                    {count}
+                  </Badge>
+                </button>
+              );
+            })}
           </div>
 
           {/* Clients Table */}
