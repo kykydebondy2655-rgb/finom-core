@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { useAuth } from '@/context/AuthContext';
 import logger from '@/lib/logger';
+import { normalizeClientStatus } from '@/lib/clientStatus';
 
 export const CLIENT_STATUSES = [
   { value: 'nouveau', label: 'Nouveau', color: '#3B82F6' },
@@ -86,11 +87,12 @@ const ClientStatusSelect: React.FC<ClientStatusSelectProps> = ({
     }
   };
 
-  const currentStatusInfo = CLIENT_STATUSES.find(s => s.value === currentStatus) || CLIENT_STATUSES[0];
+  const normalizedCurrentStatus = normalizeClientStatus(currentStatus);
+  const currentStatusInfo = CLIENT_STATUSES.find(s => s.value === normalizedCurrentStatus) || CLIENT_STATUSES[0];
 
   return (
     <Select
-      value={currentStatus || 'nouveau'}
+      value={normalizedCurrentStatus}
       onValueChange={handleStatusChange}
       disabled={updating}
     >
