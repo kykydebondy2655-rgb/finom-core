@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
 
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
 interface SEOConfig {
   title: string;
   description: string;
@@ -9,7 +14,22 @@ interface SEOConfig {
   ogDescription?: string;
   ogType?: string;
   structuredData?: object;
+  breadcrumbs?: BreadcrumbItem[];
 }
+
+/**
+ * Génère le schema BreadcrumbList pour Google
+ */
+const generateBreadcrumbSchema = (breadcrumbs: BreadcrumbItem[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': breadcrumbs.map((item, index) => ({
+    '@type': 'ListItem',
+    'position': index + 1,
+    'name': item.name,
+    'item': item.url
+  }))
+});
 
 /**
  * Hook pour gérer les méta-tags SEO dynamiques
@@ -93,6 +113,20 @@ export const useSEO = (config: SEOConfig) => {
       document.head.appendChild(script);
     }
 
+    // BreadcrumbList Schema
+    if (config.breadcrumbs && config.breadcrumbs.length > 0) {
+      const existingBreadcrumb = document.querySelector('script[data-seo-breadcrumb="true"]');
+      if (existingBreadcrumb) {
+        existingBreadcrumb.remove();
+      }
+
+      const breadcrumbScript = document.createElement('script');
+      breadcrumbScript.type = 'application/ld+json';
+      breadcrumbScript.setAttribute('data-seo-breadcrumb', 'true');
+      breadcrumbScript.textContent = JSON.stringify(generateBreadcrumbSchema(config.breadcrumbs));
+      document.head.appendChild(breadcrumbScript);
+    }
+
     // Cleanup on unmount - restore defaults
     return () => {
       document.title = 'FINOM - Simulateur de Prêt Immobilier | Simulation Gratuite';
@@ -111,8 +145,13 @@ export const useSEO = (config: SEOConfig) => {
       if (dynamicScript) {
         dynamicScript.remove();
       }
+
+      const breadcrumbScript = document.querySelector('script[data-seo-breadcrumb="true"]');
+      if (breadcrumbScript) {
+        breadcrumbScript.remove();
+      }
     };
-  }, [config.title, config.description, config.canonical, config.noIndex, config.ogTitle, config.ogDescription, config.ogType, config.structuredData]);
+  }, [config.title, config.description, config.canonical, config.noIndex, config.ogTitle, config.ogDescription, config.ogType, config.structuredData, config.breadcrumbs]);
 };
 
 // Configurations SEO pré-définies pour les pages sensibles
@@ -124,6 +163,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'Connexion Sécurisée - FINOM',
     ogDescription: 'Accédez à votre espace personnel FINOM de manière sécurisée.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'Connexion', url: 'https://pret-finom.co/login' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -154,6 +197,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'Inscription Gratuite - FINOM',
     ogDescription: 'Créez votre compte FINOM et simulez votre prêt immobilier en quelques minutes.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'Inscription', url: 'https://pret-finom.co/register' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -184,6 +231,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'Simulateur de Prêt Immobilier - FINOM',
     ogDescription: 'Calculez vos mensualités et comparez les taux de crédit immobilier.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'Simulateur', url: 'https://pret-finom.co/simulator' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
@@ -211,6 +262,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'Taux de Crédit Immobilier - FINOM',
     ogDescription: 'Découvrez nos taux de prêt immobilier actualisés selon votre profil.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'Nos Taux', url: 'https://pret-finom.co/rates' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -237,6 +292,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'Contactez FINOM',
     ogDescription: 'Notre équipe est à votre disposition pour répondre à vos questions.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'Contact', url: 'https://pret-finom.co/contact' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'ContactPage',
@@ -272,6 +331,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'Comment fonctionne FINOM',
     ogDescription: 'Obtenez votre prêt immobilier en 4 étapes simples.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'Comment ça marche', url: 'https://pret-finom.co/how-it-works' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'HowTo',
@@ -309,6 +372,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'FAQ Prêt Immobilier - FINOM',
     ogDescription: 'Réponses aux questions fréquentes sur le crédit immobilier.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'FAQ', url: 'https://pret-finom.co/faq' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
@@ -404,6 +471,10 @@ export const SEO_CONFIGS = {
     ogTitle: 'À Propos de FINOM',
     ogDescription: 'Découvrez notre mission et notre équipe dédiée au financement immobilier.',
     ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' },
+      { name: 'À Propos', url: 'https://pret-finom.co/about' }
+    ],
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'AboutPage',
@@ -416,6 +487,30 @@ export const SEO_CONFIGS = {
         'url': 'https://pret-finom.co',
         'foundingDate': '2019',
         'foundingLocation': 'Amsterdam, Netherlands'
+      }
+    }
+  },
+  home: {
+    title: 'FINOM - Simulateur de Prêt Immobilier | Meilleurs Taux 2026',
+    description: 'Simulez votre crédit immobilier gratuitement avec FINOM. Obtenez les meilleurs taux dès 2.25%, calculez vos mensualités et constituez votre dossier 100% en ligne.',
+    canonical: 'https://pret-finom.co',
+    ogTitle: 'FINOM - Simulateur de Prêt Immobilier',
+    ogDescription: 'Simulez votre crédit immobilier gratuitement. Taux dès 2.25%, réponse sous 48h.',
+    ogType: 'website',
+    breadcrumbs: [
+      { name: 'Accueil', url: 'https://pret-finom.co' }
+    ],
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      'name': 'FINOM',
+      'url': 'https://pret-finom.co',
+      'description': 'Service de simulation et d\'obtention de prêt immobilier avec les meilleurs taux du marché',
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'FINOM Payments B.V.',
+        'url': 'https://pret-finom.co',
+        'logo': 'https://pret-finom.co/icons/icon-512x512.png'
       }
     }
   }
