@@ -47,7 +47,10 @@ const AgentClients: React.FC = () => {
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { all: clients.length };
     clients.forEach(c => {
-      const status = c.client?.pipeline_stage || 'nouveau';
+      // Treat null, undefined, empty string as 'nouveau'
+      const status = c.client?.pipeline_stage && c.client.pipeline_stage.trim() !== '' 
+        ? c.client.pipeline_stage 
+        : 'nouveau';
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
@@ -57,9 +60,11 @@ const AgentClients: React.FC = () => {
     const client = c.client;
     if (!client) return false;
     
-    // Status filter
+    // Status filter - treat null/empty as 'nouveau'
     if (statusFilter) {
-      const clientStatus = client.pipeline_stage || 'nouveau';
+      const clientStatus = client.pipeline_stage && client.pipeline_stage.trim() !== '' 
+        ? client.pipeline_stage 
+        : 'nouveau';
       if (clientStatus !== statusFilter) return false;
     }
     
