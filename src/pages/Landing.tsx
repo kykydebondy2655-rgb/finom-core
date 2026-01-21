@@ -41,6 +41,11 @@ import { useABTesting } from '@/hooks/useABTesting';
 import ABVariantHero from '@/components/landing/ABVariantHero';
 import ABVariantCTA from '@/components/landing/ABVariantCTA';
 import ABVariantSocialProof from '@/components/landing/ABVariantSocialProof';
+import AnimatedHeroBackground from '@/components/landing/AnimatedHeroBackground';
+import AnimatedPropertyShowcase from '@/components/landing/AnimatedPropertyShowcase';
+import AnimatedStatsCounter from '@/components/landing/AnimatedStatsCounter';
+import AnimatedProcessSteps from '@/components/landing/AnimatedProcessSteps';
+import FloatingCTAButton from '@/components/landing/FloatingCTAButton';
 
 // Lead form validation schema
 const leadSchema = z.object({
@@ -395,211 +400,222 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            {/* A/B Tested Hero */}
-            <ABVariantHero variant={heroVariant} />
-          </div>
+      {/* Hero Section with Animated Background */}
+      <AnimatedHeroBackground>
+        <section className="py-12 md:py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              {/* A/B Tested Hero */}
+              <ABVariantHero variant={heroVariant} />
+            </div>
 
-          {/* Simulator Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-5xl mx-auto"
-          >
-            <Card className="shadow-2xl border-0 overflow-hidden">
-              <div className="grid lg:grid-cols-2 gap-0">
-                {/* Left: Form */}
-                <div className="p-6 md:p-8 bg-card">
-                  <CardHeader className="p-0 mb-6">
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <Home className="w-5 h-5 text-primary" />
-                      Votre projet
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 space-y-6">
-                    {/* Property Price */}
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <Label className="flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-muted-foreground" />
-                          Prix du bien
-                        </Label>
-                        <span className="text-lg font-semibold text-primary">
-                          {formatCurrency(formData.propertyPrice)}
-                        </span>
-                      </div>
-                      <Slider
-                        value={[formData.propertyPrice]}
-                        onValueChange={([v]) => updateField('propertyPrice', v)}
-                        min={50000}
-                        max={1500000}
-                        step={5000}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>50 000 €</span>
-                        <span>1 500 000 €</span>
-                      </div>
-                    </div>
-
-                    {/* Down Payment */}
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <Label className="flex items-center gap-2">
-                          <Euro className="w-4 h-4 text-muted-foreground" />
-                          Apport personnel
-                        </Label>
-                        <span className="text-lg font-semibold text-primary">
-                          {formatCurrency(formData.downPayment)}
-                        </span>
-                      </div>
-                      <Slider
-                        value={[formData.downPayment]}
-                        onValueChange={([v]) => updateField('downPayment', v)}
-                        min={0}
-                        max={Math.max(formData.propertyPrice * 0.5, 10000)}
-                        step={1000}
-                        className="w-full"
-                      />
-                    </div>
-
-                    {/* Duration */}
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <Label className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
-                          Durée du prêt
-                        </Label>
-                        <span className="text-lg font-semibold text-primary">
-                          {formData.durationYears} ans
-                        </span>
-                      </div>
-                      <Slider
-                        value={[formData.durationYears]}
-                        onValueChange={([v]) => updateField('durationYears', v)}
-                        min={5}
-                        max={30}
-                        step={1}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>5 ans</span>
-                        <span>30 ans</span>
-                      </div>
-                    </div>
-
-                    {/* Additional fees collapsed */}
-                    <div className="pt-4 border-t">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label className="text-sm text-muted-foreground">Frais de notaire</Label>
-                          <Input
-                            type="number"
-                            value={formData.notaryFees}
-                            onChange={(e) => updateField('notaryFees', Number(e.target.value))}
-                            className="mt-1"
-                          />
+            {/* Simulator Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="max-w-5xl mx-auto"
+            >
+              <Card className="shadow-2xl border-0 overflow-hidden">
+                <div className="grid lg:grid-cols-2 gap-0">
+                  {/* Left: Form */}
+                  <div className="p-6 md:p-8 bg-card">
+                    <CardHeader className="p-0 mb-6">
+                      <CardTitle className="flex items-center gap-2 text-xl">
+                        <Home className="w-5 h-5 text-primary" />
+                        Votre projet
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0 space-y-6">
+                      {/* Property Price */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <Label className="flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-muted-foreground" />
+                            Prix du bien
+                          </Label>
+                          <span className="text-lg font-semibold text-primary">
+                            {formatCurrency(formData.propertyPrice)}
+                          </span>
                         </div>
-                        <div>
-                          <Label className="text-sm text-muted-foreground">Frais d'agence</Label>
-                          <Input
-                            type="number"
-                            value={formData.agencyFees}
-                            onChange={(e) => updateField('agencyFees', Number(e.target.value))}
-                            className="mt-1"
-                          />
+                        <Slider
+                          value={[formData.propertyPrice]}
+                          onValueChange={([v]) => updateField('propertyPrice', v)}
+                          min={50000}
+                          max={1500000}
+                          step={5000}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>50 000 €</span>
+                          <span>1 500 000 €</span>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </div>
 
-                {/* Right: Results */}
-                <div className="p-6 md:p-8 bg-primary text-primary-foreground">
-                  <div className="h-full flex flex-col">
-                    <div className="flex items-center gap-2 mb-6">
-                      <Percent className="w-5 h-5" />
-                      <h3 className="text-xl font-semibold">Votre estimation</h3>
-                    </div>
+                      {/* Down Payment */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <Label className="flex items-center gap-2">
+                            <Euro className="w-4 h-4 text-muted-foreground" />
+                            Apport personnel
+                          </Label>
+                          <span className="text-lg font-semibold text-primary">
+                            {formatCurrency(formData.downPayment)}
+                          </span>
+                        </div>
+                        <Slider
+                          value={[formData.downPayment]}
+                          onValueChange={([v]) => updateField('downPayment', v)}
+                          min={0}
+                          max={Math.max(formData.propertyPrice * 0.5, 10000)}
+                          step={1000}
+                          className="w-full"
+                        />
+                      </div>
 
-                    {result && result.isValid ? (
-                      <div className="flex-1 space-y-6">
-                        {/* Monthly Payment */}
-                        <div className="text-center py-6 bg-white/10 rounded-xl">
-                          <p className="text-sm opacity-80 mb-2">Mensualité estimée</p>
-                          <p className="text-4xl md:text-5xl font-bold">
-                            {formatCurrency(result.monthlyTotal)}
+                      {/* Duration */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <Label className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                            Durée du prêt
+                          </Label>
+                          <span className="text-lg font-semibold text-primary">
+                            {formData.durationYears} ans
+                          </span>
+                        </div>
+                        <Slider
+                          value={[formData.durationYears]}
+                          onValueChange={([v]) => updateField('durationYears', v)}
+                          min={5}
+                          max={30}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>5 ans</span>
+                          <span>30 ans</span>
+                        </div>
+                      </div>
+
+                      {/* Additional fees collapsed */}
+                      <div className="pt-4 border-t">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-sm text-muted-foreground">Frais de notaire</Label>
+                            <Input
+                              type="number"
+                              value={formData.notaryFees}
+                              onChange={(e) => updateField('notaryFees', Number(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm text-muted-foreground">Frais d'agence</Label>
+                            <Input
+                              type="number"
+                              value={formData.agencyFees}
+                              onChange={(e) => updateField('agencyFees', Number(e.target.value))}
+                              className="mt-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </div>
+
+                  {/* Right: Results */}
+                  <div className="p-6 md:p-8 bg-primary text-primary-foreground">
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center gap-2 mb-6">
+                        <Percent className="w-5 h-5" />
+                        <h3 className="text-xl font-semibold">Votre estimation</h3>
+                      </div>
+
+                      {result && result.isValid ? (
+                        <div className="flex-1 space-y-6">
+                          {/* Monthly Payment */}
+                          <div className="text-center py-6 bg-white/10 rounded-xl">
+                            <p className="text-sm opacity-80 mb-2">Mensualité estimée</p>
+                            <p className="text-4xl md:text-5xl font-bold">
+                              {formatCurrency(result.monthlyTotal)}
+                            </p>
+                            <p className="text-sm opacity-80 mt-2">par mois</p>
+                          </div>
+
+                          {/* Details */}
+                          <div className="space-y-3">
+                            <div className="flex justify-between py-2 border-b border-white/20">
+                              <span className="opacity-80">Capital emprunté</span>
+                              <span className="font-semibold">{formatCurrency(result.loanAmount)}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b border-white/20">
+                              <span className="opacity-80">Taux d'intérêt</span>
+                              <span className="font-semibold">{formData.rate.toFixed(2)} %</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b border-white/20">
+                              <span className="opacity-80">Coût total du crédit</span>
+                              <span className="font-semibold">{formatCurrency(result.totalInterest)}</span>
+                            </div>
+                            <div className="flex justify-between py-2">
+                              <span className="opacity-80">Profil</span>
+                              <span className="font-semibold">{formData.profileLabel}</span>
+                            </div>
+                          </div>
+
+                          {/* CTA Buttons */}
+                          <div className="space-y-3">
+                            <Button
+                              onClick={() => {
+                                trackCtaClick('lead_form_open', { 
+                                  monthly_payment: result?.monthlyTotal,
+                                  loan_amount: result?.loanAmount 
+                                });
+                                setShowLeadForm(true);
+                              }}
+                              size="lg"
+                              className="w-full bg-white text-primary hover:bg-white/90 font-semibold text-lg py-6"
+                            >
+                              Être recontacté
+                              <ArrowRight className="w-5 h-5 ml-2" />
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                trackCtaClick('comparator_toggle', { action: showComparator ? 'close' : 'open' });
+                                setShowComparator(!showComparator);
+                              }}
+                              variant="ghost"
+                              className="w-full text-white/80 hover:text-white hover:bg-white/10"
+                            >
+                              <BarChart3 className="w-4 h-4 mr-2" />
+                              {showComparator ? 'Masquer' : 'Comparer les scénarios'}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex-1 flex items-center justify-center">
+                          <p className="text-center opacity-80">
+                            Ajustez les paramètres pour voir votre estimation
                           </p>
-                          <p className="text-sm opacity-80 mt-2">par mois</p>
                         </div>
-
-                        {/* Details */}
-                        <div className="space-y-3">
-                          <div className="flex justify-between py-2 border-b border-white/20">
-                            <span className="opacity-80">Capital emprunté</span>
-                            <span className="font-semibold">{formatCurrency(result.loanAmount)}</span>
-                          </div>
-                          <div className="flex justify-between py-2 border-b border-white/20">
-                            <span className="opacity-80">Taux d'intérêt</span>
-                            <span className="font-semibold">{formData.rate.toFixed(2)} %</span>
-                          </div>
-                          <div className="flex justify-between py-2 border-b border-white/20">
-                            <span className="opacity-80">Coût total du crédit</span>
-                            <span className="font-semibold">{formatCurrency(result.totalInterest)}</span>
-                          </div>
-                          <div className="flex justify-between py-2">
-                            <span className="opacity-80">Profil</span>
-                            <span className="font-semibold">{formData.profileLabel}</span>
-                          </div>
-                        </div>
-
-                        {/* CTA Buttons */}
-                        <div className="space-y-3">
-                          <Button
-                            onClick={() => {
-                              trackCtaClick('lead_form_open', { 
-                                monthly_payment: result?.monthlyTotal,
-                                loan_amount: result?.loanAmount 
-                              });
-                              setShowLeadForm(true);
-                            }}
-                            size="lg"
-                            className="w-full bg-white text-primary hover:bg-white/90 font-semibold text-lg py-6"
-                          >
-                            Être recontacté
-                            <ArrowRight className="w-5 h-5 ml-2" />
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              trackCtaClick('comparator_toggle', { action: showComparator ? 'close' : 'open' });
-                              setShowComparator(!showComparator);
-                            }}
-                            variant="ghost"
-                            className="w-full text-white/80 hover:text-white hover:bg-white/10"
-                          >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            {showComparator ? 'Masquer' : 'Comparer les scénarios'}
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex-1 flex items-center justify-center">
-                        <p className="text-center opacity-80">
-                          Ajustez les paramètres pour voir votre estimation
-                        </p>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+      </AnimatedHeroBackground>
+
+      {/* Animated Stats Counter */}
+      <AnimatedStatsCounter />
+
+      {/* Animated Process Steps */}
+      <AnimatedProcessSteps />
+
+      {/* Animated Property Showcase */}
+      <AnimatedPropertyShowcase />
 
       {/* Scenario Comparator */}
       <AnimatePresence>
@@ -1103,6 +1119,9 @@ const Landing = () => {
 
       {/* Live Chat Widget */}
       <LandingChatWidget />
+
+      {/* Floating CTA Button */}
+      <FloatingCTAButton onContactClick={() => setShowLeadForm(true)} />
     </div>
   );
 };
