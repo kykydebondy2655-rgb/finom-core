@@ -11,6 +11,7 @@ import logger from '@/lib/logger';
 import { User, Mail, Phone, MapPin, Building, Euro, Globe, Lock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 
 interface EditClientModalProps {
   isOpen: boolean;
@@ -66,6 +67,7 @@ const LEAD_SOURCES = [
 const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, client, onSuccess, isAdmin = true }) => {
   const toast = useToast();
   const { user } = useAuth();
+  const { notifyProfileModifiedByAgent } = useAdminNotifications();
   const [saving, setSaving] = useState(false);
 
   // Fields agents CAN edit (restricted mode)
@@ -205,6 +207,13 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
               changed_fields: changedFields,
             }),
           });
+
+          // If agent (not admin), notify admins via email + in-app notification
+          if (!isAdmin) {
+            const agentName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email;
+            const clientName = `${client.first_name || ''} ${client.last_name || ''}`.trim();
+            await notifyProfileModifiedByAgent(client.id, clientName, agentName, changedFields);
+          }
         } catch (auditError) {
           logger.logError('Failed to log audit', auditError);
         }
