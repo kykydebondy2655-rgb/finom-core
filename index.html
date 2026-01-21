@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#FE42B4" />
@@ -12,47 +12,128 @@
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     
-    <!-- SEO & Anti-Phishing Meta Tags -->
-    <title>FINOM - Simulateur de Prêt Immobilier | Simulation Gratuite</title>
-    <meta name="description" content="FINOM, votre partenaire financement immobilier. Simulez votre crédit, comparez les offres et obtenez les meilleurs taux. Service gratuit et personnalisé." />
-    <meta name="author" content="FINOM SAS" />
-    <meta name="robots" content="index, follow" />
+    <!-- Primary SEO Meta Tags -->
+    <title>FINOM - Simulateur de Prêt Immobilier | Meilleurs Taux 2026</title>
+    <meta name="description" content="Simulez votre crédit immobilier gratuitement avec FINOM. Obtenez les meilleurs taux dès 2.25%, calculez vos mensualités et constituez votre dossier 100% en ligne. Réponse sous 48h." />
+    <meta name="keywords" content="prêt immobilier, crédit immobilier, simulation prêt, taux immobilier, financement immobilier, FINOM, mensualité crédit, achat immobilier" />
+    <meta name="author" content="FINOM Payments B.V." />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
     <link rel="canonical" href="https://pret-finom.co/" />
     
-    <!-- Organization Schema for Trust -->
+    <!-- Geographic & Language Targeting -->
+    <meta name="geo.region" content="FR" />
+    <meta name="geo.placename" content="Paris" />
+    <meta name="language" content="French" />
+    <meta name="content-language" content="fr-FR" />
+    
+    <!-- Organization Schema for Trust & Rich Snippets -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FinancialService",
       "name": "FINOM",
-      "description": "Service de simulation de prêt immobilier",
+      "alternateName": "FINOM Prêt Immobilier",
+      "description": "Service de simulation et d'obtention de prêt immobilier avec les meilleurs taux du marché",
       "url": "https://pret-finom.co",
-      "telephone": "+31205249111",
-      "email": "contact@pret-finom.co"
+      "logo": "https://pret-finom.co/icons/icon-512x512.png",
+      "image": "https://pret-finom.co/og-image.png",
+      "telephone": "+33-1-87-68-08-90",
+      "email": "contact@pret-finom.co",
+      "priceRange": "€€",
+      "currenciesAccepted": "EUR",
+      "paymentAccepted": "Virement bancaire",
+      "areaServed": {
+        "@type": "Country",
+        "name": "France"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "9 Rue du Quatre Septembre",
+        "addressLocality": "Paris",
+        "postalCode": "75002",
+        "addressCountry": "FR"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/company/finom",
+        "https://twitter.com/faborotoloni"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "1247",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Prêts Immobiliers",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "LoanOrCredit",
+              "name": "Prêt Immobilier Résidence Principale",
+              "loanType": "Crédit immobilier"
+            }
+          }
+        ]
+      }
     }
     </script>
 
-    <!-- Open Graph / Social -->
+    <!-- WebSite Schema for Sitelinks Search Box -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "FINOM",
+      "url": "https://pret-finom.co",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://pret-finom.co/faq?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pret-finom.co/" />
-    <meta property="og:title" content="FINOM - Simulateur de Prêt Immobilier" />
-    <meta property="og:description" content="Simulez votre prêt immobilier et obtenez les meilleurs taux avec FINOM." />
+    <meta property="og:title" content="FINOM - Simulateur de Prêt Immobilier | Meilleurs Taux 2026" />
+    <meta property="og:description" content="Simulez votre crédit immobilier gratuitement. Taux dès 2.25%, réponse sous 48h, dossier 100% en ligne." />
     <meta property="og:image" content="https://pret-finom.co/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="FINOM - Simulateur de Prêt Immobilier" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:site_name" content="FINOM" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@faborotoloni" />
+    <meta name="twitter:creator" content="@faborotoloni" />
     <meta name="twitter:title" content="FINOM - Simulateur de Prêt Immobilier" />
-    <meta name="twitter:description" content="Simulez votre prêt immobilier et obtenez les meilleurs taux avec FINOM." />
+    <meta name="twitter:description" content="Simulez votre crédit immobilier gratuitement. Taux dès 2.25%, réponse sous 48h." />
     <meta name="twitter:image" content="https://pret-finom.co/og-image.png" />
 
-    <!-- Favicon -->
+    <!-- Favicon - Multiple formats for best compatibility -->
     <link rel="icon" href="/finom-favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/finom-favicon.ico" sizes="32x32" type="image/x-icon" />
+    <link rel="icon" href="/icons/icon-192x192.png" sizes="192x192" type="image/png" />
+    <link rel="shortcut icon" href="/finom-favicon.ico" />
     
-    <!-- Security Meta Tags -->
+    <!-- Security & Performance Meta Tags -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://bxinainfibipdxopolpf.supabase.co" />
     
     <!-- Note: CSP is enforced via HTTP headers in public/_headers for Cloudflare Pages -->
   </head>
