@@ -159,6 +159,20 @@ export const CLIENT_STATUS_LABELS: Record<string, string> = {
 };
 
 /**
+ * Colors for client/lead statuses
+ */
+export const CLIENT_STATUS_COLORS: Record<string, string> = {
+  nouveau: '#3B82F6',
+  nrp: '#F59E0B',
+  faux_numero: '#DC2626',
+  pas_interesse: '#6B7280',
+  a_rappeler: '#8B5CF6',
+  interesse: '#10B981',
+  qualifie: '#0EA5E9',
+  converti: '#22C55E',
+};
+
+/**
  * Labels for call statuses
  */
 export const CALL_STATUS_LABELS: Record<string, string> = {
