@@ -26,6 +26,7 @@ import LoanStatusHistory from '@/components/agent/LoanStatusHistory';
 import DocumentStatusHistory from '@/components/agent/DocumentStatusHistory';
 import NotesHistory from '@/components/agent/NotesHistory';
 import ActivityTimeline from '@/components/agent/ActivityTimeline';
+import ProfileAuditTimeline from '@/components/agent/ProfileAuditTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { emailService } from '@/services/emailService';
@@ -304,6 +305,11 @@ const AgentClientDetail: React.FC = () => {
                   <div className="info-row"><span>Pipeline</span><strong>{client.pipeline_stage || '-'}</strong></div>
                   <div className="info-row"><span>Inscrit le</span><strong>{formatDate(client.created_at)}</strong></div>
                 </div>
+              </Card>
+
+              {/* Profile Audit Timeline */}
+              <Card className="audit-card fade-in" padding="lg">
+                <ProfileAuditTimeline clientId={id || ''} maxItems={15} />
               </Card>
 
               {/* Internal Notes Panel */}
