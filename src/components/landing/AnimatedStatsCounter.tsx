@@ -51,7 +51,7 @@ const AnimatedStatsCounter = () => {
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={containerRef} className="py-20 relative overflow-hidden">
+    <section ref={containerRef} className="py-12 md:py-20 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -65,21 +65,21 @@ const AnimatedStatsCounter = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <Award className="w-4 h-4" />
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-primary/10 text-primary text-xs md:text-sm font-medium mb-3 md:mb-4">
+            <Award className="w-3 h-3 md:w-4 md:h-4" />
             Nos Résultats
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4">
             Des chiffres qui parlent
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
+          <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto px-4">
             La confiance de milliers de clients depuis plus de 10 ans
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 lg:gap-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -89,41 +89,25 @@ const AnimatedStatsCounter = () => {
               whileHover={{ scale: 1.05, y: -5 }}
               className="relative group"
             >
-              <div className="relative bg-card rounded-2xl p-6 md:p-8 shadow-lg border border-border/50 overflow-hidden">
-                {/* Glow Effect */}
-                <motion.div
-                  className={`absolute -inset-px bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100`}
-                  animate={{
-                    x: ['-200%', '200%'],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'linear'
-                  }}
-                />
-
+              <div className="relative bg-card rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-lg border border-border/50 overflow-hidden">
                 {/* Icon */}
                 <motion.div
-                  className={`inline-flex p-3 rounded-xl bg-muted mb-4 ${stat.color}`}
+                  className={`inline-flex p-2 md:p-3 rounded-lg md:rounded-xl bg-muted mb-2 md:mb-4 ${stat.color}`}
                   whileHover={{ rotate: [0, -10, 10, 0] }}
                   transition={{ duration: 0.5 }}
                 >
-                  <stat.icon className="w-6 h-6" />
+                  <stat.icon className="w-4 h-4 md:w-6 md:h-6" />
                 </motion.div>
 
                 {/* Value */}
-                <div className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                <div className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1 md:mb-2">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </div>
 
                 {/* Label */}
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   {stat.label}
                 </p>
-
-                {/* Decorative circle */}
-                <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-gradient-to-br from-primary/5 to-transparent" />
               </div>
             </motion.div>
           ))}

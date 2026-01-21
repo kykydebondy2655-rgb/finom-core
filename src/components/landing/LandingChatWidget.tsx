@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Message {
   id: string;
@@ -50,6 +51,7 @@ const LandingChatWidget = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,9 +63,10 @@ const LandingChatWidget = () => {
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+      // Delay focus on mobile to prevent keyboard jumping
+      setTimeout(() => inputRef.current?.focus(), isMobile ? 300 : 0);
     }
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   const findResponse = (message: string): string => {
     const lowerMessage = message.toLowerCase();
@@ -74,7 +77,6 @@ const LandingChatWidget = () => {
       }
     }
     
-    // Return a random default response
     return DEFAULT_RESPONSES[Math.floor(Math.random() * DEFAULT_RESPONSES.length)];
   };
 
@@ -92,7 +94,6 @@ const LandingChatWidget = () => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate bot typing delay
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
 
     const botResponse: Message = {
@@ -120,14 +121,23 @@ const LandingChatWidget = () => {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className={`fixed z-50 ${
+              isMobile 
+                ? 'bottom-20 right-4' 
+                : 'bottom-6 right-6'
+            }`}
+            style={{ 
+              paddingBottom: isMobile ? 'env(safe-area-inset-bottom, 0)' : 0 
+            }}
           >
             <Button
               onClick={() => setIsOpen(true)}
               size="lg"
-              className="rounded-full h-14 w-14 shadow-lg hover:shadow-xl transition-shadow"
+              className={`rounded-full shadow-lg hover:shadow-xl transition-shadow ${
+                isMobile ? 'h-12 w-12' : 'h-14 w-14'
+              }`}
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className={isMobile ? 'w-5 h-5' : 'w-6 h-6'} />
             </Button>
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
           </motion.div>
@@ -141,36 +151,45 @@ const LandingChatWidget = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)]"
+            className={`fixed z-50 ${
+              isMobile 
+                ? 'inset-x-3 bottom-20 top-auto max-h-[70vh]'
+                : 'bottom-6 right-6 w-[360px] max-w-[calc(100vw-3rem)]'
+            }`}
+            style={{
+              paddingBottom: isMobile ? 'env(safe-area-inset-bottom, 0)' : 0
+            }}
           >
-            <Card className="shadow-2xl border-0 overflow-hidden">
+            <Card className="shadow-2xl border-0 overflow-hidden h-full flex flex-col">
               {/* Header */}
-              <CardHeader className="bg-primary text-primary-foreground p-4">
+              <CardHeader className="bg-primary text-primary-foreground p-3 md:p-4 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <Bot className="w-5 h-5" />
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className={`rounded-full bg-white/20 flex items-center justify-center ${
+                      isMobile ? 'w-8 h-8' : 'w-10 h-10'
+                    }`}>
+                      <Bot className={isMobile ? 'w-4 h-4' : 'w-5 h-5'} />
                     </div>
                     <div>
-                      <CardTitle className="text-base">Assistant FINOM</CardTitle>
-                      <p className="text-xs opacity-80">En ligne • Répond en 1 min</p>
+                      <CardTitle className={isMobile ? 'text-sm' : 'text-base'}>Assistant FINOM</CardTitle>
+                      <p className="text-[10px] md:text-xs opacity-80">En ligne • Répond en 1 min</p>
                     </div>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsOpen(false)}
-                    className="text-primary-foreground hover:bg-white/20"
+                    className="text-primary-foreground hover:bg-white/20 h-8 w-8"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4 md:w-5 md:h-5" />
                   </Button>
                 </div>
               </CardHeader>
 
               {/* Messages */}
-              <CardContent className="p-0">
-                <ScrollArea className="h-[300px] p-4">
-                  <div className="space-y-4">
+              <CardContent className="p-0 flex-1 overflow-hidden flex flex-col">
+                <ScrollArea className={`flex-1 p-3 md:p-4 ${isMobile ? 'h-[200px]' : 'h-[300px]'}`}>
+                  <div className="space-y-3 md:space-y-4">
                     {messages.map((message) => (
                       <motion.div
                         key={message.id}
@@ -179,22 +198,26 @@ const LandingChatWidget = () => {
                         className={`flex gap-2 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.sender === 'bot' && (
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                            <Bot className="w-4 h-4 text-primary" />
+                          <div className={`rounded-full bg-primary/10 flex items-center justify-center shrink-0 ${
+                            isMobile ? 'w-6 h-6' : 'w-8 h-8'
+                          }`}>
+                            <Bot className={`text-primary ${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                           </div>
                         )}
                         <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                          className={`max-w-[80%] rounded-2xl px-3 py-2 ${
                             message.sender === 'user'
                               ? 'bg-primary text-primary-foreground rounded-br-sm'
                               : 'bg-muted rounded-bl-sm'
                           }`}
                         >
-                          <p className="text-sm">{message.content}</p>
+                          <p className={isMobile ? 'text-xs' : 'text-sm'}>{message.content}</p>
                         </div>
                         {message.sender === 'user' && (
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                            <User className="w-4 h-4 text-muted-foreground" />
+                          <div className={`rounded-full bg-muted flex items-center justify-center shrink-0 ${
+                            isMobile ? 'w-6 h-6' : 'w-8 h-8'
+                          }`}>
+                            <User className={`text-muted-foreground ${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                           </div>
                         )}
                       </motion.div>
@@ -206,11 +229,13 @@ const LandingChatWidget = () => {
                         animate={{ opacity: 1 }}
                         className="flex gap-2 items-center"
                       >
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Bot className="w-4 h-4 text-primary" />
+                        <div className={`rounded-full bg-primary/10 flex items-center justify-center ${
+                          isMobile ? 'w-6 h-6' : 'w-8 h-8'
+                        }`}>
+                          <Bot className={`text-primary ${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                         </div>
-                        <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-2">
-                          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                        <div className="bg-muted rounded-2xl rounded-bl-sm px-3 py-2">
+                          <Loader2 className={`animate-spin text-muted-foreground ${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                         </div>
                       </motion.div>
                     )}
@@ -220,14 +245,16 @@ const LandingChatWidget = () => {
 
                 {/* Quick Questions */}
                 {messages.length <= 2 && (
-                  <div className="px-4 pb-2">
-                    <p className="text-xs text-muted-foreground mb-2">Questions fréquentes :</p>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="px-3 md:px-4 pb-2 flex-shrink-0">
+                    <p className="text-[10px] md:text-xs text-muted-foreground mb-1.5 md:mb-2">Questions fréquentes :</p>
+                    <div className="flex gap-1.5 md:gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
                       {QUICK_QUESTIONS.map((question) => (
                         <button
                           key={question}
                           onClick={() => handleQuickQuestion(question)}
-                          className="text-xs bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-full transition-colors"
+                          className={`bg-muted hover:bg-muted/80 rounded-full transition-colors whitespace-nowrap flex-shrink-0 ${
+                            isMobile ? 'text-[10px] px-2.5 py-1' : 'text-xs px-3 py-1.5'
+                          }`}
                         >
                           {question}
                         </button>
@@ -237,7 +264,7 @@ const LandingChatWidget = () => {
                 )}
 
                 {/* Input */}
-                <div className="p-4 border-t">
+                <div className="p-3 md:p-4 border-t flex-shrink-0">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -250,11 +277,16 @@ const LandingChatWidget = () => {
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Écrivez votre message..."
-                      className="flex-1"
+                      className={`flex-1 ${isMobile ? 'text-sm h-10' : ''}`}
                       disabled={isTyping}
                     />
-                    <Button type="submit" size="icon" disabled={!inputValue.trim() || isTyping}>
-                      <Send className="w-4 h-4" />
+                    <Button 
+                      type="submit" 
+                      size="icon" 
+                      disabled={!inputValue.trim() || isTyping}
+                      className={isMobile ? 'h-10 w-10' : ''}
+                    >
+                      <Send className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
                     </Button>
                   </form>
                 </div>

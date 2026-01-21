@@ -504,3 +504,6 @@
     animation: none !important;
   }
 }
+
+/* Import mobile optimizations */
+@import './styles/mobile.css';
