@@ -9,6 +9,7 @@ import ClientStatusSelect, { CLIENT_STATUSES } from '@/components/agent/ClientSt
 import { Badge } from '@/components/ui/badge';
 import { agentApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
+import { normalizeClientStatus } from '@/lib/clientStatus';
 
 interface ClientAssignmentWithProfile {
   id: string;
@@ -18,24 +19,7 @@ interface ClientAssignmentWithProfile {
   client: Profile | null;
 }
 
-const normalizeStatus = (raw: string | null | undefined): string => {
-  if (!raw) return 'nouveau';
-  const v = raw.trim();
-  if (!v) return 'nouveau';
-
-  const lower = v.toLowerCase();
-  const normalized = lower
-    .replace(/\s+/g, '_')
-    .replace(/-/g, '_');
-
-  if (normalized === 'faux_numéro' || normalized === 'faux_numero') return 'faux_numero';
-  if (normalized === 'à_rappeler' || normalized === 'a_rappeler') return 'a_rappeler';
-  if (normalized === 'pas_intéressé' || normalized === 'pas_interessé') return 'pas_interesse';
-  if (normalized === 'nrp') return 'nrp';
-  if (normalized === 'nouveau' || normalized === 'nouveaux') return 'nouveau';
-
-  return normalized;
-};
+// Note: normalisation centralisée dans src/lib/clientStatus.ts
 
 const AgentClients: React.FC = () => {
   const { user } = useAuth();
@@ -66,7 +50,7 @@ const AgentClients: React.FC = () => {
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { all: clients.length };
     clients.forEach(c => {
-      const status = normalizeStatus(c.client?.pipeline_stage);
+      const status = normalizeClientStatus(c.client?.pipeline_stage);
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
@@ -78,7 +62,7 @@ const AgentClients: React.FC = () => {
     
     // Status filter - treat null/empty as 'nouveau'
     if (statusFilter) {
-      const clientStatus = normalizeStatus(client.pipeline_stage);
+      const clientStatus = normalizeClientStatus(client.pipeline_stage);
       if (clientStatus !== statusFilter) return false;
     }
     
