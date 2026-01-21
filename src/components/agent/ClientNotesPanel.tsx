@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import { useToast } from '@/components/finom/Toast';
 import Button from '@/components/finom/Button';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,6 +34,7 @@ const ClientNotesPanel: React.FC<ClientNotesPanelProps> = ({ clientId }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const { user } = useAuth();
+  const { isAdmin } = useUserRoles();
   const toast = useToast();
 
   useEffect(() => {
@@ -219,7 +221,7 @@ const ClientNotesPanel: React.FC<ClientNotesPanelProps> = ({ clientId }) => {
                         })})
                       </span>
                     )}
-                    {note.agent_id === user?.id && (
+                    {(isAdmin || note.agent_id === user?.id) && (
                       <div className="note-actions">
                         <button
                           className="note-action-btn"
