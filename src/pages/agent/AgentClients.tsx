@@ -10,12 +10,15 @@ import { Badge } from '@/components/ui/badge';
 import { agentApi, formatDate, Profile } from '@/services/api';
 import logger from '@/lib/logger';
 import { normalizeClientStatus } from '@/lib/clientStatus';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type SortField = 'name' | 'assigned_at' | 'updated_at';
 type SortDirection = 'asc' | 'desc';
 
 const SORT_STORAGE_KEY = 'agent-clients-sort';
+const PAGE_SIZE_STORAGE_KEY = 'agent-clients-page-size';
+const DEFAULT_PAGE_SIZE = 20;
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 const getSavedSort = (): { field: SortField; direction: SortDirection } => {
   try {
@@ -30,6 +33,21 @@ const getSavedSort = (): { field: SortField; direction: SortDirection } => {
 
 const saveSort = (field: SortField, direction: SortDirection) => {
   localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify({ field, direction }));
+};
+
+const getSavedPageSize = (): number => {
+  try {
+    const saved = localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
+    if (saved) {
+      const parsed = parseInt(saved, 10);
+      if (PAGE_SIZE_OPTIONS.includes(parsed)) return parsed;
+    }
+  } catch {}
+  return DEFAULT_PAGE_SIZE;
+};
+
+const savePageSize = (size: number) => {
+  localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(size));
 };
 
 interface ClientAssignmentWithProfile {
@@ -51,6 +69,13 @@ const AgentClients: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>(getSavedSort().field);
   const [sortDirection, setSortDirection] = useState<SortDirection>(getSavedSort().direction);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(getSavedPageSize);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
 
   const handleSort = (field: SortField) => {
     let newDirection: SortDirection = 'asc';
@@ -140,6 +165,19 @@ const AgentClients: React.FC = () => {
 
     return sorted;
   }, [clients, statusFilter, search, sortField, sortDirection]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredAndSortedClients.length / pageSize);
+  const paginatedClients = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredAndSortedClients.slice(start, start + pageSize);
+  }, [filteredAndSortedClients, currentPage, pageSize]);
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    savePageSize(newSize);
+    setCurrentPage(1);
+  };
 
   if (loading) {
     return <PageLayout><LoadingSpinner fullPage message="Chargement..." /></PageLayout>;
@@ -247,44 +285,112 @@ const AgentClients: React.FC = () => {
             {filteredAndSortedClients.length === 0 ? (
               <p className="empty-text">Aucun client trouvé</p>
             ) : (
-              <div className="table-wrapper">
-                <table className="clients-table">
-                  <thead>
-                    <tr>
-                      <th>Client</th>
-                      <th>Email</th>
-                      <th>Téléphone</th>
-                      <th>Statut</th>
-                      <th>Assigné le</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAndSortedClients.map(assignment => (
-                      <tr key={assignment.id}>
-                        <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>
-                          <div className="client-cell">
-                            <div className="client-avatar">{assignment.client?.first_name?.[0] || 'C'}</div>
-                            <span>{assignment.client?.first_name} {assignment.client?.last_name}</span>
-                          </div>
-                        </td>
-                        <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{assignment.client?.email || '-'}</td>
-                        <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{assignment.client?.phone || '-'}</td>
-                        <td onClick={(e) => e.stopPropagation()}>
-                          <ClientStatusSelect 
-                            clientId={assignment.client_user_id}
-                            currentStatus={assignment.client?.pipeline_stage}
-                            size="sm"
-                            onStatusChange={() => loadClients()}
-                          />
-                        </td>
-                        <td className="date" onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{formatDate(assignment.assigned_at)}</td>
-                        <td><Button variant="ghost" size="sm" onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>Voir →</Button></td>
+              <>
+                <div className="table-wrapper">
+                  <table className="clients-table">
+                    <thead>
+                      <tr>
+                        <th>Client</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Statut</th>
+                        <th>Assigné le</th>
+                        <th></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {paginatedClients.map(assignment => (
+                        <tr key={assignment.id}>
+                          <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>
+                            <div className="client-cell">
+                              <div className="client-avatar">{assignment.client?.first_name?.[0] || 'C'}</div>
+                              <span>{assignment.client?.first_name} {assignment.client?.last_name}</span>
+                            </div>
+                          </td>
+                          <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{assignment.client?.email || '-'}</td>
+                          <td onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{assignment.client?.phone || '-'}</td>
+                          <td onClick={(e) => e.stopPropagation()}>
+                            <ClientStatusSelect 
+                              clientId={assignment.client_user_id}
+                              currentStatus={assignment.client?.pipeline_stage}
+                              size="sm"
+                              onStatusChange={() => loadClients()}
+                            />
+                          </td>
+                          <td className="date" onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>{formatDate(assignment.assigned_at)}</td>
+                          <td><Button variant="ghost" size="sm" onClick={() => navigate(`/agent/clients/${assignment.client_user_id}`)}>Voir →</Button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t border-border">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>Afficher</span>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                      className="px-2 py-1 rounded border border-border bg-card text-foreground"
+                    >
+                      {PAGE_SIZE_OPTIONS.map(size => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                    <span>par page</span>
+                    <span className="ml-2">
+                      ({filteredAndSortedClients.length} résultat{filteredAndSortedClients.length > 1 ? 's' : ''})
+                    </span>
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded border border-border bg-card hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum: number;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`min-w-[36px] h-9 px-3 rounded border transition-all ${
+                              currentPage === pageNum
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-card hover:bg-muted border-border text-foreground'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+
+                      <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded border border-border bg-card hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </Card>
         </div>
