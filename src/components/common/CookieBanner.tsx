@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
+// Declare gtag for TypeScript
+declare global {
+  interface Window {
+    gtag: (command: string, action: string, params?: Record<string, string>) => void;
+  }
+}
+
 const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -12,13 +19,27 @@ const CookieBanner = () => {
     }
   }, []);
 
+  const updateGoogleConsent = (granted: boolean) => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        'ad_storage': granted ? 'granted' : 'denied',
+        'ad_user_data': granted ? 'granted' : 'denied',
+        'ad_personalization': granted ? 'granted' : 'denied',
+        'analytics_storage': granted ? 'granted' : 'denied',
+        'personalization_storage': granted ? 'granted' : 'denied'
+      });
+    }
+  };
+
   const handleAccept = () => {
     localStorage.setItem('cookie-consent', 'accepted');
+    updateGoogleConsent(true);
     setIsVisible(false);
   };
 
   const handleDecline = () => {
     localStorage.setItem('cookie-consent', 'declined');
+    updateGoogleConsent(false);
     setIsVisible(false);
   };
 
@@ -28,7 +49,7 @@ const CookieBanner = () => {
     <div className="cookie-banner">
       <div className="cookie-banner-content">
         <p className="cookie-banner-text">
-          Nous utilisons des cookies essentiels pour le fonctionnement du site.{' '}
+          Nous utilisons des cookies pour améliorer votre expérience et mesurer l'audience.{' '}
           <a href="/privacy" className="cookie-banner-link">En savoir plus</a>
         </p>
         <div className="cookie-banner-actions">
