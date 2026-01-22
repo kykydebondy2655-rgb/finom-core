@@ -27,7 +27,7 @@ import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
 import { loanApplicationSchema, coborrowerSchema, companySchema, type BorrowerType } from '@/lib/validations/loanSchemas';
 import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
-import { Wallet, ShieldCheck, Home, Building2 } from 'lucide-react';
+import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle } from 'lucide-react';
 
 interface CompanyFormData {
   companyName: string;
@@ -91,6 +91,13 @@ const Simulator = () => {
     companyLegalForm: ''
   });
 
+  // SIRET verification state
+  const [siretVerification, setSiretVerification] = useState<{
+    loading: boolean;
+    verified: boolean;
+    error: string | null;
+  }>({ loading: false, verified: false, error: null });
+
   // Format SIRET for display with spaces: XXX XXX XXX XXXXX
   const formatSiretDisplay = (siret: string): string => {
     if (!siret) return '';
@@ -102,6 +109,87 @@ const Simulator = () => {
       clean.slice(9, 14)
     ].filter(Boolean);
     return parts.join(' ');
+  };
+
+  // Luhn algorithm for client-side SIRET validation
+  const validateLuhn = (siret: string): boolean => {
+    let sum = 0;
+    for (let i = 0; i < siret.length; i++) {
+      let digit = parseInt(siret[i], 10);
+      if (i % 2 === 1) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+    }
+    return sum % 10 === 0;
+  };
+
+  // Verify SIRET via Pappers API
+  const verifySiret = async (siret: string) => {
+    if (siret.length !== 14) return;
+
+    // First check Luhn
+    if (!validateLuhn(siret)) {
+      setSiretVerification({ loading: false, verified: false, error: 'Format SIRET invalide' });
+      return;
+    }
+
+    setSiretVerification({ loading: true, verified: false, error: null });
+
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-siret', {
+        body: { siret }
+      });
+
+      if (error) {
+        setSiretVerification({ loading: false, verified: false, error: 'Erreur de vérification' });
+        return;
+      }
+
+      if (data.valid) {
+        // Auto-fill company data
+        setCompanyData(prev => ({
+          ...prev,
+          companyName: data.companyName || prev.companyName,
+          companyLegalForm: mapLegalForm(data.legalForm) || prev.companyLegalForm
+        }));
+        setSiretVerification({ loading: false, verified: true, error: null });
+        toast.success('Entreprise vérifiée avec succès');
+      } else {
+        setSiretVerification({ loading: false, verified: false, error: data.error || 'Entreprise non trouvée' });
+      }
+    } catch (err) {
+      console.error('SIRET verification error:', err);
+      setSiretVerification({ loading: false, verified: false, error: 'Erreur de connexion' });
+    }
+  };
+
+  // Map Pappers legal form to our select options
+  const mapLegalForm = (legalForm: string): string => {
+    if (!legalForm) return '';
+    const normalized = legalForm.toUpperCase();
+    if (normalized.includes('SARL')) return 'SARL';
+    if (normalized.includes('SASU')) return 'SASU';
+    if (normalized.includes('SAS') && !normalized.includes('SASU')) return 'SAS';
+    if (normalized.includes('EURL')) return 'EURL';
+    if (normalized.includes('SCI')) return 'SCI';
+    if (normalized.includes('SA') && !normalized.includes('SAS') && !normalized.includes('SARL')) return 'SA';
+    if (normalized.includes('SNC')) return 'SNC';
+    if (normalized.includes('AUTO') || normalized.includes('MICRO')) return 'Auto-entrepreneur';
+    return 'Autre';
+  };
+
+  // Handle SIRET change with auto-verification
+  const handleSiretChange = (value: string) => {
+    const rawValue = value.replace(/\D/g, '').slice(0, 14);
+    setCompanyData(prev => ({ ...prev, companySiret: rawValue }));
+    setSiretVerification({ loading: false, verified: false, error: null });
+    
+    // Auto-verify when 14 digits
+    if (rawValue.length === 14) {
+      verifySiret(rawValue);
+    }
   };
 
   const [result, setResult] = useState<SimulationResult | null>(null);
@@ -440,26 +528,48 @@ const Simulator = () => {
                       <motion.div className="form-row" variants={fadeInUp}>
                         <div className="form-group half">
                           <label>SIRET</label>
-                          <input
-                            type="text"
-                            value={formatSiretDisplay(companyData.companySiret)}
-                            onChange={(e) => {
-                              const rawValue = e.target.value.replace(/\D/g, '').slice(0, 14);
-                              setCompanyData(prev => ({ ...prev, companySiret: rawValue }));
-                            }}
-                            placeholder="XXX XXX XXX XXXXX"
-                            maxLength={17}
-                            className={`text-input siret-input ${companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 ? 'input-error' : ''}`}
-                          />
+                          <div className="siret-input-wrapper">
+                            <input
+                              type="text"
+                              value={formatSiretDisplay(companyData.companySiret)}
+                              onChange={(e) => handleSiretChange(e.target.value)}
+                              placeholder="XXX XXX XXX XXXXX"
+                              maxLength={17}
+                              className={`text-input siret-input ${
+                                siretVerification.verified ? 'input-success' : 
+                                siretVerification.error ? 'input-error' : 
+                                companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 ? 'input-error' : ''
+                              }`}
+                            />
+                            {siretVerification.loading && (
+                              <Loader2 className="siret-status-icon loading" size={18} />
+                            )}
+                            {siretVerification.verified && (
+                              <CheckCircle className="siret-status-icon success" size={18} />
+                            )}
+                            {siretVerification.error && (
+                              <XCircle className="siret-status-icon error" size={18} />
+                            )}
+                          </div>
                           <div className="siret-feedback">
-                            <span className={`char-counter ${companyData.companySiret.length === 14 ? 'valid' : companyData.companySiret.length > 0 ? 'invalid' : ''}`}>
+                            <span className={`char-counter ${
+                              siretVerification.verified ? 'valid' : 
+                              companyData.companySiret.length === 14 ? 'pending' : 
+                              companyData.companySiret.length > 0 ? 'invalid' : ''
+                            }`}>
                               {companyData.companySiret.length}/14
                             </span>
-                            {companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 && (
-                              <span className="inline-error">Le SIRET doit contenir exactement 14 chiffres</span>
+                            {siretVerification.loading && (
+                              <span className="inline-pending">Vérification en cours...</span>
                             )}
-                            {companyData.companySiret.length === 14 && (
-                              <span className="inline-success">✓ Format valide</span>
+                            {siretVerification.error && (
+                              <span className="inline-error">{siretVerification.error}</span>
+                            )}
+                            {siretVerification.verified && (
+                              <span className="inline-success">✓ Entreprise vérifiée</span>
+                            )}
+                            {!siretVerification.loading && !siretVerification.error && !siretVerification.verified && companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 && (
+                              <span className="inline-error">Le SIRET doit contenir exactement 14 chiffres</span>
                             )}
                           </div>
                         </div>
@@ -470,6 +580,7 @@ const Simulator = () => {
                             value={companyData.companyLegalForm}
                             onChange={(e) => setCompanyData(prev => ({ ...prev, companyLegalForm: e.target.value }))}
                             className="select-input"
+                            disabled={siretVerification.loading}
                           >
                             <option value="">Sélectionner...</option>
                             <option value="SARL">SARL</option>
