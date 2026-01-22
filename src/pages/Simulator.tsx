@@ -1,34 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   motion, 
   AnimatePresence, 
   fadeInUp, 
-  staggerContainer, 
-  scaleIn 
+  staggerContainer
 } from '@/components/animations';
 import { useAuth } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Card from '../components/finom/Card';
 import Button from '../components/finom/Button';
-import { getRateForProfile, PROFILE_LABELS, RateProfile } from '@/lib/rates';
+import { getRateForProfile, RateProfile } from '@/lib/rates';
 import {
   performSimulation,
-  safeFormat,
   safeNumber,
+  safeFormat,
   INSURANCE_RATE,
   SimulationResult
 } from '@/lib/loanCalculations';
-import { loansApi, type LoanApplication } from '@/services/api';
+import { loansApi } from '@/services/api';
 import type { TablesInsert } from '@/integrations/supabase/types';
 import { emailService } from '@/services/emailService';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
-import { loanApplicationSchema, coborrowerSchema } from '@/lib/validations/loanSchemas';
+import { loanApplicationSchema, coborrowerSchema, type BorrowerType } from '@/lib/validations/loanSchemas';
 import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
-import { FileText, Wallet, ShieldCheck, Calculator, CreditCard, PiggyBank, TrendingUp, Home } from 'lucide-react';
+import { Wallet, ShieldCheck, Home, Building2 } from 'lucide-react';
+
+interface CompanyFormData {
+  companyName: string;
+  companySiret: string;
+  companyLegalForm: string;
+}
 
 interface FormData {
   propertyPrice: number;
@@ -41,6 +46,7 @@ interface FormData {
   profile: RateProfile;
   profileLabel: string;
   projectType: string;
+  borrowerType: BorrowerType;
 }
 
 const Simulator = () => {
@@ -74,7 +80,15 @@ const Simulator = () => {
     rate: 3.22,
     profile: 'standard',
     profileLabel: 'Profil Standard',
-    projectType: 'achat_residence_principale'
+    projectType: 'achat_residence_principale',
+    borrowerType: 'particulier'
+  });
+
+  // Company data for business loans
+  const [companyData, setCompanyData] = useState<CompanyFormData>({
+    companyName: '',
+    companySiret: '',
+    companyLegalForm: ''
   });
 
   const [result, setResult] = useState<SimulationResult | null>(null);
@@ -172,7 +186,10 @@ const Simulator = () => {
     try {
       setLoading(true);
 
-      const loanData: TablesInsert<'loan_applications'> = {
+      const isEntreprise = formData.borrowerType === 'entreprise';
+
+      // Base loan data - using type assertion for new columns not yet in generated types
+      const loanData = {
         user_id: user.id,
         amount: result.loanAmount,
         duration: formData.durationYears,
@@ -194,11 +211,16 @@ const Simulator = () => {
         insurance_rate_used: INSURANCE_RATE,
         fees_used: result.bankFees,
         project_type: formData.projectType,
+        borrower_type: formData.borrowerType,
         status: 'pending',
         is_draft: false,
         has_coborrower: hasCoborrower,
-        coborrower_data: hasCoborrower ? coborrowerData : null
-      };
+        coborrower_data: hasCoborrower ? coborrowerData : null,
+        // Company data for enterprise loans
+        company_name: isEntreprise ? companyData.companyName : null,
+        company_siret: isEntreprise ? companyData.companySiret : null,
+        company_legal_form: isEntreprise ? companyData.companyLegalForm : null,
+      } as TablesInsert<'loan_applications'>;
 
       const newLoan = await loansApi.create(loanData);
 
@@ -323,6 +345,35 @@ const Simulator = () => {
                   animate="animate"
                   variants={staggerContainer}
                 >
+                  {/* Borrower type selector */}
+                  <motion.div className="form-group" variants={fadeInUp}>
+                    <label>Type de demandeur</label>
+                    <div className="borrower-type-selector">
+                      <button
+                        type="button"
+                        className={`borrower-type-btn ${formData.borrowerType === 'particulier' ? 'active' : ''}`}
+                        onClick={() => {
+                          updateField('borrowerType', 'particulier');
+                          updateField('projectType', 'achat_residence_principale');
+                        }}
+                      >
+                        <Home size={20} />
+                        <span>Particulier</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`borrower-type-btn ${formData.borrowerType === 'entreprise' ? 'active' : ''}`}
+                        onClick={() => {
+                          updateField('borrowerType', 'entreprise');
+                          updateField('projectType', 'achat_locaux_commerciaux');
+                        }}
+                      >
+                        <Building2 size={20} />
+                        <span>Entreprise</span>
+                      </button>
+                    </div>
+                  </motion.div>
+
                   <motion.div className="form-group" variants={fadeInUp}>
                     <label>Type de projet</label>
                     <select
@@ -330,13 +381,74 @@ const Simulator = () => {
                       onChange={(e) => updateField('projectType', e.target.value)}
                       className="select-input"
                     >
-                      <option value="achat_residence_principale">Achat résidence principale</option>
-                      <option value="achat_residence_secondaire">Achat résidence secondaire</option>
-                      <option value="investissement_locatif">Investissement locatif</option>
-                      <option value="construction">Construction</option>
-                      <option value="renovation">Rénovation</option>
+                      {formData.borrowerType === 'particulier' ? (
+                        <>
+                          <option value="achat_residence_principale">Achat résidence principale</option>
+                          <option value="achat_residence_secondaire">Achat résidence secondaire</option>
+                          <option value="investissement_locatif">Investissement locatif</option>
+                          <option value="construction">Construction</option>
+                          <option value="renovation">Rénovation</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="achat_locaux_commerciaux">Achat locaux commerciaux</option>
+                          <option value="investissement_locatif_pro">Investissement locatif professionnel</option>
+                          <option value="construction_pro">Construction professionnelle</option>
+                          <option value="renovation_pro">Rénovation professionnelle</option>
+                        </>
+                      )}
                     </select>
                   </motion.div>
+
+                  {/* Company fields for enterprise loans */}
+                  {formData.borrowerType === 'entreprise' && (
+                    <>
+                      <motion.div className="form-group" variants={fadeInUp}>
+                        <label>Raison sociale</label>
+                        <input
+                          type="text"
+                          value={companyData.companyName}
+                          onChange={(e) => setCompanyData(prev => ({ ...prev, companyName: e.target.value }))}
+                          placeholder="Nom de l'entreprise"
+                          className="text-input"
+                        />
+                      </motion.div>
+
+                      <motion.div className="form-row" variants={fadeInUp}>
+                        <div className="form-group half">
+                          <label>SIRET</label>
+                          <input
+                            type="text"
+                            value={companyData.companySiret}
+                            onChange={(e) => setCompanyData(prev => ({ ...prev, companySiret: e.target.value.replace(/\D/g, '').slice(0, 14) }))}
+                            placeholder="14 chiffres"
+                            maxLength={14}
+                            className="text-input"
+                          />
+                        </div>
+
+                        <div className="form-group half">
+                          <label>Forme juridique</label>
+                          <select
+                            value={companyData.companyLegalForm}
+                            onChange={(e) => setCompanyData(prev => ({ ...prev, companyLegalForm: e.target.value }))}
+                            className="select-input"
+                          >
+                            <option value="">Sélectionner...</option>
+                            <option value="SARL">SARL</option>
+                            <option value="SAS">SAS</option>
+                            <option value="SASU">SASU</option>
+                            <option value="EURL">EURL</option>
+                            <option value="SCI">SCI</option>
+                            <option value="SA">SA</option>
+                            <option value="SNC">SNC</option>
+                            <option value="Auto-entrepreneur">Auto-entrepreneur</option>
+                            <option value="Autre">Autre</option>
+                          </select>
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
 
                   <motion.div className="form-group" variants={fadeInUp}>
                     <label>Prix du bien immobilier</label>
