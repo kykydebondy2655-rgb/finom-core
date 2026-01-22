@@ -91,6 +91,19 @@ const Simulator = () => {
     companyLegalForm: ''
   });
 
+  // Format SIRET for display with spaces: XXX XXX XXX XXXXX
+  const formatSiretDisplay = (siret: string): string => {
+    if (!siret) return '';
+    const clean = siret.replace(/\D/g, '');
+    const parts = [
+      clean.slice(0, 3),
+      clean.slice(3, 6),
+      clean.slice(6, 9),
+      clean.slice(9, 14)
+    ].filter(Boolean);
+    return parts.join(' ');
+  };
+
   const [result, setResult] = useState<SimulationResult | null>(null);
 
   // Recalculate on form change
@@ -429,11 +442,14 @@ const Simulator = () => {
                           <label>SIRET</label>
                           <input
                             type="text"
-                            value={companyData.companySiret}
-                            onChange={(e) => setCompanyData(prev => ({ ...prev, companySiret: e.target.value.replace(/\D/g, '').slice(0, 14) }))}
-                            placeholder="14 chiffres"
-                            maxLength={14}
-                            className={`text-input ${companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 ? 'input-error' : ''}`}
+                            value={formatSiretDisplay(companyData.companySiret)}
+                            onChange={(e) => {
+                              const rawValue = e.target.value.replace(/\D/g, '').slice(0, 14);
+                              setCompanyData(prev => ({ ...prev, companySiret: rawValue }));
+                            }}
+                            placeholder="XXX XXX XXX XXXXX"
+                            maxLength={17}
+                            className={`text-input siret-input ${companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 ? 'input-error' : ''}`}
                           />
                           <div className="siret-feedback">
                             <span className={`char-counter ${companyData.companySiret.length === 14 ? 'valid' : companyData.companySiret.length > 0 ? 'invalid' : ''}`}>
