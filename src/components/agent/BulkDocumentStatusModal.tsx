@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import { useAuth } from '@/context/AuthContext';
 import logger from '@/lib/logger';
-import { CheckCircle2, XCircle, FileText, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, XCircle, FileText, AlertTriangle, Search } from 'lucide-react';
 import type { Document } from '@/services/api';
 import StatusBadge from '@/components/common/StatusBadge';
 
@@ -33,7 +33,7 @@ const BulkDocumentStatusModal: React.FC<BulkDocumentStatusModalProps> = ({
   const { user } = useAuth();
   const toast = useToast();
   const [selectedDocs, setSelectedDocs] = useState<Set<string>>(new Set());
-  const [action, setAction] = useState<'validated' | 'rejected' | null>(null);
+  const [action, setAction] = useState<'validated' | 'rejected' | 'under_review' | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -85,6 +85,10 @@ const BulkDocumentStatusModal: React.FC<BulkDocumentStatusModalProps> = ({
           updateData.rejection_reason = rejectionReason;
           updateData.validated_at = null;
           updateData.validated_by = null;
+        } else if (action === 'under_review') {
+          updateData.validated_at = null;
+          updateData.validated_by = null;
+          updateData.rejection_reason = null;
         }
 
         return supabase
@@ -96,21 +100,33 @@ const BulkDocumentStatusModal: React.FC<BulkDocumentStatusModalProps> = ({
       await Promise.all(updates);
 
       // Create notifications for each document
-      const notifications = selectedDocsList.map(doc => ({
-        user_id: doc.user_id,
-        type: 'document_status',
-        category: 'document',
-        title: action === 'validated' ? 'Document validé' : 'Document rejeté',
-        message: action === 'validated' 
-          ? `Votre document "${doc.file_name}" a été validé. ✓`
-          : `Votre document "${doc.file_name}" a été rejeté. Raison: ${rejectionReason}`,
-        related_entity: 'documents',
-        related_id: doc.id,
-      }));
+      const getNotificationContent = (docName: string) => {
+        if (action === 'validated') {
+          return { title: 'Document validé', message: `Votre document "${docName}" a été validé. ✓` };
+        } else if (action === 'rejected') {
+          return { title: 'Document rejeté', message: `Votre document "${docName}" a été rejeté. Raison: ${rejectionReason}` };
+        } else {
+          return { title: 'Document en analyse', message: `Votre document "${docName}" est en cours d'analyse.` };
+        }
+      };
+
+      const notifications = selectedDocsList.map(doc => {
+        const content = getNotificationContent(doc.file_name);
+        return {
+          user_id: doc.user_id,
+          type: 'document_status',
+          category: 'document',
+          title: content.title,
+          message: content.message,
+          related_entity: 'documents',
+          related_id: doc.id,
+        };
+      });
 
       await supabase.from('notifications').insert(notifications);
 
-      toast.success(`${selectedDocs.size} document(s) ${action === 'validated' ? 'validé(s)' : 'rejeté(s)'} avec succès`);
+      const actionLabel = action === 'validated' ? 'validé(s)' : action === 'rejected' ? 'rejeté(s)' : 'mis en analyse';
+      toast.success(`${selectedDocs.size} document(s) ${actionLabel} avec succès`);
       
       // Reset and close
       setSelectedDocs(new Set());
@@ -201,7 +217,7 @@ const BulkDocumentStatusModal: React.FC<BulkDocumentStatusModalProps> = ({
             <div className="pt-4 border-t border-border space-y-4">
               <p className="font-medium">{selectedDocs.size} document(s) sélectionné(s) - Choisir une action :</p>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   type="button"
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
@@ -214,6 +230,20 @@ const BulkDocumentStatusModal: React.FC<BulkDocumentStatusModalProps> = ({
                   <CheckCircle2 size={24} className="text-green-600 mb-2" />
                   <p className="font-medium text-green-700 dark:text-green-400">Valider tous</p>
                   <p className="text-xs text-muted-foreground">Marquer comme conformes</p>
+                </button>
+
+                <button
+                  type="button"
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    action === 'under_review' 
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30' 
+                      : 'border-border hover:border-blue-300'
+                  }`}
+                  onClick={() => setAction('under_review')}
+                >
+                  <Search size={24} className="text-blue-600 mb-2" />
+                  <p className="font-medium text-blue-700 dark:text-blue-400">En analyse</p>
+                  <p className="text-xs text-muted-foreground">Mettre en cours d'examen</p>
                 </button>
 
                 <button
@@ -258,7 +288,7 @@ const BulkDocumentStatusModal: React.FC<BulkDocumentStatusModalProps> = ({
             disabled={loading || selectedDocs.size === 0 || !action || (action === 'rejected' && !rejectionReason.trim())}
             isLoading={loading}
           >
-            {action === 'validated' ? 'Valider' : action === 'rejected' ? 'Rejeter' : 'Confirmer'} ({selectedDocs.size})
+            {action === 'validated' ? 'Valider' : action === 'rejected' ? 'Rejeter' : action === 'under_review' ? 'Analyser' : 'Confirmer'} ({selectedDocs.size})
           </Button>
         </DialogFooter>
       </DialogContent>
