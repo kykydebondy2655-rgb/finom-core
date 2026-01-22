@@ -20,6 +20,7 @@ const AdminLoans: React.FC = () => {
   const [loans, setLoans] = useState<LoanWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
+  const [borrowerFilter, setBorrowerFilter] = useState<'all' | 'particulier' | 'entreprise'>('all');
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState<LoanWithUser | null>(null);
@@ -50,21 +51,33 @@ const AdminLoans: React.FC = () => {
     setShowDeleteModal(true);
   };
 
-  const filteredLoans = loans.filter(l => {
+  // Apply borrower type filter first
+  const loansAfterBorrowerFilter = loans.filter(l => {
+    if (borrowerFilter === 'all') return true;
+    return l.borrower_type === borrowerFilter;
+  });
+
+  const filteredLoans = loansAfterBorrowerFilter.filter(l => {
     if (filter === 'all') return true;
     if (filter === 'under_review') return l.status === 'in_review' || l.status === 'under_review';
     return l.status === filter;
   });
 
   const statusCounts = {
+    all: loansAfterBorrowerFilter.length,
+    pending: loansAfterBorrowerFilter.filter(l => l.status === 'pending').length,
+    documents_required: loansAfterBorrowerFilter.filter(l => l.status === 'documents_required').length,
+    under_review: loansAfterBorrowerFilter.filter(l => l.status === 'in_review' || l.status === 'under_review').length,
+    processing: loansAfterBorrowerFilter.filter(l => l.status === 'processing').length,
+    approved: loansAfterBorrowerFilter.filter(l => l.status === 'approved').length,
+    funded: loansAfterBorrowerFilter.filter(l => l.status === 'funded').length,
+    rejected: loansAfterBorrowerFilter.filter(l => l.status === 'rejected').length,
+  };
+
+  const borrowerCounts = {
     all: loans.length,
-    pending: loans.filter(l => l.status === 'pending').length,
-    documents_required: loans.filter(l => l.status === 'documents_required').length,
-    under_review: loans.filter(l => l.status === 'in_review' || l.status === 'under_review').length,
-    processing: loans.filter(l => l.status === 'processing').length,
-    approved: loans.filter(l => l.status === 'approved').length,
-    funded: loans.filter(l => l.status === 'funded').length,
-    rejected: loans.filter(l => l.status === 'rejected').length,
+    particulier: loans.filter(l => l.borrower_type === 'particulier' || !l.borrower_type).length,
+    entreprise: loans.filter(l => l.borrower_type === 'entreprise').length,
   };
 
   if (loading) {
@@ -83,7 +96,32 @@ const AdminLoans: React.FC = () => {
         </div>
 
         <div className="container">
-          {/* Filters */}
+          {/* Borrower Type Filter */}
+          <div className="borrower-filter fade-in">
+            <span className="filter-label">Type d'emprunteur :</span>
+            <div className="borrower-filter-buttons">
+              <button
+                className={`borrower-filter-btn ${borrowerFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setBorrowerFilter('all')}
+              >
+                Tous ({borrowerCounts.all})
+              </button>
+              <button
+                className={`borrower-filter-btn particulier ${borrowerFilter === 'particulier' ? 'active' : ''}`}
+                onClick={() => setBorrowerFilter('particulier')}
+              >
+                👤 Particuliers ({borrowerCounts.particulier})
+              </button>
+              <button
+                className={`borrower-filter-btn entreprise ${borrowerFilter === 'entreprise' ? 'active' : ''}`}
+                onClick={() => setBorrowerFilter('entreprise')}
+              >
+                🏢 Entreprises ({borrowerCounts.entreprise})
+              </button>
+            </div>
+          </div>
+
+          {/* Status Filters */}
           <div className="filters fade-in">
               {Object.entries(statusCounts).map(([key, count]) => {
               const labelMap: Record<string, string> = {
@@ -118,6 +156,7 @@ const AdminLoans: React.FC = () => {
                     <tr>
                       <th>Référence</th>
                       <th>Client</th>
+                      <th>Type</th>
                       <th>Montant</th>
                       <th>Durée</th>
                       <th>Taux</th>
@@ -134,8 +173,20 @@ const AdminLoans: React.FC = () => {
                         <td>
                           <div className="user-cell">
                             <div className="user-avatar">{loan.user?.first_name?.[0] || 'C'}</div>
-                            <span>{loan.user?.first_name} {loan.user?.last_name}</span>
+                            <div className="user-info">
+                              <span>{loan.user?.first_name} {loan.user?.last_name}</span>
+                              {loan.borrower_type === 'entreprise' && loan.company_name && (
+                                <span className="company-name-small">{loan.company_name}</span>
+                              )}
+                            </div>
                           </div>
+                        </td>
+                        <td>
+                          {loan.borrower_type === 'entreprise' ? (
+                            <span className="borrower-type-badge entreprise" title={loan.company_siret || ''}>🏢</span>
+                          ) : (
+                            <span className="borrower-type-badge particulier">👤</span>
+                          )}
                         </td>
                         <td className="amount">{formatCurrency(loan.amount)}</td>
                         <td>{loan.duration} ans</td>

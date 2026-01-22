@@ -3698,3 +3698,303 @@
 .dark .client-notes-panel .notes-header h3 {
   color: #f1f5f9;
 }
+
+/* ============= Borrower Type Filter (Admin Loans) ============= */
+.borrower-filter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: hsl(var(--card));
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border));
+}
+
+.borrower-filter .filter-label {
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
+}
+
+.borrower-filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.borrower-filter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.borrower-filter-btn:hover {
+  background: hsl(var(--muted));
+}
+
+.borrower-filter-btn.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.borrower-filter-btn.particulier.active {
+  background: #3B82F6;
+  border-color: #3B82F6;
+}
+
+.borrower-filter-btn.entreprise.active {
+  background: #8B5CF6;
+  border-color: #8B5CF6;
+}
+
+/* Borrower Type Badge in Table */
+.borrower-type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.borrower-type-badge.particulier {
+  background: #DBEAFE;
+}
+
+.borrower-type-badge.entreprise {
+  background: #EDE9FE;
+}
+
+/* Company name in user cell */
+.user-cell .user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-cell .company-name-small {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* ============= Borrower Stats Section (Admin Dashboard) ============= */
+.borrower-stats-section {
+  margin-bottom: 2rem;
+}
+
+.borrower-stats-section h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.borrower-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .borrower-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .borrower-filter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .borrower-filter-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+.borrower-stat-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.borrower-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+}
+
+.borrower-stat-card.particulier {
+  border-left: 4px solid #3B82F6;
+}
+
+.borrower-stat-card.entreprise {
+  border-left: 4px solid #8B5CF6;
+}
+
+.borrower-stat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.borrower-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: hsl(var(--muted));
+}
+
+.borrower-stat-card.particulier .borrower-stat-icon {
+  background: #DBEAFE;
+  color: #3B82F6;
+}
+
+.borrower-stat-card.entreprise .borrower-stat-icon {
+  background: #EDE9FE;
+  color: #8B5CF6;
+}
+
+.borrower-stat-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.borrower-stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.borrower-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.borrower-stat-row span {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
+}
+
+.borrower-stat-row strong {
+  font-weight: 700;
+  font-size: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.borrower-stat-row.highlight {
+  background: hsl(var(--muted) / 0.5);
+  padding: 0.5rem 0.75rem;
+  margin: 0 -0.75rem;
+  border-radius: 8px;
+}
+
+.borrower-stat-row.highlight strong {
+  color: hsl(var(--primary));
+}
+
+/* ============= Borrower Type Card (Loan Detail) ============= */
+.borrower-type-card {
+  grid-column: span 1;
+}
+
+.borrower-type-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.borrower-badge-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.borrower-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.borrower-badge .inline-icon {
+  margin-right: 0.25rem;
+}
+
+.borrower-badge.particulier {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.borrower-badge.entreprise {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+
+.company-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: hsl(var(--muted) / 0.5);
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border));
+}
+
+.company-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.company-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
+}
+
+.company-row strong {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.siret-value {
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  background: hsl(var(--muted));
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Dark mode */
+.dark .borrower-badge.particulier {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93C5FD;
+}
+
+.dark .borrower-badge.entreprise {
+  background: rgba(139, 92, 246, 0.2);
+  color: #C4B5FD;
+}
+
+.dark .borrower-type-badge.particulier {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.dark .borrower-type-badge.entreprise {
+  background: rgba(139, 92, 246, 0.2);
+}
