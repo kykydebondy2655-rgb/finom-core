@@ -7188,3 +7188,55 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Field modification indicator */
+.field-with-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.modified-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: hsl(38 92% 50%);
+  background: hsl(38 92% 50% / 0.1);
+  border: 1px solid hsl(38 92% 50% / 0.25);
+  border-radius: var(--radius-sm);
+  animation: pulse-subtle 2s infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.text-input.input-modified,
+.select-input.input-modified {
+  border-color: hsl(38 92% 50% / 0.5);
+  background: hsl(38 92% 50% / 0.03);
+}
+
+.text-input.input-modified:focus,
+.select-input.input-modified:focus {
+  border-color: hsl(38 92% 50%);
+  box-shadow: 0 0 0 3px hsl(38 92% 50% / 0.15);
+}
+
+/* Dark mode for modification indicator */
+.dark .modified-indicator {
+  color: hsl(38 92% 60%);
+  background: hsl(38 92% 50% / 0.15);
+  border-color: hsl(38 92% 50% / 0.3);
+}
+
+.dark .text-input.input-modified,
+.dark .select-input.input-modified {
+  border-color: hsl(38 92% 50% / 0.4);
+  background: hsl(38 92% 50% / 0.05);
+}
