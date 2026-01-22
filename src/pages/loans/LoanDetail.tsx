@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { 
   RefreshCw, FileText, Search, CheckCircle2, XCircle, Coins, 
   Clock, ClipboardList, Cog, Mail, Users, User, ArrowUpFromLine,
-  ArrowDownToLine, X, Plus, FileStack, MessageCircle, Calendar, Calculator
+  ArrowDownToLine, X, Plus, FileStack, MessageCircle, Calendar, Calculator, ListChecks
 } from 'lucide-react';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
@@ -23,6 +23,7 @@ import ReplaceDocumentButton from '@/components/documents/ReplaceDocumentButton'
 import DownloadAllDocuments from '@/components/documents/DownloadAllDocuments';
 import DocumentExpirationBadge from '@/components/documents/DocumentExpirationBadge';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
+import BulkDocumentStatusModal from '@/components/agent/BulkDocumentStatusModal';
 import { useToast } from '@/components/finom/Toast';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useDocumentProgress } from '@/hooks/useDocumentProgress';
@@ -54,6 +55,7 @@ const LoanDetail: React.FC = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [showUploadSection, setShowUploadSection] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
+  const [showBulkStatusModal, setShowBulkStatusModal] = useState(false);
   const [clientProfile, setClientProfile] = useState<Profile | null>(null);
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [statusHistory, setStatusHistory] = useState<Array<{ new_status: string; created_at: string; notes?: string | null }>>([]);
@@ -515,6 +517,15 @@ const LoanDetail: React.FC = () => {
                     {(isAdmin || isAgent) && loan && id && (
                       <DownloadAllDocuments loanId={id} loanRef={loan.id.slice(0, 8)} />
                     )}
+                    {(isAdmin || isAgent) && documents.length > 0 && (
+                      <Button 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => setShowBulkStatusModal(true)}
+                      >
+                        <ListChecks size={14} className="btn-icon" /> Traiter en masse
+                      </Button>
+                    )}
                     {(isAdmin || isAgent) && loan && (
                       <Button 
                         variant="primary" 
@@ -637,6 +648,17 @@ const LoanDetail: React.FC = () => {
                   clientId={loan.user_id}
                   clientName={`${clientProfile?.first_name || ''} ${clientProfile?.last_name || ''}`}
                   loanId={id}
+                />
+              )}
+
+              {/* Bulk Document Status Modal */}
+              {(isAdmin || isAgent) && (
+                <BulkDocumentStatusModal
+                  isOpen={showBulkStatusModal}
+                  onClose={() => setShowBulkStatusModal(false)}
+                  onSuccess={loadLoanData}
+                  documents={documents}
+                  clientName={clientProfile ? `${clientProfile.first_name || ''} ${clientProfile.last_name || ''}` : 'le client'}
                 />
               )}
             </div>
