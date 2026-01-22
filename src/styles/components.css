@@ -6948,3 +6948,68 @@
     opacity: 0.2;
   }
 }
+
+/* =============================================================================
+   SIRET FIELD FEEDBACK
+   ============================================================================= */
+.siret-feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.char-counter {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-weight: 500;
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  transition: all 0.2s ease;
+}
+
+.char-counter.valid {
+  background: hsl(142 76% 36% / 0.15);
+  color: hsl(142 76% 30%);
+}
+
+.char-counter.invalid {
+  background: hsl(0 84% 60% / 0.15);
+  color: hsl(0 84% 45%);
+}
+
+.inline-error {
+  color: hsl(0 84% 50%);
+  font-weight: 500;
+}
+
+.inline-success {
+  color: hsl(142 76% 36%);
+  font-weight: 500;
+}
+
+.text-input.input-error {
+  border-color: hsl(0 84% 60%);
+  box-shadow: 0 0 0 3px hsl(0 84% 60% / 0.1);
+}
+
+/* Dark mode support */
+.dark .char-counter.valid {
+  background: hsl(142 76% 36% / 0.2);
+  color: hsl(142 76% 60%);
+}
+
+.dark .char-counter.invalid {
+  background: hsl(0 84% 60% / 0.2);
+  color: hsl(0 84% 70%);
+}
+
+.dark .inline-error {
+  color: hsl(0 84% 65%);
+}
+
+.dark .inline-success {
+  color: hsl(142 76% 55%);
+}
