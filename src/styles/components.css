@@ -7240,3 +7240,54 @@
   border-color: hsl(38 92% 50% / 0.4);
   background: hsl(38 92% 50% / 0.05);
 }
+
+/* Reset to Pappers button */
+.reset-pappers-wrapper {
+  margin-bottom: 1rem;
+}
+
+.reset-pappers-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(38 92% 40%);
+  background: hsl(38 92% 50% / 0.1);
+  border: 1px solid hsl(38 92% 50% / 0.3);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-pappers-btn:hover {
+  background: hsl(38 92% 50% / 0.15);
+  border-color: hsl(38 92% 50% / 0.5);
+  color: hsl(38 92% 35%);
+}
+
+.reset-pappers-btn:active {
+  transform: scale(0.98);
+}
+
+.reset-pappers-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.reset-pappers-btn:hover svg {
+  transform: rotate(-180deg);
+}
+
+/* Dark mode for reset button */
+.dark .reset-pappers-btn {
+  color: hsl(38 92% 60%);
+  background: hsl(38 92% 50% / 0.12);
+  border-color: hsl(38 92% 50% / 0.25);
+}
+
+.dark .reset-pappers-btn:hover {
+  background: hsl(38 92% 50% / 0.2);
+  border-color: hsl(38 92% 50% / 0.4);
+  color: hsl(38 92% 70%);
+}
