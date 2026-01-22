@@ -433,8 +433,19 @@ const Simulator = () => {
                             onChange={(e) => setCompanyData(prev => ({ ...prev, companySiret: e.target.value.replace(/\D/g, '').slice(0, 14) }))}
                             placeholder="14 chiffres"
                             maxLength={14}
-                            className="text-input"
+                            className={`text-input ${companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 ? 'input-error' : ''}`}
                           />
+                          <div className="siret-feedback">
+                            <span className={`char-counter ${companyData.companySiret.length === 14 ? 'valid' : companyData.companySiret.length > 0 ? 'invalid' : ''}`}>
+                              {companyData.companySiret.length}/14
+                            </span>
+                            {companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 && (
+                              <span className="inline-error">Le SIRET doit contenir exactement 14 chiffres</span>
+                            )}
+                            {companyData.companySiret.length === 14 && (
+                              <span className="inline-success">✓ Format valide</span>
+                            )}
+                          </div>
                         </div>
 
                         <div className="form-group half">
