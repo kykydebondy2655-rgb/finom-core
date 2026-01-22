@@ -11,6 +11,7 @@ import { agentApi, adminApi, formatCurrency, formatDate } from '@/services/api';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import CreateCallbackModal from '@/components/agent/CreateCallbackModal';
 import DocumentStatusModal from '@/components/agent/DocumentStatusModal';
+import BulkDocumentStatusModal from '@/components/agent/BulkDocumentStatusModal';
 import LoanStatusModal from '@/components/agent/LoanStatusModal';
 import ClientBankModal from '@/components/admin/ClientBankModal';
 import AdminDocumentUploadModal from '@/components/admin/AdminDocumentUploadModal';
@@ -30,7 +31,7 @@ import ProfileAuditTimeline from '@/components/agent/ProfileAuditTimeline';
 import { useToast } from '@/components/finom/Toast';
 import { storageService } from '@/services/storageService';
 import { emailService } from '@/services/emailService';
-import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2, Edit } from 'lucide-react';
+import { Phone, Mail, KeyRound, Trash2, CreditCard, Pencil, FileText, ClipboardList, Upload, Download, AlertTriangle, MapPin, Building, Globe, RefreshCw, UserCheck, Lock, Loader2, Edit, CheckSquare } from 'lucide-react';
 import type { Profile, LoanApplication, Document, BankAccount } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -48,6 +49,7 @@ const AgentClientDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'info' | 'loans' | 'documents' | 'activity'>('info');
   const [showCallbackModal, setShowCallbackModal] = useState(false);
   const [showDocumentStatusModal, setShowDocumentStatusModal] = useState(false);
+  const [showBulkDocumentModal, setShowBulkDocumentModal] = useState(false);
   const [showLoanStatusModal, setShowLoanStatusModal] = useState(false);
   const [showBankModal, setShowBankModal] = useState(false);
   const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
@@ -410,15 +412,27 @@ const AgentClientDetail: React.FC = () => {
             <Card className="docs-card fade-in" padding="lg">
               <div className="docs-header">
                 <h3><Upload size={18} className="inline mr-2" />Documents du client</h3>
-                {isAdmin && client && (
-                  <Button 
-                    variant="primary" 
-                    size="sm"
-                    onClick={() => setShowAdminUploadModal(true)}
-                  >
-                    <Download size={14} className="mr-1" /> Envoyer un document
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {/* Bulk Validation Button */}
+                  {documents.filter(d => (d as any).direction !== 'incoming' && d.status !== 'validated').length > 0 && (
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => setShowBulkDocumentModal(true)}
+                    >
+                      <CheckSquare size={14} className="mr-1" /> Traiter en masse
+                    </Button>
+                  )}
+                  {isAdmin && client && (
+                    <Button 
+                      variant="primary" 
+                      size="sm"
+                      onClick={() => setShowAdminUploadModal(true)}
+                    >
+                      <Download size={14} className="mr-1" /> Envoyer un document
+                    </Button>
+                  )}
+                </div>
               </div>
               {documents.length === 0 ? (
                 <p className="empty-text">Aucun document uploadé par le client</p>
@@ -681,6 +695,15 @@ const AgentClientDetail: React.FC = () => {
             isAdmin={isAdmin}
           />
         )}
+
+        {/* Bulk Document Status Modal */}
+        <BulkDocumentStatusModal
+          isOpen={showBulkDocumentModal}
+          onClose={() => setShowBulkDocumentModal(false)}
+          onSuccess={loadClientData}
+          documents={documents}
+          clientName={`${client.first_name || ''} ${client.last_name || ''}`}
+        />
       </div>
     </PageLayout>
   );
