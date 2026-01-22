@@ -5,12 +5,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface PappersRepresentant {
+  nom?: string;
+  prenom?: string;
+  qualite?: string;
+}
+
 interface PappersResponse {
   siren: string;
   siret: string;
   denomination?: string;
   nom_entreprise?: string;
   forme_juridique?: string;
+  date_creation?: string;
+  date_creation_formate?: string;
+  representants?: PappersRepresentant[];
   siege?: {
     siret: string;
     adresse_ligne_1?: string;
@@ -26,6 +35,8 @@ interface VerifyResponse {
   address?: string;
   city?: string;
   postalCode?: string;
+  directorName?: string;
+  creationDate?: string;
   error?: string;
 }
 
@@ -93,6 +104,22 @@ serve(async (req: Request): Promise<Response> => {
 
     const data: PappersResponse = await pappersResponse.json();
 
+    // Extract director name (first representant with qualite containing "Gérant" or "Président")
+    let directorName = '';
+    if (data.representants && data.representants.length > 0) {
+      const director = data.representants.find(r => 
+        r.qualite?.toLowerCase().includes('gérant') || 
+        r.qualite?.toLowerCase().includes('président') ||
+        r.qualite?.toLowerCase().includes('directeur')
+      ) || data.representants[0];
+      
+      if (director.prenom && director.nom) {
+        directorName = `${director.prenom} ${director.nom}`;
+      } else if (director.nom) {
+        directorName = director.nom;
+      }
+    }
+
     const response: VerifyResponse = {
       valid: true,
       companyName: data.denomination || data.nom_entreprise || '',
@@ -100,6 +127,8 @@ serve(async (req: Request): Promise<Response> => {
       address: data.siege?.adresse_ligne_1 || '',
       city: data.siege?.ville || '',
       postalCode: data.siege?.code_postal || '',
+      directorName: directorName,
+      creationDate: data.date_creation_formate || data.date_creation || '',
     };
 
     return new Response(
