@@ -7013,3 +7013,78 @@
 .dark .inline-success {
   color: hsl(142 76% 55%);
 }
+
+/* SIRET input wrapper for positioning status icon */
+.siret-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.siret-input-wrapper .siret-input {
+  padding-right: 2.5rem;
+}
+
+.siret-status-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.siret-status-icon.loading {
+  color: hsl(var(--primary));
+  animation: spin 1s linear infinite;
+}
+
+.siret-status-icon.success {
+  color: hsl(142 76% 36%);
+}
+
+.siret-status-icon.error {
+  color: hsl(0 84% 50%);
+}
+
+@keyframes spin {
+  from { transform: translateY(-50%) rotate(0deg); }
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.text-input.input-success {
+  border-color: hsl(142 76% 36%);
+  box-shadow: 0 0 0 3px hsl(142 76% 36% / 0.1);
+}
+
+.inline-pending {
+  color: hsl(var(--primary));
+  font-weight: 500;
+}
+
+.char-counter.pending {
+  background: hsl(var(--primary) / 0.15);
+  color: hsl(var(--primary));
+}
+
+/* Dark mode for new styles */
+.dark .siret-status-icon.success {
+  color: hsl(142 76% 55%);
+}
+
+.dark .siret-status-icon.error {
+  color: hsl(0 84% 65%);
+}
+
+.dark .text-input.input-success {
+  border-color: hsl(142 76% 45%);
+  box-shadow: 0 0 0 3px hsl(142 76% 45% / 0.15);
+}
+
+.dark .inline-pending {
+  color: hsl(var(--primary));
+}
+
+.dark .char-counter.pending {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+}
