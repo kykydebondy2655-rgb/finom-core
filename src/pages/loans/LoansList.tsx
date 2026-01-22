@@ -77,6 +77,7 @@ const LoansList: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Référence</th>
+                      <th>Type</th>
                       <th>Montant</th>
                       <th>Durée</th>
                       <th>Mensualité</th>
@@ -94,6 +95,13 @@ const LoansList: React.FC = () => {
                       >
                         <td>
                           <span className="ref-badge">#{loan.id.slice(0, 8)}</span>
+                        </td>
+                        <td>
+                          {loan.borrower_type === 'entreprise' ? (
+                            <span className="borrower-type-badge entreprise" title={loan.company_name || 'Entreprise'}>🏢</span>
+                          ) : (
+                            <span className="borrower-type-badge particulier" title="Particulier">👤</span>
+                          )}
                         </td>
                         <td className="amount">{formatCurrency(loan.amount)}</td>
                         <td>{loan.duration} ans</td>

@@ -25,7 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/finom/Toast';
 import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
-import { loanApplicationSchema, coborrowerSchema, type BorrowerType } from '@/lib/validations/loanSchemas';
+import { loanApplicationSchema, coborrowerSchema, companySchema, type BorrowerType } from '@/lib/validations/loanSchemas';
 import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
 import { Wallet, ShieldCheck, Home, Building2 } from 'lucide-react';
 
@@ -171,6 +171,16 @@ const Simulator = () => {
       const firstError = validationResult.error.errors[0];
       toast.error(firstError?.message || 'Données de simulation invalides');
       return;
+    }
+
+    // Validate company data if enterprise loan
+    if (formData.borrowerType === 'entreprise') {
+      const companyValidation = companySchema.safeParse(companyData);
+      if (!companyValidation.success) {
+        const firstError = companyValidation.error.errors[0];
+        toast.error(`Entreprise: ${firstError?.message || 'Données invalides'}`);
+        return;
+      }
     }
 
     // Validate coborrower data if present
