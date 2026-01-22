@@ -27,12 +27,17 @@ import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
 import { loanApplicationSchema, coborrowerSchema, companySchema, type BorrowerType } from '@/lib/validations/loanSchemas';
 import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
-import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle, RefreshCw, MapPin, User, Calendar } from 'lucide-react';
 
 interface CompanyFormData {
   companyName: string;
   companySiret: string;
   companyLegalForm: string;
+  companyAddress: string;
+  companyPostalCode: string;
+  companyCity: string;
+  directorName: string;
+  creationDate: string;
 }
 
 interface FormData {
@@ -88,7 +93,12 @@ const Simulator = () => {
   const [companyData, setCompanyData] = useState<CompanyFormData>({
     companyName: '',
     companySiret: '',
-    companyLegalForm: ''
+    companyLegalForm: '',
+    companyAddress: '',
+    companyPostalCode: '',
+    companyCity: '',
+    directorName: '',
+    creationDate: ''
   });
 
   // SIRET verification state
@@ -148,11 +158,16 @@ const Simulator = () => {
       }
 
       if (data.valid) {
-        // Auto-fill company data
+        // Auto-fill company data from Pappers
         setCompanyData(prev => ({
           ...prev,
           companyName: data.companyName || prev.companyName,
-          companyLegalForm: mapLegalForm(data.legalForm) || prev.companyLegalForm
+          companyLegalForm: mapLegalForm(data.legalForm) || prev.companyLegalForm,
+          companyAddress: data.address || '',
+          companyPostalCode: data.postalCode || '',
+          companyCity: data.city || '',
+          directorName: data.directorName || '',
+          creationDate: data.creationDate || ''
         }));
         setSiretVerification({ loading: false, verified: true, error: null });
         toast.success('Entreprise vérifiée avec succès');
@@ -162,6 +177,13 @@ const Simulator = () => {
     } catch (err) {
       console.error('SIRET verification error:', err);
       setSiretVerification({ loading: false, verified: false, error: 'Erreur de connexion' });
+    }
+  };
+
+  // Manual re-verification
+  const handleReVerify = () => {
+    if (companyData.companySiret.length === 14) {
+      verifySiret(companyData.companySiret);
     }
   };
 
@@ -571,6 +593,17 @@ const Simulator = () => {
                             {!siretVerification.loading && !siretVerification.error && !siretVerification.verified && companyData.companySiret.length > 0 && companyData.companySiret.length !== 14 && (
                               <span className="inline-error">Le SIRET doit contenir exactement 14 chiffres</span>
                             )}
+                            {companyData.companySiret.length === 14 && !siretVerification.loading && (
+                              <button
+                                type="button"
+                                onClick={handleReVerify}
+                                className="reverify-btn"
+                                title="Re-vérifier le SIRET"
+                              >
+                                <RefreshCw size={14} />
+                                Re-vérifier
+                              </button>
+                            )}
                           </div>
                         </div>
 
@@ -595,6 +628,48 @@ const Simulator = () => {
                           </select>
                         </div>
                       </motion.div>
+
+                      {/* Company info from Pappers */}
+                      {siretVerification.verified && (
+                        <motion.div 
+                          className="company-info-card"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="company-info-header">
+                            <CheckCircle size={16} className="text-green-600" />
+                            <span>Informations vérifiées</span>
+                          </div>
+                          <div className="company-info-grid">
+                            {companyData.directorName && (
+                              <div className="company-info-item">
+                                <User size={14} />
+                                <span className="company-info-label">Dirigeant</span>
+                                <span className="company-info-value">{companyData.directorName}</span>
+                              </div>
+                            )}
+                            {companyData.creationDate && (
+                              <div className="company-info-item">
+                                <Calendar size={14} />
+                                <span className="company-info-label">Création</span>
+                                <span className="company-info-value">{companyData.creationDate}</span>
+                              </div>
+                            )}
+                            {(companyData.companyAddress || companyData.companyCity) && (
+                              <div className="company-info-item full-width">
+                                <MapPin size={14} />
+                                <span className="company-info-label">Adresse</span>
+                                <span className="company-info-value">
+                                  {[companyData.companyAddress, companyData.companyPostalCode, companyData.companyCity]
+                                    .filter(Boolean)
+                                    .join(', ')}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
                     </>
                   )}
 
