@@ -335,6 +335,48 @@ const LoanDetail: React.FC = () => {
           {activeTab === 'overview' && (
             <div className="tab-content fade-in">
               <div className="overview-grid">
+                {/* Borrower Type Card */}
+                <Card className="borrower-type-card" padding="lg">
+                  <h3>Type d'emprunteur</h3>
+                  <div className="borrower-type-info">
+                    <div className="borrower-badge-wrapper">
+                      {loan.borrower_type === 'entreprise' ? (
+                        <span className="borrower-badge entreprise">
+                          <FileText size={18} className="inline-icon" />
+                          Entreprise
+                        </span>
+                      ) : (
+                        <span className="borrower-badge particulier">
+                          <User size={18} className="inline-icon" />
+                          Particulier
+                        </span>
+                      )}
+                    </div>
+                    {loan.borrower_type === 'entreprise' && (
+                      <div className="company-details">
+                        {loan.company_name && (
+                          <div className="company-row">
+                            <span className="company-label">Raison sociale</span>
+                            <strong>{loan.company_name}</strong>
+                          </div>
+                        )}
+                        {loan.company_siret && (
+                          <div className="company-row">
+                            <span className="company-label">SIRET</span>
+                            <strong className="siret-value">{loan.company_siret}</strong>
+                          </div>
+                        )}
+                        {loan.company_legal_form && (
+                          <div className="company-row">
+                            <span className="company-label">Forme juridique</span>
+                            <strong>{loan.company_legal_form}</strong>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
                 <Card className="summary-card" padding="lg">
                   <h3>Résumé du financement</h3>
                   <div className="summary-rows">

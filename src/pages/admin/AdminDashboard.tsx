@@ -21,7 +21,9 @@ import {
   Settings,
   Shield,
   BarChart3,
-  Headphones
+  Headphones,
+  Building2,
+  User
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -32,10 +34,27 @@ interface DashboardStats {
   totalAmount: number;
 }
 
+interface BorrowerTypeStats {
+  particulier: {
+    count: number;
+    totalAmount: number;
+    pendingCount: number;
+  };
+  entreprise: {
+    count: number;
+    totalAmount: number;
+    pendingCount: number;
+  };
+}
+
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({ clients: 0, agents: 0, loans: 0, pendingLoans: 0, totalAmount: 0 });
+  const [borrowerStats, setBorrowerStats] = useState<BorrowerTypeStats>({
+    particulier: { count: 0, totalAmount: 0, pendingCount: 0 },
+    entreprise: { count: 0, totalAmount: 0, pendingCount: 0 },
+  });
   const [loansByStatus, setLoansByStatus] = useState<{ status: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,6 +80,23 @@ const AdminDashboard: React.FC = () => {
         loans: typedLoans.length,
         pendingLoans: typedLoans.filter(l => l.status === 'pending').length,
         totalAmount: typedLoans.reduce((sum, l) => sum + (l.down_payment || 0), 0)
+      });
+
+      // Calculate borrower type stats
+      const particulierLoans = typedLoans.filter(l => l.borrower_type === 'particulier' || !l.borrower_type);
+      const entrepriseLoans = typedLoans.filter(l => l.borrower_type === 'entreprise');
+      
+      setBorrowerStats({
+        particulier: {
+          count: particulierLoans.length,
+          totalAmount: particulierLoans.reduce((sum, l) => sum + (l.amount || 0), 0),
+          pendingCount: particulierLoans.filter(l => l.status === 'pending').length,
+        },
+        entreprise: {
+          count: entrepriseLoans.length,
+          totalAmount: entrepriseLoans.reduce((sum, l) => sum + (l.amount || 0), 0),
+          pendingCount: entrepriseLoans.filter(l => l.status === 'pending').length,
+        },
       });
 
       // Group loans by status for chart
@@ -125,6 +161,53 @@ const AdminDashboard: React.FC = () => {
               <span className="stat-value">{formatCurrency(stats.totalAmount)}</span>
               <span className="stat-label">Montant total des apports</span>
             </Card>
+          </div>
+
+          {/* Borrower Type Stats */}
+          <div className="borrower-stats-section fade-in">
+            <h3>Statistiques par type d'emprunteur</h3>
+            <div className="borrower-stats-grid">
+              <Card className="borrower-stat-card particulier" padding="lg">
+                <div className="borrower-stat-header">
+                  <span className="borrower-stat-icon"><User size={24} /></span>
+                  <span className="borrower-stat-title">Particuliers</span>
+                </div>
+                <div className="borrower-stat-content">
+                  <div className="borrower-stat-row">
+                    <span>Dossiers</span>
+                    <strong>{borrowerStats.particulier.count}</strong>
+                  </div>
+                  <div className="borrower-stat-row">
+                    <span>Montant total</span>
+                    <strong>{formatCurrency(borrowerStats.particulier.totalAmount)}</strong>
+                  </div>
+                  <div className="borrower-stat-row highlight">
+                    <span>En attente</span>
+                    <strong>{borrowerStats.particulier.pendingCount}</strong>
+                  </div>
+                </div>
+              </Card>
+              <Card className="borrower-stat-card entreprise" padding="lg">
+                <div className="borrower-stat-header">
+                  <span className="borrower-stat-icon"><Building2 size={24} /></span>
+                  <span className="borrower-stat-title">Entreprises</span>
+                </div>
+                <div className="borrower-stat-content">
+                  <div className="borrower-stat-row">
+                    <span>Dossiers</span>
+                    <strong>{borrowerStats.entreprise.count}</strong>
+                  </div>
+                  <div className="borrower-stat-row">
+                    <span>Montant total</span>
+                    <strong>{formatCurrency(borrowerStats.entreprise.totalAmount)}</strong>
+                  </div>
+                  <div className="borrower-stat-row highlight">
+                    <span>En attente</span>
+                    <strong>{borrowerStats.entreprise.pendingCount}</strong>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
 
           {/* Charts Section */}
