@@ -337,17 +337,27 @@ const LoanDetail: React.FC = () => {
               <div className="overview-grid">
                 {/* Borrower Type Card */}
                 <Card className="borrower-type-card" padding="lg">
-                  <h3>Type d'emprunteur</h3>
+                  <h3>
+                    {loan.borrower_type === 'entreprise' ? (
+                      <><FileText size={18} /> Type d'emprunteur</>
+                    ) : (
+                      <><User size={18} /> Type d'emprunteur</>
+                    )}
+                  </h3>
                   <div className="borrower-type-info">
                     <div className="borrower-badge-wrapper">
                       {loan.borrower_type === 'entreprise' ? (
                         <span className="borrower-badge entreprise">
-                          <FileText size={18} className="inline-icon" />
+                          <span className="inline-icon">
+                            <FileText size={20} />
+                          </span>
                           Entreprise
                         </span>
                       ) : (
                         <span className="borrower-badge particulier">
-                          <User size={18} className="inline-icon" />
+                          <span className="inline-icon">
+                            <User size={20} />
+                          </span>
                           Particulier
                         </span>
                       )}

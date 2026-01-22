@@ -3907,88 +3907,193 @@
   color: hsl(var(--primary));
 }
 
-/* ============= Borrower Type Card (Loan Detail) ============= */
+/* ============= Borrower Type Card (Loan Detail) - Enhanced ============= */
 .borrower-type-card {
   grid-column: span 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.borrower-type-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+}
+
+.borrower-type-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .borrower-type-info {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .borrower-badge-wrapper {
+  display: flex;
+  justify-content: center;
   margin-bottom: 0.5rem;
 }
 
 .borrower-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.borrower-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .borrower-badge .inline-icon {
-  margin-right: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .borrower-badge.particulier {
-  background: #DBEAFE;
-  color: #1D4ED8;
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  color: white;
+}
+
+.borrower-badge.particulier .inline-icon {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .borrower-badge.entreprise {
-  background: #EDE9FE;
-  color: #7C3AED;
+  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  color: white;
+}
+
+.borrower-badge.entreprise .inline-icon {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .company-details {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: hsl(var(--muted) / 0.5);
-  border-radius: 10px;
+  gap: 0;
+  border-radius: 12px;
   border: 1px solid hsl(var(--border));
+  overflow: hidden;
+  background: hsl(var(--card));
 }
 
 .company-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid hsl(var(--border));
+  transition: background 0.2s ease;
+}
+
+.company-row:last-child {
+  border-bottom: none;
+}
+
+.company-row:hover {
+  background: hsl(var(--muted) / 0.5);
 }
 
 .company-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   color: hsl(var(--muted-foreground));
   font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.company-label::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8B5CF6;
 }
 
 .company-row strong {
-  font-weight: 600;
+  font-weight: 700;
   color: hsl(var(--foreground));
+  text-align: right;
 }
 
 .siret-value {
   font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-  background: hsl(var(--muted));
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
   font-size: 0.9rem;
+  font-weight: 600;
+  color: #6D28D9;
+  letter-spacing: 0.5px;
+}
+
+/* Company details header icon badges */
+.company-details-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.company-details-header svg {
+  opacity: 0.8;
 }
 
 /* Dark mode */
+.dark .borrower-type-card::before {
+  background: linear-gradient(90deg, #60A5FA, #A78BFA);
+}
+
 .dark .borrower-badge.particulier {
-  background: rgba(59, 130, 246, 0.2);
-  color: #93C5FD;
+  background: linear-gradient(135deg, #2563EB, #1E40AF);
 }
 
 .dark .borrower-badge.entreprise {
-  background: rgba(139, 92, 246, 0.2);
+  background: linear-gradient(135deg, #7C3AED, #6D28D9);
+}
+
+.dark .company-details {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark .company-row:hover {
+  background: hsl(var(--muted) / 0.3);
+}
+
+.dark .siret-value {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(109, 40, 217, 0.3));
   color: #C4B5FD;
+}
+
+.dark .company-label::before {
+  background: #A78BFA;
 }
 
 .dark .borrower-type-badge.particulier {
