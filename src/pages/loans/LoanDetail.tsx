@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { 
   RefreshCw, FileText, Search, CheckCircle2, XCircle, Coins, 
   Clock, ClipboardList, Cog, Mail, Users, User, ArrowUpFromLine,
-  ArrowDownToLine, X, Plus, FileStack, MessageCircle, Calendar, Calculator, ListChecks
+  ArrowDownToLine, X, Plus, FileStack, MessageCircle, Calendar, Calculator, ListChecks, Trash2
 } from 'lucide-react';
 import StatusBadge from '@/components/common/StatusBadge';
 import { loansApi, documentsApi, messagesApi, adminApi, formatCurrency, formatDate, formatDateTime } from '@/services/api';
@@ -36,6 +36,7 @@ import LoanTimeline from '@/components/loans/LoanTimeline';
 import AmortizationSchedule from '@/components/loans/AmortizationSchedule';
 import AppointmentBooking from '@/components/appointments/AppointmentBooking';
 import { supabase } from '@/integrations/supabase/client';
+import { storageService } from '@/services/storageService';
 
 const LoanDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -59,6 +60,7 @@ const LoanDetail: React.FC = () => {
   const [clientProfile, setClientProfile] = useState<Profile | null>(null);
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [statusHistory, setStatusHistory] = useState<Array<{ new_status: string; created_at: string; notes?: string | null }>>([]);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -171,6 +173,47 @@ const LoanDetail: React.FC = () => {
       logger.logError('Error sending message', err);
     } finally {
       setSendingMessage(false);
+    }
+  };
+
+  // Admin document deletion handler
+  const handleDeleteDocument = async (doc: Document) => {
+    if (!isAdmin) {
+      toast.error('Seuls les administrateurs peuvent supprimer des documents');
+      return;
+    }
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le document "${doc.file_name}" ? Cette action est irréversible.`)) {
+      return;
+    }
+
+    try {
+      setDeletingDocId(doc.id);
+
+      // Delete from storage first
+      const storageResult = await storageService.deleteDocument(doc.file_path);
+      if (!storageResult.success) {
+        logger.warn('Storage deletion failed', { error: storageResult.error });
+        // Continue with DB deletion even if storage fails (file might already be gone)
+      }
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', doc.id);
+
+      if (dbError) {
+        throw new Error(dbError.message);
+      }
+
+      toast.success('Document supprimé avec succès');
+      loadLoanData(); // Refresh documents list
+    } catch (err) {
+      logger.logError('Document deletion error', err);
+      toast.error('Erreur lors de la suppression du document');
+    } finally {
+      setDeletingDocId(null);
     }
   };
 
@@ -673,15 +716,32 @@ const LoanDetail: React.FC = () => {
                             )}
                           </div>
                           <StatusBadge status={doc.status} size="sm" />
-                          {doc.status === 'rejected' && (
-                            <ReplaceDocumentButton
-                              documentId={doc.id}
-                              documentCategory={doc.category || 'other'}
-                              loanId={id}
-                              documentOwner={doc.document_owner as 'primary' | 'co_borrower' | undefined}
-                              onSuccess={loadLoanData}
-                            />
-                          )}
+                          <div className="doc-actions-wrapper">
+                            {doc.status === 'rejected' && (
+                              <ReplaceDocumentButton
+                                documentId={doc.id}
+                                documentCategory={doc.category || 'other'}
+                                loanId={id}
+                                documentOwner={doc.document_owner as 'primary' | 'co_borrower' | undefined}
+                                onSuccess={loadLoanData}
+                              />
+                            )}
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                className="doc-delete-btn"
+                                onClick={() => handleDeleteDocument(doc)}
+                                disabled={deletingDocId === doc.id}
+                                title="Supprimer ce document"
+                              >
+                                {deletingDocId === doc.id ? (
+                                  <span className="spinner-sm" />
+                                ) : (
+                                  <Trash2 size={16} />
+                                )}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
                   </div>

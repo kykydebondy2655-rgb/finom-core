@@ -1,6 +1,6 @@
 /**
  * Component to display documents received from admin (incoming documents)
- * Allows clients to download these documents
+ * Allows clients to download these documents and admins to delete them
  */
 
 import React, { useState, useEffect, forwardRef } from 'react';
@@ -10,10 +10,11 @@ import StatusBadge from '@/components/common/StatusBadge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/finom/Toast';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import { storageService } from '@/services/storageService';
 import { formatDate } from '@/services/api';
 import logger from '@/lib/logger';
-import { ClipboardList, FileText, PenLine, BarChart3, FileStack, Mail, Download, Loader2, Inbox } from 'lucide-react';
+import { ClipboardList, FileText, PenLine, BarChart3, FileStack, Mail, Download, Loader2, Inbox, Trash2 } from 'lucide-react';
 
 interface ReceivedDocument {
   id: string;
@@ -23,11 +24,13 @@ interface ReceivedDocument {
   motif: string | null;
   uploaded_at: string;
   status: string | null;
+  loan_id?: string | null;
 }
 
 interface ReceivedDocumentsListProps {
   loanId?: string;
   showTitle?: boolean;
+  onRefresh?: () => void;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -55,13 +58,16 @@ const getCategoryIcon = (category: string | null): React.ReactNode => {
 
 const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListProps>(({ 
   loanId,
-  showTitle = true 
+  showTitle = true,
+  onRefresh
 }, ref) => {
   const { user } = useAuth();
+  const { isAdmin } = useUserRoles();
   const toast = useToast();
   const [documents, setDocuments] = useState<ReceivedDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState<string | null>(null);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -75,16 +81,19 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
     try {
       setLoading(true);
       
+      // For admins, we may need to see documents for a specific loan even if user_id doesn't match
       let query = supabase
         .from('documents')
-        .select('id, file_name, file_path, category, motif, uploaded_at, status, loan_id')
-        .eq('user_id', user.id)
+        .select('id, file_name, file_path, category, motif, uploaded_at, status, loan_id, user_id')
         .eq('direction', 'incoming')
         .order('uploaded_at', { ascending: false });
 
-      // Show documents for this specific loan OR general documents (no loan_id)
       if (loanId) {
-        query = query.or(`loan_id.eq.${loanId},loan_id.is.null`);
+        // If viewing a specific loan, show all incoming docs for that loan
+        query = query.eq('loan_id', loanId);
+      } else {
+        // Otherwise, show user's own incoming documents
+        query = query.eq('user_id', user.id);
       }
 
       const { data, error } = await query;
@@ -131,6 +140,48 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
       toast.error('Erreur lors du téléchargement');
     } finally {
       setDownloading(null);
+    }
+  };
+
+  // Admin document deletion handler
+  const handleDeleteDocument = async (doc: ReceivedDocument) => {
+    if (!isAdmin) {
+      toast.error('Seuls les administrateurs peuvent supprimer des documents');
+      return;
+    }
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le document "${doc.file_name}" ? Cette action est irréversible.`)) {
+      return;
+    }
+
+    try {
+      setDeletingDocId(doc.id);
+
+      // Delete from storage first
+      const storageResult = await storageService.deleteDocument(doc.file_path);
+      if (!storageResult.success) {
+        logger.warn('Storage deletion failed', { error: storageResult.error });
+        // Continue with DB deletion even if storage fails
+      }
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', doc.id);
+
+      if (dbError) {
+        throw new Error(dbError.message);
+      }
+
+      toast.success('Document supprimé avec succès');
+      loadDocuments(); // Refresh list
+      onRefresh?.(); // Notify parent to refresh
+    } catch (err) {
+      logger.logError('Document deletion error', err);
+      toast.error('Erreur lors de la suppression du document');
+    } finally {
+      setDeletingDocId(null);
     }
   };
 
@@ -190,6 +241,21 @@ const ReceivedDocumentsList = forwardRef<HTMLDivElement, ReceivedDocumentsListPr
                 {downloading === doc.id ? <Loader2 size={14} className="animate-spin mr-1" /> : <Download size={14} className="mr-1" />}
                 Télécharger
               </Button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="doc-delete-btn"
+                  onClick={() => handleDeleteDocument(doc)}
+                  disabled={deletingDocId === doc.id}
+                  title="Supprimer ce document"
+                >
+                  {deletingDocId === doc.id ? (
+                    <span className="spinner-sm" />
+                  ) : (
+                    <Trash2 size={16} />
+                  )}
+                </button>
+              )}
             </div>
           </div>
         ))}
