@@ -27,7 +27,7 @@ import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
 import { loanApplicationSchema, coborrowerSchema, companySchema, type BorrowerType } from '@/lib/validations/loanSchemas';
 import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
-import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle, RefreshCw, MapPin, User, Calendar } from 'lucide-react';
+import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle, RefreshCw, MapPin, User, Calendar, TrendingUp, Users, Edit3 } from 'lucide-react';
 
 interface CompanyFormData {
   companyName: string;
@@ -38,7 +38,10 @@ interface CompanyFormData {
   companyCity: string;
   directorName: string;
   creationDate: string;
+  revenue: number | null;
+  workforce: string;
 }
+
 
 interface FormData {
   propertyPrice: number;
@@ -98,8 +101,13 @@ const Simulator = () => {
     companyPostalCode: '',
     companyCity: '',
     directorName: '',
-    creationDate: ''
+    creationDate: '',
+    revenue: null,
+    workforce: ''
   });
+
+  // Track original Pappers data for modification detection
+  const [pappersOriginal, setPappersOriginal] = useState<{ companyName: string; companyLegalForm: string } | null>(null);
 
   // SIRET verification state
   const [siretVerification, setSiretVerification] = useState<{
@@ -158,17 +166,25 @@ const Simulator = () => {
       }
 
       if (data.valid) {
+        const mappedLegalForm = mapLegalForm(data.legalForm) || '';
         // Auto-fill company data from Pappers
         setCompanyData(prev => ({
           ...prev,
           companyName: data.companyName || prev.companyName,
-          companyLegalForm: mapLegalForm(data.legalForm) || prev.companyLegalForm,
+          companyLegalForm: mappedLegalForm || prev.companyLegalForm,
           companyAddress: data.address || '',
           companyPostalCode: data.postalCode || '',
           companyCity: data.city || '',
           directorName: data.directorName || '',
-          creationDate: data.creationDate || ''
+          creationDate: data.creationDate || '',
+          revenue: data.revenue || null,
+          workforce: data.workforce || ''
         }));
+        // Store original Pappers data for modification tracking
+        setPappersOriginal({
+          companyName: data.companyName || '',
+          companyLegalForm: mappedLegalForm
+        });
         setSiretVerification({ loading: false, verified: true, error: null });
         toast.success('Entreprise vérifiée avec succès');
       } else {
@@ -537,13 +553,20 @@ const Simulator = () => {
                   {formData.borrowerType === 'entreprise' && (
                     <>
                       <motion.div className="form-group" variants={fadeInUp}>
-                        <label>Raison sociale</label>
+                        <div className="field-with-indicator">
+                          <label>Raison sociale</label>
+                          {pappersOriginal && companyData.companyName !== pappersOriginal.companyName && (
+                            <span className="modified-indicator" title="Modifié manuellement">
+                              <Edit3 size={12} /> Modifié
+                            </span>
+                          )}
+                        </div>
                         <input
                           type="text"
                           value={companyData.companyName}
                           onChange={(e) => setCompanyData(prev => ({ ...prev, companyName: e.target.value }))}
                           placeholder="Nom de l'entreprise"
-                          className="text-input"
+                          className={`text-input ${pappersOriginal && companyData.companyName !== pappersOriginal.companyName ? 'input-modified' : ''}`}
                         />
                       </motion.div>
 
@@ -608,11 +631,18 @@ const Simulator = () => {
                         </div>
 
                         <div className="form-group half">
-                          <label>Forme juridique</label>
+                          <div className="field-with-indicator">
+                            <label>Forme juridique</label>
+                            {pappersOriginal && companyData.companyLegalForm !== pappersOriginal.companyLegalForm && (
+                              <span className="modified-indicator" title="Modifié manuellement">
+                                <Edit3 size={12} /> Modifié
+                              </span>
+                            )}
+                          </div>
                           <select
                             value={companyData.companyLegalForm}
                             onChange={(e) => setCompanyData(prev => ({ ...prev, companyLegalForm: e.target.value }))}
-                            className="select-input"
+                            className={`select-input ${pappersOriginal && companyData.companyLegalForm !== pappersOriginal.companyLegalForm ? 'input-modified' : ''}`}
                             disabled={siretVerification.loading}
                           >
                             <option value="">Sélectionner...</option>
@@ -665,6 +695,22 @@ const Simulator = () => {
                                     .filter(Boolean)
                                     .join(', ')}
                                 </span>
+                              </div>
+                            )}
+                            {companyData.revenue && (
+                              <div className="company-info-item">
+                                <TrendingUp size={14} />
+                                <span className="company-info-label">CA</span>
+                                <span className="company-info-value">
+                                  {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(companyData.revenue)}
+                                </span>
+                              </div>
+                            )}
+                            {companyData.workforce && (
+                              <div className="company-info-item">
+                                <Users size={14} />
+                                <span className="company-info-label">Effectif</span>
+                                <span className="company-info-value">{companyData.workforce}</span>
                               </div>
                             )}
                           </div>

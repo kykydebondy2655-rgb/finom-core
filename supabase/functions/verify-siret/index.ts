@@ -19,6 +19,16 @@ interface PappersResponse {
   forme_juridique?: string;
   date_creation?: string;
   date_creation_formate?: string;
+  effectif?: string;
+  tranche_effectif?: string;
+  chiffre_affaires?: number;
+  dernier_bilan?: {
+    chiffre_affaires?: number;
+    resultat?: number;
+  };
+  finances?: {
+    chiffre_affaires?: number;
+  }[];
   representants?: PappersRepresentant[];
   siege?: {
     siret: string;
@@ -37,6 +47,8 @@ interface VerifyResponse {
   postalCode?: string;
   directorName?: string;
   creationDate?: string;
+  revenue?: number;
+  workforce?: string;
   error?: string;
 }
 
@@ -120,6 +132,14 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
+    // Extract revenue (chiffre d'affaires)
+    const revenue = data.chiffre_affaires || 
+                    data.dernier_bilan?.chiffre_affaires || 
+                    (data.finances && data.finances.length > 0 ? data.finances[0].chiffre_affaires : undefined);
+
+    // Extract workforce (effectif)
+    const workforce = data.effectif || data.tranche_effectif || '';
+
     const response: VerifyResponse = {
       valid: true,
       companyName: data.denomination || data.nom_entreprise || '',
@@ -129,6 +149,8 @@ serve(async (req: Request): Promise<Response> => {
       postalCode: data.siege?.code_postal || '',
       directorName: directorName,
       creationDate: data.date_creation_formate || data.date_creation || '',
+      revenue: revenue,
+      workforce: workforce,
     };
 
     return new Response(
