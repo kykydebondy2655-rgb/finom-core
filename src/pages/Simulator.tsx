@@ -27,7 +27,7 @@ import logger from '@/lib/logger';
 import CoborrowerSection from '@/components/loans/CoborrowerSection';
 import { loanApplicationSchema, coborrowerSchema, companySchema, type BorrowerType } from '@/lib/validations/loanSchemas';
 import { useSEO, SEO_CONFIGS } from '@/hooks/useSEO';
-import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle, RefreshCw, MapPin, User, Calendar, TrendingUp, Users, Edit3 } from 'lucide-react';
+import { Wallet, ShieldCheck, Home, Building2, Loader2, CheckCircle, XCircle, RefreshCw, MapPin, User, Calendar, TrendingUp, Users, Edit3, RotateCcw } from 'lucide-react';
 
 interface CompanyFormData {
   companyName: string;
@@ -200,6 +200,24 @@ const Simulator = () => {
   const handleReVerify = () => {
     if (companyData.companySiret.length === 14) {
       verifySiret(companyData.companySiret);
+    }
+  };
+
+  // Check if any field has been modified from Pappers original
+  const hasModifiedFields = pappersOriginal && (
+    companyData.companyName !== pappersOriginal.companyName ||
+    companyData.companyLegalForm !== pappersOriginal.companyLegalForm
+  );
+
+  // Reset modified fields to original Pappers values
+  const handleResetToPappers = () => {
+    if (pappersOriginal) {
+      setCompanyData(prev => ({
+        ...prev,
+        companyName: pappersOriginal.companyName,
+        companyLegalForm: pappersOriginal.companyLegalForm
+      }));
+      toast.success('Valeurs Pappers restaurées');
     }
   };
 
@@ -552,6 +570,26 @@ const Simulator = () => {
                   {/* Company fields for enterprise loans */}
                   {formData.borrowerType === 'entreprise' && (
                     <>
+                      {/* Reset button for modified fields */}
+                      {hasModifiedFields && (
+                        <motion.div 
+                          className="reset-pappers-wrapper"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                        >
+                          <button
+                            type="button"
+                            onClick={handleResetToPappers}
+                            className="reset-pappers-btn"
+                            title="Restaurer les valeurs originales Pappers"
+                          >
+                            <RotateCcw size={14} />
+                            Restaurer les valeurs Pappers
+                          </button>
+                        </motion.div>
+                      )}
+
                       <motion.div className="form-group" variants={fadeInUp}>
                         <div className="field-with-indicator">
                           <label>Raison sociale</label>
