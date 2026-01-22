@@ -1,13 +1,53 @@
 import { z } from 'zod';
 
-// Allowed project types for loan applications
-export const PROJECT_TYPES = [
+// Borrower types
+export const BORROWER_TYPES = ['particulier', 'entreprise'] as const;
+export type BorrowerType = typeof BORROWER_TYPES[number];
+
+// Allowed project types for individual loan applications
+export const PROJECT_TYPES_PARTICULIER = [
   'achat_residence_principale',
   'achat_residence_secondaire', 
   'investissement_locatif',
   'construction',
   'renovation'
 ] as const;
+
+// Allowed project types for business loan applications
+export const PROJECT_TYPES_ENTREPRISE = [
+  'achat_locaux_commerciaux',
+  'investissement_locatif_pro',
+  'construction_pro',
+  'renovation_pro'
+] as const;
+
+// All project types combined
+export const PROJECT_TYPES = [
+  ...PROJECT_TYPES_PARTICULIER,
+  ...PROJECT_TYPES_ENTREPRISE
+] as const;
+
+// Company legal forms
+export const COMPANY_LEGAL_FORMS = [
+  'SARL',
+  'SAS',
+  'SASU',
+  'EURL',
+  'SCI',
+  'SA',
+  'SNC',
+  'Auto-entrepreneur',
+  'Autre'
+] as const;
+
+// Company data validation schema
+export const companySchema = z.object({
+  companyName: z.string().trim().min(1, 'Raison sociale requise').max(255, 'Raison sociale trop longue'),
+  companySiret: z.string().trim().length(14, 'Le SIRET doit contenir 14 chiffres').regex(/^\d{14}$/, 'SIRET invalide'),
+  companyLegalForm: z.enum(COMPANY_LEGAL_FORMS, {
+    errorMap: () => ({ message: 'Forme juridique invalide' })
+  })
+});
 
 // Loan application validation schema
 export const loanApplicationSchema = z.object({
@@ -33,7 +73,10 @@ export const loanApplicationSchema = z.object({
     .max(20, 'Le taux semble anormalement élevé'),
   projectType: z.enum(PROJECT_TYPES, {
     errorMap: () => ({ message: 'Type de projet invalide' })
-  })
+  }),
+  borrowerType: z.enum(BORROWER_TYPES, {
+    errorMap: () => ({ message: 'Type de demandeur invalide' })
+  }).optional()
 });
 
 // Co-borrower validation schema
@@ -51,3 +94,4 @@ export const coborrowerSchema = z.object({
 
 export type LoanApplicationData = z.infer<typeof loanApplicationSchema>;
 export type CoborrowerData = z.infer<typeof coborrowerSchema>;
+export type CompanyData = z.infer<typeof companySchema>;

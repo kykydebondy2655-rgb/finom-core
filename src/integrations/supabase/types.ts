@@ -768,7 +768,11 @@ export type Database = {
           agency_fees: number | null
           amount: number
           assurance_status: string | null
+          borrower_type: string | null
           coborrower_data: Json | null
+          company_legal_form: string | null
+          company_name: string | null
+          company_siret: string | null
           created_at: string
           debt_ratio_est: number | null
           down_payment: number | null
@@ -808,7 +812,11 @@ export type Database = {
           agency_fees?: number | null
           amount: number
           assurance_status?: string | null
+          borrower_type?: string | null
           coborrower_data?: Json | null
+          company_legal_form?: string | null
+          company_name?: string | null
+          company_siret?: string | null
           created_at?: string
           debt_ratio_est?: number | null
           down_payment?: number | null
@@ -848,7 +856,11 @@ export type Database = {
           agency_fees?: number | null
           amount?: number
           assurance_status?: string | null
+          borrower_type?: string | null
           coborrower_data?: Json | null
+          company_legal_form?: string | null
+          company_name?: string | null
+          company_siret?: string | null
           created_at?: string
           debt_ratio_est?: number | null
           down_payment?: number | null
