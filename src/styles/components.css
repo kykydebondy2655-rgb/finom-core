@@ -7291,3 +7291,56 @@
   border-color: hsl(38 92% 50% / 0.4);
   color: hsl(38 92% 70%);
 }
+
+/* Document delete button */
+.doc-actions-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.doc-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: hsl(0 0% 95%);
+  color: hsl(0 60% 50%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.doc-delete-btn:hover:not(:disabled) {
+  background: hsl(0 60% 50%);
+  color: white;
+}
+
+.doc-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.doc-delete-btn .spinner-sm {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Dark mode for delete button */
+.dark .doc-delete-btn {
+  background: hsl(0 0% 20%);
+  color: hsl(0 60% 60%);
+}
+
+.dark .doc-delete-btn:hover:not(:disabled) {
+  background: hsl(0 60% 45%);
+  color: white;
+}
