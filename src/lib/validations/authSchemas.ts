@@ -33,6 +33,11 @@ export const registerSchema = z.object({
     .min(1, { message: "Le nom est requis" })
     .max(50, { message: "Le nom ne peut pas dépasser 50 caractères" })
     .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, { message: "Le nom contient des caractères invalides" }),
+  phone: z
+    .string()
+    .trim()
+    .min(1, { message: "Le numéro de téléphone est requis" })
+    .regex(/^(?:\+33|0033|0)[1-9](?:[\s.-]?\d{2}){4}$/, { message: "Format de téléphone invalide (ex: 06 12 34 56 78)" }),
   email: z
     .string()
     .trim()
