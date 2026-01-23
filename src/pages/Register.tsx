@@ -21,7 +21,8 @@ const Register = () => {
         password: '',
         confirmPassword: '',
         firstName: '',
-        lastName: ''
+        lastName: '',
+        phone: ''
     });
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -65,7 +66,7 @@ const Register = () => {
         setLoading(true);
 
         try {
-            await register(result.data.email, result.data.password, result.data.firstName, result.data.lastName);
+            await register(result.data.email, result.data.password, result.data.firstName, result.data.lastName, result.data.phone);
             if (from) {
                 navigate(from, { replace: true });
             } else {
@@ -197,6 +198,36 @@ const Register = () => {
                                     )}
                                 </AnimatePresence>
                             </div>
+                        </motion.div>
+
+                        <motion.div 
+                            className="form-group-finom"
+                            variants={fadeInUp}
+                            transition={{ duration: 0.4 }}
+                        >
+                            <label>Téléphone *</label>
+                            <motion.input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                className={`input-finom ${fieldErrors.phone ? 'input-error' : ''}`}
+                                placeholder="06 12 34 56 78"
+                                whileFocus={{ scale: 1.01, boxShadow: '0 0 0 3px rgba(254, 66, 180, 0.15)' }}
+                                transition={{ duration: 0.2 }}
+                            />
+                            <AnimatePresence>
+                                {fieldErrors.phone && (
+                                    <motion.span 
+                                        className="field-error-finom"
+                                        initial={{ opacity: 0, y: -5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -5 }}
+                                    >
+                                        {fieldErrors.phone}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
                         </motion.div>
 
                         <motion.div 

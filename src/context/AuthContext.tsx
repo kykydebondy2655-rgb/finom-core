@@ -21,7 +21,7 @@ interface AuthContextType {
     user: AuthUser | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<AuthUser>;
-    register: (email: string, password: string, firstName: string, lastName: string) => Promise<AuthUser>;
+    register: (email: string, password: string, firstName: string, lastName: string, phone?: string) => Promise<AuthUser>;
     logout: () => Promise<void>;
     clearMustChangePassword: () => void;
     isAuthenticated: boolean;
@@ -192,7 +192,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const register = async (email: string, password: string, firstName: string, lastName: string): Promise<AuthUser> => {
+    const register = async (email: string, password: string, firstName: string, lastName: string, phone?: string): Promise<AuthUser> => {
         // Normalize email to lowercase to prevent case sensitivity issues
         const normalizedEmail = email.toLowerCase().trim();
         
@@ -202,7 +202,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             options: {
                 data: {
                     first_name: firstName.trim(),
-                    last_name: lastName.trim()
+                    last_name: lastName.trim(),
+                    phone: phone?.trim() || null
                 },
                 emailRedirectTo: `${window.location.origin}/`
             }
@@ -220,12 +221,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             throw new Error('Cet email est déjà utilisé. Veuillez vous connecter.');
         }
 
+        // Update profile with phone number
+        if (phone) {
+            await supabase
+                .from('profiles')
+                .update({ phone: phone.trim() })
+                .eq('id', authUser.id);
+        }
+
         // New users are always clients
         const registeredUser: AuthUser = {
             id: authUser.id,
             email: authUser.email || normalizedEmail,
             firstName: firstName.trim(),
             lastName: lastName.trim(),
+            phone: phone?.trim(),
             role: 'client'
         };
 
